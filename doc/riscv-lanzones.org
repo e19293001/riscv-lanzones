@@ -1,0 +1,111 @@
+#+LATEX_HEADER_EXTRA: \usepackage{tikz-timing}[2009/12/09]
+#+LATEX_HEADER_EXTRA: \usetikztiminglibrary[new={char=Q,reset char=R}]{counters}
+#+LATEX_HEADER_EXTRA: \usetikzlibrary{shapes,arrows}
+#+LATEX_HEADER_EXTRA: \usepackage[active,tightpage]{preview}
+#+LATEX_HEADER_EXTRA: \setlength{\PreviewBorder}{5mm}
+
+#+LATEX_HEADER_EXTRA: \definecolor{bgblue}{rgb}{0.5,0.9,0.9}
+#+LATEX_HEADER_EXTRA: \definecolor{bgred}{rgb}{1,0.6,0.6}
+#+LATEX_HEADER_EXTRA: \definecolor{fgblue}{rgb}{0,0,0.6}
+#+LATEX_HEADER_EXTRA: \definecolor{bgred}{rgb}{0.6,,0}
+
+* RISC-V 32I Instruction Set Implementation
+
+This document describes the design implementation specifications
+of RISC-V 32I.
+
+** Top Level Architecture
+
+** Hand Shake
+*** External Hand Shake
+**** Read Hand Shake
+#+CAPTION: <<Figure_1>>
+#+NAME: fig: <<Figure_1>>
+#+BEGIN_LATEX
+    \begin{tikztimingtable} [
+    %    table/grid,
+        timing/slope=0.15,
+        timing/coldist=2pt,
+        xscale=2.05,yscale=1.1,
+        semithick
+    ]
+
+      \scriptsize clk & 15{C} \\ 
+      o\_rdy & LLLLLHHHHLLLL \\
+      i\_ack & LLLLLLLHHLLLL \\
+      i\_addr & 7U 2D{$VALID$} 4U \\
+      i\_data & 7U 2D{$VALID$} 4U \\
+    \end{tikztimingtable}
+#+END_LATEX
+
+[[Figure_1]] shows a two way handshake for the read channel.
+**** Write Hand Shake
+#+BEGIN_LATEX
+
+    \begin{tikztimingtable} [
+    %    table/grid,
+        timing/slope=0.15,
+        timing/coldist=2pt,
+        xscale=2.05,yscale=1.1,
+        semithick
+    ]
+
+      \scriptsize clk & 15{C} \\ 
+      outputAddress & 5U 4D{0x00} 4U 2D{} \\
+      outputWdata & 15U \\
+      outputWnR & LLLLLLLLLLLLLLL \\
+      outputSelect & LLLLLHH N(A) HHLL LL HH \\
+      inputRdata & 7U 2D{0x3005} N(C) 6U \\
+      inputValid & LLLLLLLHH N(B) 6L \\
+      \\
+      regState & 3D{$P\_IDLE$} 6D{$P\_FETCH$} 2D{\scriptsize $P\_DECODE$} 2D{\scriptsize $P\_EXECUTE$} 2D{$P\_FETCH$} \\
+      combAddressSelect & 3D{$NONE$} 6D{$PC$} 6D{$NONE$} \\ 
+      combOutputAddressEn & LLLHHLLLLLLLLHH \\
+      enInstruction & LLLLLLLHH 6L \\
+      regInstruction & 9U 4D{0x3005} 2U \\
+      w\_asp & LLLLLLLLLHHHHLL \\
+      \\
+      enStackPtr & 11L HH 2L \\
+      regStackPtr & 13D{0xFFFE} 2D{0xFFFF} \\
+      enPrgCntr & 11L HH 2L \\
+      regPrgCntr & 13D{0x0000} 2D{0x0001} \\
+      \extracode
+    \end{tikztimingtable}
+#+END_LATEX
+
+*** Internal Hand Shake
+** Instructions 
+*** LUI
+#+BEGIN_LATEX
+    \begin{tikztimingtable} [
+    %    table/grid,
+        timing/slope=0.15,
+        timing/coldist=2pt,
+        xscale=2.05,yscale=1.1,
+        semithick
+    ]
+
+      \scriptsize clk & 15{C} \\ 
+      outputAddress & 5U 4D{0x00} 4U 2D{} \\
+      outputWdata & 15U \\
+      outputWnR & LLLLLLLLLLLLLLL \\
+      outputSelect & LLLLLHH N(A) HHLL LL HH \\
+      inputRdata & 7U 2D{0x3005} N(C) 6U \\
+      inputValid & LLLLLLLHH N(B) 6L \\
+      \\
+      regState & 3D{$P\_IDLE$} 6D{$P\_FETCH$} 2D{\scriptsize $P\_DECODE$} 2D{\scriptsize $P\_EXECUTE$} 2D{$P\_FETCH$} \\
+      combAddressSelect & 3D{$NONE$} 6D{$PC$} 6D{$NONE$} \\ 
+      combOutputAddressEn & LLLHHLLLLLLLLHH \\
+      enInstruction & LLLLLLLHH 6L \\
+      regInstruction & 9U 4D{0x3005} 2U \\
+      w\_asp & LLLLLLLLLHHHHLL \\
+      \\
+      enStackPtr & 11L HH 2L \\
+      regStackPtr & 13D{0xFFFE} 2D{0xFFFF} \\
+      enPrgCntr & 11L HH 2L \\
+      regPrgCntr & 13D{0x0000} 2D{0x0001} \\
+      \extracode
+    \end{tikztimingtable}
+#+END_LATEX
+
+
