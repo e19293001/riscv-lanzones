@@ -17,11 +17,15 @@ module lanzones(
    reg [31:0]          MAff;
    reg [31:0]          WBff;
 
+   reg [31:0]          PCff;
+
    wire                FIctrl;
    wire                DIctrl;
    wire                EXctrl;
    wire                MActrl;
    wire                WBctrl;
+
+   wire                PCctrl;
 
    reg [31:0]          x0ff;
    reg [31:0]          x1ff;
@@ -80,11 +84,38 @@ module lanzones(
       end
       else begin
          if (LEn) begin
+//            if (RVld) begin
+//               RRdy <= 0;
+//            end
+//            else begin
+               RRdy <= 1;
+//            end
+         end
+      end
+   end
+
+   always @(posedge clk) begin
+      if (!rstn) begin
+         PCff <= 0;
+      end
+      else begin
+         if (PCctrl) begin
+            PCff <= PCff + 1;
+         end
+      end
+   end
+
+   always @(posedge clk) begin
+      if (!rstn) begin
+         RAddr <= 0;
+      end
+      else begin
+         if (LEn) begin
             if (RVld) begin
-               RRdy <= 0;
+               RAddr <= PCff;
             end
             else begin
-               RRdy <= 1;
+               RAddr <= 0;
             end
          end
       end
@@ -99,6 +130,23 @@ module lanzones(
             FIff <= RData;
          end
       end
+   end
+
+   reg [31:0] DInextctrl;
+
+   always @* begin
+      DInextctrl = 0;
+      case (FIff)
+        1: begin
+           DInextctrl = 0;
+        end
+        2: begin
+           DInextctrl = 0;
+        end
+        default: begin
+           DInextctrl = 0;
+        end         
+      endcase
    end
 
    always @(posedge clk) begin

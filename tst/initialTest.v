@@ -10,7 +10,7 @@ module MemoryModel(
    reg [15:0] mem ['hFFFF:0];
 
    always @(posedge clk) begin
-      if (rstn) begin
+      if (!rstn) begin
          RData <= 0;
       end
       else begin
@@ -21,10 +21,17 @@ module MemoryModel(
    end
 
    always @(posedge clk) begin
-      if (rstn) begin
+      if (!rstn) begin
          RVld <= 0;
       end
       else begin
+//         if (RVld) begin
+//            RVld <= 0;
+//         end
+//         else if (RRdy) begin
+//            RVld <= 1;
+//         end
+
          if (RRdy) begin
             RVld <= 1;
          end
@@ -70,7 +77,7 @@ module initialTest;
 
    initial begin
 	   $dumpfile("sim.vcd");
-	   $dumpvars(-1, dut);
+	   $dumpvars(-1, dut, mem);
    end
 
    lanzones dut(
@@ -91,30 +98,8 @@ module initialTest;
                    .RData(RData)
                    );
 
-//   initial begin
-//      RVld <= 0;
-//      forever begin
-//         @(posedge clk);
-//         if (RRdy) begin
-//            if (RVld) begin
-//               RVld <= 0;
-//            end
-//            else begin
-//               RVld <= 1;
-//            end
-//         end
-//      end
-//   end
-
-//   initial begin
-//      RData <= 0;
-//      forever begin
-//         @(posedge clk);
-//         if (
-
-
    initial begin
-      file2mem("lwPattern.asm");
+      file2mem("lwPattern.txt");
    end
    
    task file2mem(input [8*128:1] str);
