@@ -7,7 +7,7 @@ module MemoryModel(
                    output reg [31:0] RData
                    );
 
-   reg [15:0] mem ['hFFFF:0];
+   reg [31:0] mem ['hFFFF:0];
 
    always @(posedge clk) begin
       if (!rstn) begin
@@ -25,18 +25,11 @@ module MemoryModel(
          RVld <= 0;
       end
       else begin
-//         if (RVld) begin
-//            RVld <= 0;
-//         end
-//         else if (RRdy) begin
-//            RVld <= 1;
-//         end
-
-         if (RRdy) begin
-            RVld <= 1;
-         end
-         else if (RVld) begin
+         if (RVld) begin
             RVld <= 0;
+         end
+         else if (RRdy) begin
+            RVld <= 1;
          end
       end
    end
@@ -105,14 +98,14 @@ module initialTest;
    task file2mem(input [8*128:1] str);
       integer fp;
       integer code;
-      reg [15:0] indx; // should be an integer. but iverilog won't display %04x properly
+      reg [31:0] indx; // should be an integer. but iverilog won't display %04x properly
       integer data;
 
       reg [8*128:1] datastr;
       integer       addrOrData;
       reg [8*128:1] tomem;
-      reg [15:0]    addr;
-      reg [15:0]    datain;
+      reg [31:0]    addr;
+      reg [31:0]    datain;
       begin
          fp = $fopen(str, "r");
          $display("str: %0s", str);

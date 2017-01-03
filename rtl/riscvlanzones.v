@@ -61,14 +61,13 @@ module lanzones(
    reg [31:0]          x31ff;
 
    reg [4:0]           xAddr;
-   reg [31:0]          xRData;
+//   reg [31:0]          xRData;
    reg [31:0]          xWData;
    reg 		 	        xWEn;
 
    always @(*) begin
       xWEn = 0;
-      xAddr = 0;
-      xRData = 0;
+//      xRData = 0;
       xWData = 0;
    end
 
@@ -84,12 +83,12 @@ module lanzones(
       end
       else begin
          if (LEn) begin
-//            if (RVld) begin
-//               RRdy <= 0;
-//            end
-//            else begin
+            if (RVld) begin
+               RRdy <= 0;
+            end
+            else begin
                RRdy <= 1;
-//            end
+            end
          end
       end
    end
@@ -134,18 +133,56 @@ module lanzones(
 
    reg [31:0] DInextctrl;
 
+   wire [11:0] imm_instw;
+   wire [4:0]  rs1_instw;
+   wire [2:0]  funct3_instw;
+   wire [4:0]  rd_instw;
+   wire [6:0]  opcode_instw;
+
+   assign imm_instw = FIff[31:20];
+   assign rs1_instw = FIff[19:15];
+   assign funct3_instw = FIff[14:12];
+   assign rd_instw = FIff[11:7];
+   assign opcode_instw = FIff[6:0];
+
+   reg [4:0]   alu_opctrl;
+   reg [5:0]   alu_outctrl;
+
    always @* begin
-      DInextctrl = 0;
-      case (FIff)
-        1: begin
-           DInextctrl = 0;
+      alu_opctrl = 0;
+      case (opcode_instw)
+        5'b00011: begin // LW
+           case (funct3_instw)
+             3'b000: alu_opctrl = 0;
+             3'b001: alu_opctrl = 0;
+             3'b010: alu_opctrl = 5;
+             default: alu_opctrl = 0;
+           endcase
         end
         2: begin
-           DInextctrl = 0;
+           alu_opctrl = 0;
         end
         default: begin
-           DInextctrl = 0;
+           alu_opctrl = 0;
         end         
+      endcase
+   end
+
+   always @* begin
+      alu_outctrl = 0;
+      case (alu_opctrl)
+        0:; 
+        1:;
+        2:;
+        5: alu_outctrl = xRData + imm_instw;
+        default: alu_opctrl = 0;
+      endcase
+   end
+
+   always @* begin
+      case (alu_opctrl)
+        5: xAddr = rs1_instw;
+        default: xAddr = 0;
       endcase
    end
 
@@ -166,7 +203,7 @@ module lanzones(
       end
       else begin
          if (EXctrl) begin
-            EXff <= EXff;
+            EXff <= DIff;
          end
       end
    end
@@ -194,6 +231,45 @@ module lanzones(
    end
 
 // registers
+   reg [31:0] xRData;
+   always @* begin
+      case (xAddr)
+        0: xRData = x0ff;
+        1: xRData = x1ff;
+        2: xRData = x2ff;
+        3: xRData = x3ff;
+        4: xRData = x4ff;
+        5: xRData = x5ff;
+        6: xRData = x6ff;
+        7: xRData = x7ff;
+        8: xRData = x8ff;
+        9: xRData = x9ff;
+        10: xRData = x10ff;
+        11: xRData = x11ff;
+        12: xRData = x12ff;
+        13: xRData = x13ff;
+        14: xRData = x14ff;
+        15: xRData = x15ff;
+        16: xRData = x16ff;
+        17: xRData = x17ff;
+        18: xRData = x18ff;
+        19: xRData = x19ff;
+        20: xRData = x20ff;
+        21: xRData = x21ff;
+        22: xRData = x22ff;
+        23: xRData = x23ff;
+        24: xRData = x24ff;
+        25: xRData = x25ff;
+        26: xRData = x26ff;
+        27: xRData = x27ff;
+        28: xRData = x28ff;
+        29: xRData = x29ff;
+        30: xRData = x30ff;
+        31: xRData = x31ff;
+        default: xRData = 0;
+      endcase
+   end
+
    always @(posedge clk) begin
       if (!rstn) begin
          x0ff <= 0;
@@ -202,9 +278,6 @@ module lanzones(
          if (xAddr == 0) begin
             if (xWEn) begin
                x0ff <= xWData;
-            end
-            else begin
-               xRData <= x0ff;
             end
          end
       end
@@ -219,9 +292,6 @@ module lanzones(
             if (xWEn) begin
                x1ff <= xWData;
             end
-            else begin
-               xRData <= x1ff;
-            end
          end
       end
    end
@@ -235,24 +305,18 @@ module lanzones(
             if (xWEn) begin
                x2ff <= xWData;
             end
-            else begin
-               xRData <= x2ff;
-            end
          end
       end
    end
 
    always @(posedge clk) begin
       if (!rstn) begin
-         x3ff <= 0;
+         x3ff <= 'hCAFE_BABE;
       end
       else begin
          if (xAddr == 3) begin
             if (xWEn) begin
                x3ff <= xWData;
-            end
-            else begin
-               xRData <= x3ff;
             end
          end
       end
@@ -267,9 +331,6 @@ module lanzones(
             if (xWEn) begin
                x4ff <= xWData;
             end
-            else begin
-               xRData <= x4ff;
-            end
          end
       end
    end
@@ -282,9 +343,6 @@ module lanzones(
          if (xAddr == 5) begin
             if (xWEn) begin
                x5ff <= xWData;
-            end
-            else begin
-               xRData <= x5ff;
             end
          end
       end
@@ -299,9 +357,6 @@ module lanzones(
             if (xWEn) begin
                x6ff <= xWData;
             end
-            else begin
-               xRData <= x6ff;
-            end
          end
       end
    end
@@ -314,9 +369,6 @@ module lanzones(
          if (xAddr == 7) begin
             if (xWEn) begin
                x7ff <= xWData;
-            end
-            else begin
-               xRData <= x7ff;
             end
          end
       end
@@ -331,9 +383,6 @@ module lanzones(
             if (xWEn) begin
                x8ff <= xWData;
             end
-            else begin
-               xRData <= x8ff;
-            end
          end
       end
    end
@@ -346,9 +395,6 @@ module lanzones(
          if (xAddr == 9) begin
             if (xWEn) begin
                x9ff <= xWData;
-            end
-            else begin
-               xRData <= x9ff;
             end
          end
       end
@@ -363,9 +409,6 @@ module lanzones(
             if (xWEn) begin
                x10ff <= xWData;
             end
-            else begin
-               xRData <= x10ff;
-            end
          end
       end
    end
@@ -378,9 +421,6 @@ module lanzones(
          if (xAddr == 11) begin
             if (xWEn) begin
                x11ff <= xWData;
-            end
-            else begin
-               xRData <= x11ff;
             end
          end
       end
@@ -395,9 +435,6 @@ module lanzones(
             if (xWEn) begin
                x12ff <= xWData;
             end
-            else begin
-               xRData <= x12ff;
-            end
          end
       end
    end
@@ -410,9 +447,6 @@ module lanzones(
          if (xAddr == 13) begin
             if (xWEn) begin
                x13ff <= xWData;
-            end
-            else begin
-               xRData <= x13ff;
             end
          end
       end
@@ -427,9 +461,6 @@ module lanzones(
             if (xWEn) begin
                x14ff <= xWData;
             end
-            else begin
-               xRData <= x14ff;
-            end
          end
       end
    end
@@ -442,9 +473,6 @@ module lanzones(
          if (xAddr == 15) begin
             if (xWEn) begin
                x15ff <= xWData;
-            end
-            else begin
-               xRData <= x15ff;
             end
          end
       end
@@ -459,9 +487,6 @@ module lanzones(
             if (xWEn) begin
                x16ff <= xWData;
             end
-            else begin
-               xRData <= x16ff;
-            end
          end
       end
    end
@@ -474,9 +499,6 @@ module lanzones(
          if (xAddr == 17) begin
             if (xWEn) begin
                x17ff <= xWData;
-            end
-            else begin
-               xRData <= x17ff;
             end
          end
       end
@@ -491,9 +513,6 @@ module lanzones(
             if (xWEn) begin
                x18ff <= xWData;
             end
-            else begin
-               xRData <= x18ff;
-            end
          end
       end
    end
@@ -506,9 +525,6 @@ module lanzones(
          if (xAddr == 19) begin
             if (xWEn) begin
                x19ff <= xWData;
-            end
-            else begin
-               xRData <= x19ff;
             end
          end
       end
@@ -523,9 +539,6 @@ module lanzones(
             if (xWEn) begin
                x20ff <= xWData;
             end
-            else begin
-               xRData <= x20ff;
-            end
          end
       end
    end
@@ -538,9 +551,6 @@ module lanzones(
          if (xAddr == 21) begin
             if (xWEn) begin
                x21ff <= xWData;
-            end
-            else begin
-               xRData <= x21ff;
             end
          end
       end
@@ -555,9 +565,6 @@ module lanzones(
             if (xWEn) begin
                x22ff <= xWData;
             end
-            else begin
-               xRData <= x22ff;
-            end
          end
       end
    end
@@ -570,9 +577,6 @@ module lanzones(
          if (xAddr == 23) begin
             if (xWEn) begin
                x23ff <= xWData;
-            end
-            else begin
-               xRData <= x23ff;
             end
          end
       end
@@ -587,9 +591,6 @@ module lanzones(
             if (xWEn) begin
                x24ff <= xWData;
             end
-            else begin
-               xRData <= x24ff;
-            end
          end
       end
    end
@@ -602,9 +603,6 @@ module lanzones(
          if (xAddr == 25) begin
             if (xWEn) begin
                x25ff <= xWData;
-            end
-            else begin
-               xRData <= x25ff;
             end
          end
       end
@@ -619,9 +617,6 @@ module lanzones(
             if (xWEn) begin
                x26ff <= xWData;
             end
-            else begin
-               xRData <= x26ff;
-            end
          end
       end
    end
@@ -634,9 +629,6 @@ module lanzones(
          if (xAddr == 27) begin
             if (xWEn) begin
                x27ff <= xWData;
-            end
-            else begin
-               xRData <= x27ff;
             end
          end
       end
@@ -651,9 +643,6 @@ module lanzones(
             if (xWEn) begin
                x28ff <= xWData;
             end
-            else begin
-               xRData <= x28ff;
-            end
          end
       end
    end
@@ -666,9 +655,6 @@ module lanzones(
          if (xAddr == 29) begin
             if (xWEn) begin
                x29ff <= xWData;
-            end
-            else begin
-               xRData <= x29ff;
             end
          end
       end
@@ -683,9 +669,6 @@ module lanzones(
             if (xWEn) begin
                x30ff <= xWData;
             end
-            else begin
-               xRData <= x30ff;
-            end
          end
       end
    end
@@ -698,9 +681,6 @@ module lanzones(
          if (xAddr == 31) begin
             if (xWEn) begin
                x31ff <= xWData;
-            end
-            else begin
-               xRData <= x31ff;
             end
          end
       end
