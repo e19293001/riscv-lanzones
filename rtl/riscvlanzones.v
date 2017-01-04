@@ -65,6 +65,8 @@ module lanzones(
    reg [31:0]          xWData;
    reg 		 	        xWEn;
 
+   reg                 stallctrl;
+
    always @(*) begin
       xWEn = 0;
 //      xRData = 0;
@@ -139,14 +141,14 @@ module lanzones(
    wire [4:0]  rd_instw;
    wire [6:0]  opcode_instw;
 
-   assign imm_instw = FIff[31:20];
-   assign rs1_instw = FIff[19:15];
-   assign funct3_instw = FIff[14:12];
-   assign rd_instw = FIff[11:7];
-   assign opcode_instw = FIff[6:0];
+   assign imm_instw = DIff[31:20];
+   assign rs1_instw = DIff[19:15];
+   assign funct3_instw = DIff[14:12];
+   assign rd_instw = DIff[11:7];
+   assign opcode_instw = DIff[6:0];
 
    reg [4:0]   alu_opctrl;
-   reg [5:0]   alu_outctrl;
+   reg [31:0]   alu_outctrl;
 
    always @* begin
       alu_opctrl = 0;
@@ -175,7 +177,7 @@ module lanzones(
         1:;
         2:;
         5: alu_outctrl = xRData + imm_instw;
-        default: alu_opctrl = 0;
+        default: alu_outctrl = 0;
       endcase
    end
 
@@ -311,7 +313,7 @@ module lanzones(
 
    always @(posedge clk) begin
       if (!rstn) begin
-         x3ff <= 'hCAFE_BABE;
+         x3ff <= 3;
       end
       else begin
          if (xAddr == 3) begin
