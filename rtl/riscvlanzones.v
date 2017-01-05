@@ -67,11 +67,10 @@ module lanzones(
 
    reg                 stallctrl;
 
-   always @(*) begin
-      xWEn = 0;
+//   always @(*) begin
 //      xRData = 0;
-      xWData = 0;
-   end
+
+//   end
 
    assign FIctrl = (RRdy & RVld) ? 1 : 0;
    assign DIctrl = 1;
@@ -95,13 +94,17 @@ module lanzones(
       end
    end
 
+   assign PCctrl = 1;
+   
    always @(posedge clk) begin
       if (!rstn) begin
          PCff <= 0;
       end
       else begin
-         if (PCctrl) begin
-            PCff <= PCff + 1;
+         if (LEn && RVld) begin
+            if (PCctrl) begin
+               PCff <= PCff + 1;
+            end
          end
       end
    end
@@ -113,10 +116,10 @@ module lanzones(
       else begin
          if (LEn) begin
             if (RVld) begin
-               RAddr <= PCff;
+               RAddr <= 0;
             end
             else begin
-               RAddr <= 0;
+               RAddr <= PCff;
             end
          end
       end
@@ -133,61 +136,73 @@ module lanzones(
       end
    end
 
-   reg [31:0] DInextctrl;
-
-   wire [11:0] imm_instw;
-   wire [4:0]  rs1_instw;
-   wire [2:0]  funct3_instw;
-   wire [4:0]  rd_instw;
    wire [6:0]  opcode_instw;
 
-   assign imm_instw = DIff[31:20];
-   assign rs1_instw = DIff[19:15];
-   assign funct3_instw = DIff[14:12];
-   assign rd_instw = DIff[11:7];
+   reg         DI_LUI_ctrl;
+   reg [4:0]   rd_ctrl;
+   reg [19:0]  imm_ctrl;
+   reg         DI_LUI_ctrlff;
+
+   always @(posedge clk) begin
+      if (!rstn) begin
+         DI_LUI_ctrlff <= 0;
+      end
+      else begin
+         DI_LUI_ctrlff <= DI_LUI_ctrl;
+      end
+   end
+
    assign opcode_instw = DIff[6:0];
 
-   reg [4:0]   alu_opctrl;
-   reg [31:0]   alu_outctrl;
-
    always @* begin
-      alu_opctrl = 0;
+      DI_LUI_ctrl = 0;
+      rd_ctrl = 0;
+      imm_ctrl = 0;
       case (opcode_instw)
-        5'b00011: begin // LW
-           case (funct3_instw)
-             3'b000: alu_opctrl = 0;
-             3'b001: alu_opctrl = 0;
-             3'b010: alu_opctrl = 5;
-             default: alu_opctrl = 0;
-           endcase
+        7'b0110111: begin
+           DI_LUI_ctrl = 1;
+           rd_ctrl = DIff[11:7];
+           imm_ctrl = DIff[31:12];
         end
-        2: begin
-           alu_opctrl = 0;
-        end
-        default: begin
-           alu_opctrl = 0;
-        end         
       endcase
    end
 
-   always @* begin
-      alu_outctrl = 0;
-      case (alu_opctrl)
-        0:; 
-        1:;
-        2:;
-        5: alu_outctrl = xRData + imm_instw;
-        default: alu_outctrl = 0;
-      endcase
+   always @(posedge clk) begin
+      if (!rstn) begin
+         xWEn <= 0;
+      end
+      else begin
+         if (DI_LUI_ctrlff) begin
+            xWEn <= 1;
+         end
+         else begin
+            xWEn <= 0;
+         end
+      end
    end
 
-   always @* begin
-      case (alu_opctrl)
-        5: xAddr = rs1_instw;
-        default: xAddr = 0;
-      endcase
+   always @(posedge clk) begin
+      if (!rstn) begin
+         xWData <= 0;
+      end
+      else begin
+         if (DI_LUI_ctrl) begin
+            xWData <= imm_ctrl;
+         end
+      end
    end
 
+   always @(posedge clk) begin
+      if (!rstn) begin
+         xAddr <= 0;
+      end
+      else begin
+         if (DI_LUI_ctrl) begin
+            xAddr <= rd_ctrl;
+         end
+      end
+   end
+ 
    always @(posedge clk) begin
       if (!rstn) begin
          DIff <= 0;
@@ -313,7 +328,7 @@ module lanzones(
 
    always @(posedge clk) begin
       if (!rstn) begin
-         x3ff <= 3;
+         x3ff <= 0;
       end
       else begin
          if (xAddr == 3) begin

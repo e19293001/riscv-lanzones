@@ -14,8 +14,11 @@ module MemoryModel(
          RData <= 0;
       end
       else begin
-         if (RRdy) begin
+         if (RRdy && !RVld) begin
             RData <= mem[RAddr];
+         end
+         else begin
+            RData <= 0;
          end
       end
    end
@@ -92,7 +95,8 @@ module initialTest;
                    );
 
    initial begin
-      file2mem("lwPattern.txt");
+      //file2mem("lwPattern.txt");
+      file2mem("tstPattern0000.txt");
    end
    
    task file2mem(input [8*128:1] str);
