@@ -20,7 +20,7 @@ module lanzones(
    reg [31:0]          PCff;
 
    wire                FIctrl;
-   wire                DIctrl;
+   reg                 DIctrlff;
    wire                EXctrl;
    wire                MActrl;
    wire                WBctrl;
@@ -61,23 +61,31 @@ module lanzones(
    reg [31:0]          x31ff;
 
    reg [4:0]           xAddr;
-//   reg [31:0]          xRData;
    reg [31:0]          xWData;
    reg 		 	        xWEn;
 
    reg                 stallctrl;
 
-//   always @(*) begin
-//      xRData = 0;
-
-//   end
-
    assign FIctrl = (RRdy & RVld) ? 1 : 0;
-   assign DIctrl = 1;
+   //assign DIctrl = 1;
    assign EXctrl = 1;
    assign MActrl = 1;
    assign WBctrl = 1;
 
+   always @(posedge clk) begin
+      if (!rstn) begin
+         DIctrlff <= 0;
+      end
+      else begin
+         if (FIctrl) begin
+            DIctrlff <= 1;
+         end
+         else begin
+            DIctrlff <= 0;
+         end
+      end
+   end
+   
    always @(posedge clk) begin
       if (!rstn) begin
          RRdy <= 0;
@@ -141,18 +149,8 @@ module lanzones(
    reg         DI_LUI_ctrl;
    reg [4:0]   rd_ctrl;
    reg [19:0]  imm_ctrl;
-   reg         DI_LUI_ctrlff;
 
-   always @(posedge clk) begin
-      if (!rstn) begin
-         DI_LUI_ctrlff <= 0;
-      end
-      else begin
-         DI_LUI_ctrlff <= DI_LUI_ctrl;
-      end
-   end
-
-   assign opcode_instw = DIff[6:0];
+   assign opcode_instw = FIff[6:0];
 
    always @* begin
       DI_LUI_ctrl = 0;
@@ -160,9 +158,11 @@ module lanzones(
       imm_ctrl = 0;
       case (opcode_instw)
         7'b0110111: begin
-           DI_LUI_ctrl = 1;
-           rd_ctrl = DIff[11:7];
-           imm_ctrl = DIff[31:12];
+           if (DIctrlff) begin
+              DI_LUI_ctrl = 1;
+              rd_ctrl = FIff[11:7];
+              imm_ctrl = FIff[31:12];
+           end
         end
       endcase
    end
@@ -172,7 +172,7 @@ module lanzones(
          xWEn <= 0;
       end
       else begin
-         if (DI_LUI_ctrlff) begin
+         if (DI_LUI_ctrl) begin
             xWEn <= 1;
          end
          else begin
@@ -208,7 +208,7 @@ module lanzones(
          DIff <= 0;
       end
       else begin
-         if (DIctrl) begin
+         if (DIctrlff) begin
             DIff <= FIff;
          end
       end

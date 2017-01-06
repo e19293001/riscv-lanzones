@@ -1,11 +1,11 @@
 [*]
 [*] GTKWave Analyzer v3.3.65 (w)1999-2015 BSI
-[*] Thu Jan  5 12:48:03 2017
+[*] Thu Jan  5 12:48:32 2017
 [*]
 [dumpfile] "/home/e19293001/codes/github/riscv-lanzones/sim/sim.vcd"
 [dumpfile_mtime] "Thu Jan  5 12:47:33 2017"
 [dumpfile_size] 49508
-[savefile] "/home/e19293001/codes/github/riscv-lanzones/sim/waveviewgtk.gtkw"
+[savefile] "/home/e19293001/codes/github/riscv-lanzones/sim/waveviewLUI.gtkw"
 [timestart] 20
 [size] 1367 739
 [pos] -1 -1
