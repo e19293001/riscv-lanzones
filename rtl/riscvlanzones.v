@@ -150,21 +150,51 @@ module lanzones(
    reg [4:0]   rd_ctrl;
    reg [19:0]  imm_ctrl;
 
+   reg         DI_ADD_ctrl;
+   reg [6:0]   funct7_ctrl;
+   reg [4:0]   rs1_ctrl;
+   reg [4:0]   rs2_ctrl;
+   reg [2:0]   funct3_ctrl;
+
+   reg [31:0]  alu_outctrl;
+
    assign opcode_instw = FIff[6:0];
 
    always @* begin
       DI_LUI_ctrl = 0;
+      DI_ADD_ctrl = 0;
       rd_ctrl = 0;
       imm_ctrl = 0;
+      funct7_ctrl = 0;
+      funct3_ctrl = 0;
+      rs1_ctrl = 0;
+      rs2_ctrl = 0;
       case (opcode_instw)
-        7'b0110111: begin
+        7'b0110111: begin // LUI
            if (DIctrlff) begin
               DI_LUI_ctrl = 1;
               rd_ctrl = FIff[11:7];
               imm_ctrl = FIff[31:12];
            end
         end
+        7'b0110011: begin // ADD
+           if (DIctrlff) begin
+              DI_ADD_ctrl = 1;
+              funct7_ctrl = FIff[31:25];
+              rs2_ctrl = FIff[24:20];
+              rs1_ctrl = FIff[19:15];
+              funct3_ctrl = FIff[14:12];
+              rd_ctrl = FIff[11:7];
+           end
+        end
       endcase
+   end
+
+   always @* begin
+      alu_outctrl = 0;
+      if (DI_ADD_ctrl) begin
+         alu_outctrl = rs1_ctrl + rs2_ctrl;
+      end
    end
 
    always @(posedge clk) begin
@@ -172,7 +202,7 @@ module lanzones(
          xWEn <= 0;
       end
       else begin
-         if (DI_LUI_ctrl) begin
+         if (DI_LUI_ctrl || DI_ADD_ctrl) begin
             xWEn <= 1;
          end
          else begin
@@ -189,6 +219,9 @@ module lanzones(
          if (DI_LUI_ctrl) begin
             xWData <= imm_ctrl;
          end
+         else if (DI_ADD_ctrl) begin
+            xWData <= alu_outctrl;
+         end
       end
    end
 
@@ -199,6 +232,12 @@ module lanzones(
       else begin
          if (DI_LUI_ctrl) begin
             xAddr <= rd_ctrl;
+         end
+         else if (DI_ADD_ctrl) begin
+            xAddr <= rd_ctrl;
+         end
+         else begin
+            xAddr <= 0;
          end
       end
    end

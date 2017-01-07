@@ -136,6 +136,8 @@ opcode = 0000011
 
 ** ADD
 
+ADD rd,rs1,rs2
+
 31    25 24    20 19   15 14  12 11    7 6    0
 ________ ________ _______ ______ _______ ______
  funct7    rs2      rs1   funct3   rd    opcode
@@ -149,9 +151,24 @@ opcode = inst[6:0]
 
 *** Example
 
+**** ADD x4,x3,x2
+
 Add x3 and x2 then store the result to x4
 
-ADD x4,x3,x2
+funct7 = 0000000
+rs2 = 00010
+rs1 = 00011
+funct3 = 000
+rd = 00100
+opcode = 0110011
+
+0000000 00010 00011 000 00100 0110011
+
+0000 0000 0010 0001 1000 0010 0011 0011
+   0    0    2    1    8    2    3    3
+
+00218233
+
 
 ** LUI
 

@@ -96,7 +96,8 @@ module initialTest;
 
    initial begin
       //file2mem("lwPattern.txt");
-      file2mem("tstPattern0000.txt");
+      //file2mem("tstPattern0000.txt");
+      file2mem("tstPattern0001.txt");
    end
    
    task file2mem(input [8*128:1] str);
