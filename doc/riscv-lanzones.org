@@ -219,4 +219,24 @@ SW rs1,rs2,imm
 ________ _______ ________ _______ ______ ______
   imm      rs2     rs1     funct3  imm   opcode
 
+*** Example
+
+**** SW x2,x0,imm
+
+Store the contents of register x2 to memory address 0x1000
+
+imm = 0000 0000 1000
+rs1 = 00000
+rs2 = 00010
+funct3 = 010
+opcode = 0100011
+
+0000000 00010 00000 010 01000 0100011
+
+0000 0000 0010 0000 0010 0100 0010 0011
+   0    0    2    0    2    4    2    3
+
+00202423
+
+
 
