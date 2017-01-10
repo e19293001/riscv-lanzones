@@ -3,7 +3,7 @@ module lanzones(
                 input         rstn,
                 input         RVld,
                 input [31:0]  RData,
-//                input [31:0]  RWData,
+                output [31:0]  RWData,
                 output        RWEn,
                 output        RRdy,
                 output [31:0] RAddr,
@@ -13,6 +13,7 @@ module lanzones(
    reg                 RRdy;
    reg [31:0]          RAddr;
    reg                 RWEn;
+   reg [31:0]          RWData;
 
    reg [31:0]          FIff;
    reg [31:0]          DIff;
@@ -132,6 +133,25 @@ module lanzones(
          end
          else if (RVld) begin
             RWEn <= 0;
+         end
+      end
+   end
+
+   always @(posedge clk) begin
+      if (!rstn) begin
+         RWData <= 0;
+      end
+      else begin
+         if (RVld) begin
+            RWData <= 0;
+         end
+         else begin
+            if (stallctrl) begin
+               RWData <= rs1_ctrl + imm_ctrl;
+            end
+            else begin
+               RAddr <= PCff;
+            end
          end
       end
    end

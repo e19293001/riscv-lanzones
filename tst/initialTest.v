@@ -4,6 +4,7 @@ module MemoryModel(
                    output reg        RVld,
                    input             RRdy,
                    input [31:0]      RAddr,
+                   input [31:0]      RWData,
                    input 				 RWEn,
                    output reg [31:0] RData
                    );
@@ -50,6 +51,7 @@ module initialTest;
    reg 			rstn;
    wire 			RVld;
    wire [31:0] RData;
+   wire [31:0]  RWData;
    wire        RRdy;
    wire [31:0] RAddr;
    reg         LEn;
@@ -89,6 +91,7 @@ module initialTest;
       .rstn(rstn),
       .RVld(RVld),
       .RData(RData),
+      .RWData(RWData),
       .RRdy(RRdy),
       .RWEn(RWEn),
       .RAddr(RAddr),
@@ -100,6 +103,7 @@ module initialTest;
                    .RVld(RVld),
                    .RRdy(RRdy),
                    .RAddr(RAddr),
+                   .RWData(RWData),
                    .RWEn(RWEn),
                    .RData(RData)
                    );

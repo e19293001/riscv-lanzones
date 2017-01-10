@@ -1,28 +1,32 @@
 [*]
 [*] GTKWave Analyzer v3.3.65 (w)1999-2015 BSI
-[*] Tue Jan 10 04:34:48 2017
+[*] Tue Jan 10 08:56:48 2017
 [*]
 [dumpfile] "/mnt/home/silladore/nwr/codes/verilog/github/riscv-lanzones/sim/sim.vcd"
-[dumpfile_mtime] "Tue Jan 10 04:31:33 2017"
-[dumpfile_size] 54276
+[dumpfile_mtime] "Tue Jan 10 08:51:44 2017"
+[dumpfile_size] 54572
 [savefile] "/mnt/home/silladore/nwr/codes/verilog/github/riscv-lanzones/sim/waveviewgtkSW.gtkw"
 [timestart] 32
-[size] 1581 771
+[size] 1539 600
 [pos] -1 -1
-*-2.000000 43 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-2.000000 45 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] initialTest.
 [sst_width] 217
 [signals_width] 166
 [sst_expanded] 1
-[sst_vpaned_height] 360
+[sst_vpaned_height] 325
 @28
 initialTest.dut.clk
 initialTest.dut.DI_LUI_ctrl
+initialTest.dut.DI_SW_ctrl
 @22
 initialTest.dut.xAddr[4:0]
-initialTest.dut.xRData[31:0]
-initialTest.dut.xWData[31:0]
 @23
+initialTest.dut.xRData[31:0]
+@22
+initialTest.dut.xWData[31:0]
+initialTest.dut.rs1_ctrl[4:0]
+initialTest.dut.rs2_ctrl[4:0]
 initialTest.dut.alu_outctrl[31:0]
 @28
 initialTest.dut.xWEn
