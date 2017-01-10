@@ -1,0 +1,96 @@
+[*]
+[*] GTKWave Analyzer v3.3.65 (w)1999-2015 BSI
+[*] Tue Jan 10 04:34:48 2017
+[*]
+[dumpfile] "/mnt/home/silladore/nwr/codes/verilog/github/riscv-lanzones/sim/sim.vcd"
+[dumpfile_mtime] "Tue Jan 10 04:31:33 2017"
+[dumpfile_size] 54276
+[savefile] "/mnt/home/silladore/nwr/codes/verilog/github/riscv-lanzones/sim/waveviewgtkSW.gtkw"
+[timestart] 32
+[size] 1581 771
+[pos] -1 -1
+*-2.000000 43 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] initialTest.
+[sst_width] 217
+[signals_width] 166
+[sst_expanded] 1
+[sst_vpaned_height] 360
+@28
+initialTest.dut.clk
+initialTest.dut.DI_LUI_ctrl
+@22
+initialTest.dut.xAddr[4:0]
+initialTest.dut.xRData[31:0]
+initialTest.dut.xWData[31:0]
+@23
+initialTest.dut.alu_outctrl[31:0]
+@28
+initialTest.dut.xWEn
+@22
+initialTest.dut.rd_ctrl[4:0]
+initialTest.dut.imm_ctrl[19:0]
+initialTest.dut.DIff[31:0]
+@28
+initialTest.dut.EXctrl
+@22
+initialTest.dut.EXff[31:0]
+@28
+initialTest.dut.FIctrl
+@22
+initialTest.dut.FIff[31:0]
+@28
+initialTest.dut.LEn
+initialTest.dut.MActrl
+@22
+initialTest.dut.MAff[31:0]
+@28
+initialTest.dut.PCctrl
+initialTest.dut.PCctrl
+@22
+initialTest.dut.PCff[31:0]
+initialTest.dut.RAddr[31:0]
+initialTest.dut.RData[31:0]
+@28
+initialTest.dut.RRdy
+initialTest.dut.RVld
+initialTest.dut.WBctrl
+@22
+initialTest.dut.WBff[31:0]
+initialTest.dut.opcode_instw[6:0]
+@28
+initialTest.dut.rstn
+@22
+initialTest.dut.x0ff[31:0]
+initialTest.dut.x1ff[31:0]
+initialTest.dut.x2ff[31:0]
+initialTest.dut.x3ff[31:0]
+initialTest.dut.x4ff[31:0]
+initialTest.dut.x5ff[31:0]
+initialTest.dut.x6ff[31:0]
+initialTest.dut.x7ff[31:0]
+initialTest.dut.x8ff[31:0]
+initialTest.dut.x9ff[31:0]
+initialTest.dut.x10ff[31:0]
+initialTest.dut.x11ff[31:0]
+initialTest.dut.x12ff[31:0]
+initialTest.dut.x13ff[31:0]
+initialTest.dut.x14ff[31:0]
+initialTest.dut.x15ff[31:0]
+initialTest.dut.x16ff[31:0]
+initialTest.dut.x17ff[31:0]
+initialTest.dut.x18ff[31:0]
+initialTest.dut.x19ff[31:0]
+initialTest.dut.x20ff[31:0]
+initialTest.dut.x21ff[31:0]
+initialTest.dut.x22ff[31:0]
+initialTest.dut.x23ff[31:0]
+initialTest.dut.x24ff[31:0]
+initialTest.dut.x25ff[31:0]
+initialTest.dut.x26ff[31:0]
+initialTest.dut.x27ff[31:0]
+initialTest.dut.x28ff[31:0]
+initialTest.dut.x29ff[31:0]
+initialTest.dut.x30ff[31:0]
+initialTest.dut.x31ff[31:0]
+[pattern_trace] 1
+[pattern_trace] 0

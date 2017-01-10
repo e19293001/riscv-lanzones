@@ -4,6 +4,7 @@ module MemoryModel(
                    output reg        RVld,
                    input             RRdy,
                    input [31:0]      RAddr,
+                   input 				 RWEn,
                    output reg [31:0] RData
                    );
 
@@ -20,6 +21,12 @@ module MemoryModel(
          else begin
             RData <= 0;
          end
+      end
+   end
+
+   always @(posedge clk) begin
+      if (RWEn) begin
+         mem[RAddr] <= RData;
       end
    end
 
@@ -46,6 +53,7 @@ module initialTest;
    wire        RRdy;
    wire [31:0] RAddr;
    reg         LEn;
+   wire        RWEn;
    
    initial begin
       clk = 0;
@@ -82,6 +90,7 @@ module initialTest;
       .RVld(RVld),
       .RData(RData),
       .RRdy(RRdy),
+      .RWEn(RWEn),
       .RAddr(RAddr),
       .LEn(LEn));
 
@@ -91,6 +100,7 @@ module initialTest;
                    .RVld(RVld),
                    .RRdy(RRdy),
                    .RAddr(RAddr),
+                   .RWEn(RWEn),
                    .RData(RData)
                    );
 
