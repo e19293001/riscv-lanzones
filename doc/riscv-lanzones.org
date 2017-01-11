@@ -244,5 +244,26 @@ opcode = inst[6:0]
 
 00202423
 
+**** SW x3,x0,imm
 
+Store the contents of register x2 to memory address 0x1000
+
+imm = 0000 0000 1000
+rs1 = 00000
+rs2 = 00011
+funct3 = 010
+opcode = 0100011
+
+imm = {inst[31:25],inst[11:7]}
+rs2 = inst[24:20]
+rs1 = inst[19:15]
+funct3 = inst[14:12]
+opcode = inst[6:0]
+
+0000000 00011 00000 010 01000 0100011
+
+0000 0000 0011 0000 0010 0100 0010 0011
+   0    0    3    0    2    4    2    3
+
+00302423
 
