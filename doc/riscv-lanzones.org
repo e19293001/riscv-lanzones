@@ -221,11 +221,11 @@ SW rs1,rs2,imm
 ________ _______ ________ _______ ______ ______
   imm      rs2     rs1     funct3  imm   opcode
 
-*** Example
+*** Examples
 
 **** SW x2,x0,imm
 
-Store the contents of register x2 to memory address 0x1000
+Store the contents of register x2 to memory address 0x0008
 
 SW x2,x0,0x8
 
@@ -250,7 +250,7 @@ opcode = inst[6:0]
 
 **** SW x3,x0,imm
 
-Store the contents of register x2 to memory address 0x1000
+Store the contents of register x2 to memory address 0x0007
 
 SW x3,x0,0x7
 

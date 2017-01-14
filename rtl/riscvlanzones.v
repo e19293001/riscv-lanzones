@@ -86,12 +86,15 @@ module lanzones(
 
    reg                 stallctrl;
    reg                 stallff;
+   wire                fetchctrl;
 
    assign FIctrl = (RRdy & RVld) ? 1 : 0;
    //assign DIctrl = 1;
    assign EXctrl = 1;
    assign MActrl = 1;
    assign WBctrl = 1;
+
+   assign fetchctrl = stallff ? 0 : 1;
 
    always @(posedge clk) begin
       if (!rstn) begin
@@ -142,16 +145,11 @@ module lanzones(
          RWData <= 0;
       end
       else begin
-         if (RVld) begin
-            RWData <= 0;
+         if (stallctrl) begin
+            RWData <= xRData;
          end
-         else begin
-            if (stallctrl) begin
-               RWData <= rs1_ctrl + imm_ctrl;
-            end
-            else begin
-               RAddr <= PCff;
-            end
+         else if (RVld) begin
+            RWData <= 0;
          end
       end
    end
@@ -191,17 +189,29 @@ module lanzones(
       end
       else begin
          if (LEn) begin
-            if (RVld) begin
-               RAddr <= 0;
+            if (stallctrl) begin
+               RAddr <= alu_outctrl;
             end
             else begin
-               if (stallff) begin
-                  RAddr <= alu_outctrl;
-               end
-               else begin
+               if (fetchctrl) begin
                   RAddr <= PCff;
                end
+               else if (RVld) begin
+                  RAddr <= 0;
+               end
             end
+
+//            if (RVld) begin
+//               RAddr <= 0;
+//            end
+//            else begin
+//               if (stallctrl) begin
+//                  RAddr <= alu_outctrl;
+//               end
+//               else begin
+//                  RAddr <= PCff;
+//               end
+//            end
          end
       end
    end
@@ -363,7 +373,7 @@ module lanzones(
 // registers
    reg [31:0] xRData;
    always @* begin
-      case (xAddr)
+      case (rs2_ctrl)
         0: xRData = x0ff;
         1: xRData = x1ff;
         2: xRData = x2ff;
@@ -405,13 +415,6 @@ module lanzones(
       if (!rstn) begin
          x0ff <= 0;
       end
-//      else begin
-//         if (xAddr == 0) begin
-//            if (xWEn) begin
-//               x0ff <= xWData;
-//            end
-//         end
-//      end
    end
 
    always @(posedge clk) begin

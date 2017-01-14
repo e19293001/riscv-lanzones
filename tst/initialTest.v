@@ -16,18 +16,17 @@ module MemoryModel(
          RData <= 0;
       end
       else begin
-         if (RRdy && !RVld) begin
-            RData <= mem[RAddr];
+         if (RWEn) begin
+            mem[RAddr] <= RWData;
          end
          else begin
-            RData <= 0;
+            if (RRdy && !RVld) begin
+               RData <= mem[RAddr];
+            end
+            else begin
+               RData <= 0;
+            end
          end
-      end
-   end
-
-   always @(posedge clk) begin
-      if (RWEn) begin
-         mem[RAddr] <= RData;
       end
    end
 
@@ -44,6 +43,29 @@ module MemoryModel(
          end
       end
    end
+
+   wire [31:0] mem00;
+   wire [31:0] mem01;
+   wire [31:0] mem02;
+   wire [31:0] mem03;
+   wire [31:0] mem04;
+   wire [31:0] mem05;
+   wire [31:0] mem06;
+   wire [31:0] mem07;
+   wire [31:0] mem08;
+   wire [31:0] mem09;
+
+   assign mem00 = mem[00];
+   assign mem01 = mem[01];
+   assign mem02 = mem[02];
+   assign mem03 = mem[03];
+   assign mem04 = mem[04];
+   assign mem05 = mem[05];
+   assign mem06 = mem[06];
+   assign mem07 = mem[07];
+   assign mem08 = mem[08];
+   assign mem09 = mem[09];
+
 endmodule
 
 module initialTest;
@@ -83,7 +105,7 @@ module initialTest;
 
    initial begin
 	   $dumpfile("sim.vcd");
-	   $dumpvars(-1, dut, mem);
+	   $dumpvars(-1, dut, mem, initialTest);
    end
 
    lanzones dut(
