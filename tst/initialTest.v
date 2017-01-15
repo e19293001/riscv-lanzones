@@ -5,7 +5,7 @@ module MemoryModel(
                    input             RRdy,
                    input [31:0]      RAddr,
                    input [31:0]      RWData,
-                   input 				 RWEn,
+                   input             RWEn,
                    output reg [31:0] RData
                    );
 
@@ -35,6 +35,7 @@ module MemoryModel(
          RVld <= 0;
       end
       else begin
+         RVld <= 0;
          if (RVld) begin
             RVld <= 0;
          end
@@ -43,28 +44,28 @@ module MemoryModel(
          end
       end
    end
+   
+   wire [31:0] mem0x100;
+   wire [31:0] mem0x101;
+   wire [31:0] mem0x102;
+   wire [31:0] mem0x103;
+   wire [31:0] mem0x104;
+   wire [31:0] mem0x105;
+   wire [31:0] mem0x106;
+   wire [31:0] mem0x107;
+   wire [31:0] mem0x108;
+   wire [31:0] mem0x109;
 
-   wire [31:0] mem00;
-   wire [31:0] mem01;
-   wire [31:0] mem02;
-   wire [31:0] mem03;
-   wire [31:0] mem04;
-   wire [31:0] mem05;
-   wire [31:0] mem06;
-   wire [31:0] mem07;
-   wire [31:0] mem08;
-   wire [31:0] mem09;
-
-   assign mem00 = mem[00];
-   assign mem01 = mem[01];
-   assign mem02 = mem[02];
-   assign mem03 = mem[03];
-   assign mem04 = mem[04];
-   assign mem05 = mem[05];
-   assign mem06 = mem[06];
-   assign mem07 = mem[07];
-   assign mem08 = mem[08];
-   assign mem09 = mem[09];
+   assign mem0x100 = mem['h100];
+   assign mem0x101 = mem['h101];
+   assign mem0x102 = mem['h102];
+   assign mem0x103 = mem['h103];
+   assign mem0x104 = mem['h104];
+   assign mem0x105 = mem['h105];
+   assign mem0x106 = mem['h106];
+   assign mem0x107 = mem['h107];
+   assign mem0x108 = mem['h108];
+   assign mem0x109 = mem['h109];
 
 endmodule
 
@@ -78,6 +79,7 @@ module initialTest;
    wire [31:0] RAddr;
    reg         LEn;
    wire        RWEn;
+   wire        Halt;
    
    initial begin
       clk = 0;
@@ -96,6 +98,8 @@ module initialTest;
 
       repeat (3) @(posedge clk);
       LEn <= 1;
+      @(posedge clk);
+      LEn <= 0;
    end
 
    initial begin
@@ -117,7 +121,8 @@ module initialTest;
       .RRdy(RRdy),
       .RWEn(RWEn),
       .RAddr(RAddr),
-      .LEn(LEn));
+      .LEn(LEn),
+      .Halt(Halt));
 
    MemoryModel mem(
                    .clk(clk),
@@ -134,7 +139,8 @@ module initialTest;
       //file2mem("lwPattern.txt");
       //file2mem("tstPattern0000.txt");
       //file2mem("tstPattern0001.txt");
-      file2mem("tstPattern0002.txt");
+      //file2mem("tstPattern0002.txt");
+      file2mem("tstPattern0003.txt");
    end
    
    task file2mem(input [8*128:1] str);

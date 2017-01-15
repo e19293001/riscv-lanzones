@@ -1,0 +1,57 @@
+[*]
+[*] GTKWave Analyzer v3.3.65 (w)1999-2015 BSI
+[*] Sun Jan 15 04:31:40 2017
+[*]
+[dumpfile] "/home/e19293001/codes/github/riscv-lanzones/sim/sim.vcd"
+[dumpfile_mtime] "Sun Jan 15 04:30:29 2017"
+[dumpfile_size] 25909
+[savefile] "/home/e19293001/codes/github/riscv-lanzones/sim/waveviewgtkLW.gtkw"
+[timestart] 71
+[size] 1333 677
+[pos] -1 -1
+*-3.000000 87 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] initialTest.
+[sst_width] 256
+[signals_width] 200
+[sst_expanded] 1
+[sst_vpaned_height] 108
+@28
+initialTest.Halt
+initialTest.LEn
+@22
+initialTest.RAddr[31:0]
+initialTest.RData[31:0]
+@28
+initialTest.RRdy
+initialTest.RVld
+@22
+initialTest.RWData[31:0]
+@28
+initialTest.RWEn
+initialTest.clk
+initialTest.rstn
+initialTest.dut.DI_LW_ctrl
+initialTest.dut.DI_LWff
+initialTest.dut.DI_LW_w
+initialTest.dut.DI_LW_xW_ctrl
+initialTest.dut.stallctrl
+initialTest.dut.stallff
+@22
+initialTest.dut.imm_ctrl[19:0]
+initialTest.dut.rs1_ctrl[4:0]
+@28
+initialTest.dut.funct3_ctrl[2:0]
+@22
+initialTest.dut.rd_ctrl[4:0]
+initialTest.dut.alu_outctrl[31:0]
+@28
+initialTest.dut.xWEn
+@22
+initialTest.dut.xWData[31:0]
+initialTest.dut.xAddr[4:0]
+@23
+initialTest.dut.x5ff[31:0]
+@22
+initialTest.dut.x4ff[31:0]
+[pattern_trace] 1
+[pattern_trace] 0

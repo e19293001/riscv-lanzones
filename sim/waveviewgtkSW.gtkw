@@ -1,100 +1,56 @@
 [*]
 [*] GTKWave Analyzer v3.3.65 (w)1999-2015 BSI
-[*] Tue Jan 10 08:56:48 2017
+[*] Sun Jan 15 03:45:37 2017
 [*]
-[dumpfile] "/mnt/home/silladore/nwr/codes/verilog/github/riscv-lanzones/sim/sim.vcd"
-[dumpfile_mtime] "Tue Jan 10 08:51:44 2017"
-[dumpfile_size] 54572
-[savefile] "/mnt/home/silladore/nwr/codes/verilog/github/riscv-lanzones/sim/waveviewgtkSW.gtkw"
-[timestart] 32
-[size] 1539 600
+[dumpfile] "/home/e19293001/codes/github/riscv-lanzones/sim/sim.vcd"
+[dumpfile_mtime] "Sun Jan 15 03:44:57 2017"
+[dumpfile_size] 24819
+[savefile] "/home/e19293001/codes/github/riscv-lanzones/sim/waveviewgtkSW.gtkw"
+[timestart] 71
+[size] 1333 677
 [pos] -1 -1
-*-2.000000 45 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-2.000000 79 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] initialTest.
-[sst_width] 217
-[signals_width] 166
+[sst_width] 256
+[signals_width] 200
 [sst_expanded] 1
-[sst_vpaned_height] 325
+[sst_vpaned_height] 108
 @28
-initialTest.dut.clk
+initialTest.clk
+initialTest.rstn
+initialTest.LEn
+initialTest.dut.Halt
+@22
+initialTest.RAddr[31:0]
+initialTest.RData[31:0]
+initialTest.dut.xRData[31:0]
+@29
+initialTest.dut.FIctrl
+@28
+initialTest.RRdy
+initialTest.RVld
+initialTest.RWEn
+@22
+initialTest.RWData[31:0]
+@28
+initialTest.dut.DIctrlff
+initialTest.dut.DI_ADD_ctrl
 initialTest.dut.DI_LUI_ctrl
 initialTest.dut.DI_SW_ctrl
 @22
-initialTest.dut.xAddr[4:0]
-@23
-initialTest.dut.xRData[31:0]
-@22
-initialTest.dut.xWData[31:0]
+initialTest.dut.imm_ctrl[19:0]
 initialTest.dut.rs1_ctrl[4:0]
 initialTest.dut.rs2_ctrl[4:0]
-initialTest.dut.alu_outctrl[31:0]
 @28
-initialTest.dut.xWEn
+initialTest.dut.funct3_ctrl[2:0]
 @22
-initialTest.dut.rd_ctrl[4:0]
-initialTest.dut.imm_ctrl[19:0]
-initialTest.dut.DIff[31:0]
-@28
-initialTest.dut.EXctrl
-@22
-initialTest.dut.EXff[31:0]
-@28
-initialTest.dut.FIctrl
-@22
-initialTest.dut.FIff[31:0]
-@28
-initialTest.dut.LEn
-initialTest.dut.MActrl
-@22
-initialTest.dut.MAff[31:0]
-@28
-initialTest.dut.PCctrl
-initialTest.dut.PCctrl
-@22
-initialTest.dut.PCff[31:0]
-initialTest.dut.RAddr[31:0]
-initialTest.dut.RData[31:0]
-@28
-initialTest.dut.RRdy
-initialTest.dut.RVld
-initialTest.dut.WBctrl
-@22
-initialTest.dut.WBff[31:0]
 initialTest.dut.opcode_instw[6:0]
 @28
-initialTest.dut.rstn
+initialTest.dut.stallctrl
+initialTest.dut.stallff
 @22
-initialTest.dut.x0ff[31:0]
-initialTest.dut.x1ff[31:0]
-initialTest.dut.x2ff[31:0]
-initialTest.dut.x3ff[31:0]
-initialTest.dut.x4ff[31:0]
-initialTest.dut.x5ff[31:0]
-initialTest.dut.x6ff[31:0]
-initialTest.dut.x7ff[31:0]
-initialTest.dut.x8ff[31:0]
-initialTest.dut.x9ff[31:0]
-initialTest.dut.x10ff[31:0]
-initialTest.dut.x11ff[31:0]
-initialTest.dut.x12ff[31:0]
-initialTest.dut.x13ff[31:0]
-initialTest.dut.x14ff[31:0]
-initialTest.dut.x15ff[31:0]
-initialTest.dut.x16ff[31:0]
-initialTest.dut.x17ff[31:0]
-initialTest.dut.x18ff[31:0]
-initialTest.dut.x19ff[31:0]
-initialTest.dut.x20ff[31:0]
-initialTest.dut.x21ff[31:0]
-initialTest.dut.x22ff[31:0]
-initialTest.dut.x23ff[31:0]
-initialTest.dut.x24ff[31:0]
-initialTest.dut.x25ff[31:0]
-initialTest.dut.x26ff[31:0]
-initialTest.dut.x27ff[31:0]
-initialTest.dut.x28ff[31:0]
-initialTest.dut.x29ff[31:0]
-initialTest.dut.x30ff[31:0]
-initialTest.dut.x31ff[31:0]
+initialTest.dut.alu_outctrl[31:0]
+initialTest.mem.mem0x107[31:0]
+initialTest.mem.mem0x108[31:0]
 [pattern_trace] 1
 [pattern_trace] 0

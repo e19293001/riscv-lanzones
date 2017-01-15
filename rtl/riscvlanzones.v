@@ -3,10 +3,11 @@ module lanzones(
                 input         rstn,
                 input         RVld,
                 input [31:0]  RData,
-                output [31:0]  RWData,
+                output [31:0] RWData,
                 output        RWEn,
                 output        RRdy,
                 output [31:0] RAddr,
+                output        Halt,
                 input         LEn
                 );
 
@@ -14,6 +15,8 @@ module lanzones(
    reg [31:0]          RAddr;
    reg                 RWEn;
    reg [31:0]          RWData;
+
+   reg                 Halt;
 
    reg [31:0]          FIff;
    reg [31:0]          DIff;
@@ -71,11 +74,17 @@ module lanzones(
    wire [6:0]  opcode_instw;
 
    reg [4:0]   rd_ctrl;
+   reg [4:0]   rdff;
    reg [19:0]  imm_ctrl;
 
    reg         DI_LUI_ctrl;
    reg         DI_ADD_ctrl;
    reg         DI_SW_ctrl;
+
+   reg         DI_LW_ctrl;
+   reg         DI_LWff;
+   wire        DI_LW_w;
+   wire        DI_LW_xW_ctrl;
 
    reg [6:0]   funct7_ctrl;
    reg [4:0]   rs1_ctrl;
@@ -96,6 +105,48 @@ module lanzones(
 
    assign fetchctrl = stallff ? 0 : 1;
 
+   assign DI_LW_w = (DI_LW_ctrl | DI_LWff) ? 1 : 0;
+   assign DI_LW_xW_ctrl = (DI_LWff & RVld) ? 1 : 0;
+
+   always @(posedge clk) begin
+      if (!rstn) begin
+         rdff <= 0;
+      end
+      else begin
+         if (DI_LW_ctrl) begin
+            rdff = rd_ctrl;
+         end
+      end
+   end
+   
+   always @(posedge clk) begin
+      if (!rstn) begin
+         DI_LWff <= 0;
+      end
+      else begin
+         if (DI_LW_ctrl) begin
+            DI_LWff <= 1;
+         end
+         else if (DI_LWff && RVld) begin
+            DI_LWff <= 0;
+         end
+      end
+   end
+
+   always @(posedge clk) begin
+      if (!rstn) begin
+         Halt <= 1;
+      end
+      else begin
+         if (LEn) begin
+            Halt <= 0;
+         end
+         else if (opcode_instw == 7'h7F) begin
+            Halt <= 1;
+         end
+      end
+   end
+
    always @(posedge clk) begin
       if (!rstn) begin
          DIctrlff <= 0;
@@ -115,13 +166,16 @@ module lanzones(
          RRdy <= 0;
       end
       else begin
-         if (LEn) begin
+         if (!Halt) begin
             if (RVld) begin
                RRdy <= 0;
             end
             else begin
                RRdy <= 1;
             end
+         end
+         else begin
+            RRdy <= 0;
          end
       end
    end
@@ -131,11 +185,13 @@ module lanzones(
          RWEn <= 0;
       end
       else begin
-         if (stallctrl) begin
-            RWEn <= 1;
-         end
-         else if (RVld) begin
-            RWEn <= 0;
+         if (!Halt) begin
+            if (stallctrl && DI_SW_ctrl) begin
+               RWEn <= 1;
+            end
+            else if (RVld) begin
+               RWEn <= 0;
+            end
          end
       end
    end
@@ -145,11 +201,13 @@ module lanzones(
          RWData <= 0;
       end
       else begin
-         if (stallctrl) begin
-            RWData <= xRData;
-         end
-         else if (RVld) begin
-            RWData <= 0;
+         if (!Halt) begin
+            if (stallctrl && DI_SW_ctrl) begin
+               RWData <= xRData;
+            end
+            else if (RVld) begin
+               RWData <= 0;
+            end
          end
       end
    end
@@ -175,7 +233,7 @@ module lanzones(
          PCff <= 0;
       end
       else begin
-         if (LEn && RVld) begin
+         if (RVld) begin
             if (PCctrl) begin
                PCff <= PCff + 1;
             end
@@ -188,7 +246,7 @@ module lanzones(
          RAddr <= 0;
       end
       else begin
-         if (LEn) begin
+         if (!Halt) begin
             if (stallctrl) begin
                RAddr <= alu_outctrl;
             end
@@ -200,18 +258,6 @@ module lanzones(
                   RAddr <= 0;
                end
             end
-
-//            if (RVld) begin
-//               RAddr <= 0;
-//            end
-//            else begin
-//               if (stallctrl) begin
-//                  RAddr <= alu_outctrl;
-//               end
-//               else begin
-//                  RAddr <= PCff;
-//               end
-//            end
          end
       end
    end
@@ -233,6 +279,7 @@ module lanzones(
       DI_LUI_ctrl = 0;
       DI_ADD_ctrl = 0;
       DI_SW_ctrl = 0;
+      DI_LW_ctrl = 0;
       rd_ctrl = 0;
       imm_ctrl = 0;
       funct7_ctrl = 0;
@@ -262,7 +309,15 @@ module lanzones(
               rs2_ctrl = FIff[24:20];
               rs1_ctrl = FIff[19:15];
               funct3_ctrl = FIff[14:12];
-              stallctrl = 1;
+              stallctrl = 1; // stop the fetch to write to memory
+           end
+           7'b0000011: begin // LW
+              DI_LW_ctrl = 1;
+              imm_ctrl = FIff[31:20];
+              rs1_ctrl = FIff[19:15];
+              funct3_ctrl = FIff[14:12];
+              rd_ctrl = FIff[11:7];
+              stallctrl = 1; // stop the fetch to read from memory
            end
          endcase
       end
@@ -273,7 +328,7 @@ module lanzones(
       if (DI_ADD_ctrl) begin
          alu_outctrl = rs1_ctrl + rs2_ctrl;
       end
-      else if (DI_SW_ctrl) begin
+      else if (DI_SW_ctrl | DI_LW_ctrl) begin
          alu_outctrl = rs1_ctrl + imm_ctrl;
       end
    end
@@ -283,7 +338,7 @@ module lanzones(
          xWEn <= 0;
       end
       else begin
-         if (DI_LUI_ctrl || DI_ADD_ctrl) begin
+         if (DI_LUI_ctrl || DI_ADD_ctrl || DI_LW_xW_ctrl) begin
             xWEn <= 1;
          end
          else begin
@@ -303,6 +358,9 @@ module lanzones(
          else if (DI_ADD_ctrl) begin
             xWData <= alu_outctrl;
          end
+         else if (DI_LW_xW_ctrl) begin
+            xWData <= RData;
+         end
       end
    end
 
@@ -319,6 +377,9 @@ module lanzones(
          end
          else if (DI_SW_ctrl) begin
             xAddr <= rs2_ctrl;
+         end
+         else if (DI_LW_xW_ctrl) begin
+            xAddr <= rdff;
          end
          else begin
             xAddr <= 0;
