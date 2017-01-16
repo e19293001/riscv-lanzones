@@ -275,6 +275,7 @@ module lanzones(
 
    assign opcode_instw = FIff[6:0];
 
+   // decoder
    always @* begin
       DI_LUI_ctrl = 0;
       DI_ADD_ctrl = 0;
@@ -323,6 +324,7 @@ module lanzones(
       end
    end
 
+   // ALU
    always @* begin
       alu_outctrl = 0;
       if (DI_ADD_ctrl) begin
@@ -333,6 +335,7 @@ module lanzones(
       end
    end
 
+   // x register controller
    always @(posedge clk) begin
       if (!rstn) begin
          xWEn <= 0;
@@ -431,7 +434,7 @@ module lanzones(
       end
    end
 
-// registers
+// register file
    reg [31:0] xRData;
    always @* begin
       case (rs2_ctrl)

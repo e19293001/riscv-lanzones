@@ -148,6 +148,8 @@ opcode = 0110011
 
 ** LUI
 
+LUI rd,imm
+
 31     12 11  7 6    0
 _________ _____ ______
    imm     rd   opcode
