@@ -54,6 +54,7 @@ class TokenMgr:
         else:
             if self.currentChar.isdigit():
                 if self.currentChar == "0":
+                    #print "found 0"
                     self.buff = ""
                     while True:
                         self.buff = self.buff + self.currentChar
@@ -68,10 +69,12 @@ class TokenMgr:
                 self.buff = ""
                 while True:
                     self.buff = self.buff + self.currentChar
+                    #print "buff:" + self.buff
                     tkn.endLine = self.currentLineNumber
                     tkn.endColumn = self.currentColumnNumber
                     #if not (self.currentChar.isalnum() and self.currentChar == "x"):
-                    if self.currentChar.isalnum():
+                    self.getNextChar()
+                    if not self.currentChar.isalnum():
                         break
                 tkn.image = self.buff
                 if tkn.image == "LUI":
@@ -85,11 +88,12 @@ class TokenMgr:
                 else:
                     tkn.kind = ERROR
             elif self.currentChar == ",":
+                print "comma"
                 tkn.endLine = self.currentLineNumber
                 tkn.endColumn = self.currentColumnNumber
-                self.getNextChar()
                 tkn.image = self.currentChar
                 tkn.kind = COMMA
+                self.getNextChar()
             else:
                 tkn.kind = ERROR
         return tkn
@@ -119,8 +123,7 @@ tmgr.getNextChar()
 
 for i in range(10):
     tkn = tmgr.getNextToken()
-    print "Token.image:" + tkn.image
-    print "Token.kind:" + str(tkn.kind)
+    print "Token.image:" + tkn.image + " Token.kind:" + str(tkn.kind)
 
 #import sys
 #import re
