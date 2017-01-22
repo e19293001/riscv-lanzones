@@ -19,15 +19,15 @@ class Token:
         self.image = ""
 
         self.tokenImage = ["EOF",
-          "UNSIGNED",
-          "HEX",
-          "LUI",
-          "ADD",
-          "SW",
-          "LW",
-          "ERROR",
-          "COMMA",
-          "REGISTER"]
+                           "UNSIGNED",
+                           "HEX",
+                           "LUI",
+                           "ADD",
+                           "SW",
+                           "LW",
+                           "ERROR",
+                           "COMMA",
+                           "REGISTER"]
           
     def getKind(self,k):
         if (k == 0):
@@ -104,10 +104,8 @@ class TokenMgr:
                 self.buff = ""
                 while True:
                     self.buff = self.buff + self.currentChar
-                    #print "buff:" + self.buff
                     tkn.endLine = self.currentLineNumber
                     tkn.endColumn = self.currentColumnNumber
-                    #if not (self.currentChar.isalnum() and self.currentChar == "x"):
                     self.getNextChar()
                     if not self.currentChar.isalnum():
                         break
@@ -152,12 +150,80 @@ class TokenMgr:
         self.currentChar = self.inputLine[self.currentColumnNumber]
         self.currentColumnNumber = self.currentColumnNumber + 1
         #print "currentChar:" + self.currentChar
+
+class asmblr:
+    def __init__(self):
+        self.currentToken = Token()
+        self.previousToken = Token()
+        self.tmgr = TokenMgr("tstPattern0003.asm", "outfile.txt")
+        self.tmgr.getNextChar()
+        self.currentToken = self.tmgr.getNextToken()
         
+    def advance(self):
+        self.previousToken = self.currentToken
+        self.currentToken = self.tmgr.getNextToken()
 
-tmgr = TokenMgr("tstPattern0003.asm", "outfile.txt")
-tmgr.getNextChar()
+    def consume(self,expected):
+        print "currentToken:" + self.currentToken.image
+        if (self.currentToken.kind == expected):
+            self.advance()
+        else:
+            print "Error. Expecting" + self.currentToken.getKind(expected)
 
-for i in range(50):
-    tkn = tmgr.getNextToken()
-    print "Token.image:" + tkn.image + " Token.kind:" + tkn.getKind(tkn.kind)
+    def LWpattern(self):
+        self.consume(LW)
+        self.consume(REGISTER)
+        self.consume(COMMA)
+        self.consume(REGISTER)
+        self.consume(COMMA)
+        self.consume(HEX)
+
+    def SWpattern(self):
+        self.consume(SW)
+        self.consume(REGISTER)
+        self.consume(COMMA)
+        self.consume(REGISTER)
+        self.consume(COMMA)
+        self.consume(HEX)
+
+    def LUIpattern(self):
+        self.consume(LUI)
+        self.consume(REGISTER)
+        self.consume(COMMA)
+        self.consume(HEX)
+
+    def ADDpattern(self):
+        self.consume(ADD)
+        self.consume(REGISTER)
+        self.consume(COMMA)
+        self.consume(REGISTER)
+        self.consume(COMMA)
+        self.consume(REGISTER)
+
+    def program(self):
+        while self.currentToken.kind != EOF:
+            if self.currentToken.kind == LUI:
+                self.LUIpattern()
+            elif self.currentToken.kind == ADD:
+                self.ADDpattern()
+            elif self.currentToken.kind == SW:
+                self.SWpattern()
+            elif self.currentToken.kind == LW:
+                self.LWpattern()
+            elif self.currentToken.kind == ERROR:
+                print "syntax Error"
+                exit()
+            else:
+                print "unexpected termination"
+                exit()
+
+    def parse(self):
+        self.program()
+
+ass = asmblr()
+ass.parse()    
+
+#for i in range(50):
+#    tkn = tmgr.getNextToken()
+#    print "Token.image:" + tkn.image + " Token.kind:" + tkn.getKind(tkn.kind)
 
