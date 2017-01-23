@@ -54,6 +54,15 @@ class Token:
             return "UNKNOWN"
     
 
+class CodeGenerator:
+    def __init__(self, outFile):
+        self.outFile = outFile
+        #print "[ start ] CodeGenerator"
+
+    def emitInstruction(self, op):
+        print op
+        #self.outFile.write(
+
 class TokenMgr:
 
     def __init__(self, inFile, outFile):
@@ -140,7 +149,7 @@ class TokenMgr:
         if self.currentChar == "\n":
             self.inputLine = self.inFileHandle.readline()
             if self.inputLine:
-                print "\ninputLine:" + self.inputLine
+                #print "inputLine:" + self.inputLine[:len(self.inputLine)-1]
                 self.currentColumnNumber = 0
                 self.currentLineNumber = self.currentLineNumber + 1
             else:
@@ -158,46 +167,66 @@ class asmblr:
         self.tmgr = TokenMgr("tstPattern0003.asm", "outfile.txt")
         self.tmgr.getNextChar()
         self.currentToken = self.tmgr.getNextToken()
+        self.cg = CodeGenerator(self.tmgr.outFileHandle)
         
     def advance(self):
         self.previousToken = self.currentToken
         self.currentToken = self.tmgr.getNextToken()
 
     def consume(self,expected):
-        print "currentToken:" + self.currentToken.image
+        #print "currentToken:" + self.currentToken.image
         if (self.currentToken.kind == expected):
             self.advance()
         else:
             print "Error. Expecting" + self.currentToken.getKind(expected)
 
     def LWpattern(self):
+        op = "0000011"
         self.consume(LW)
+        rd = self.currentToken
         self.consume(REGISTER)
         self.consume(COMMA)
+        rs1 = self.currentToken
         self.consume(REGISTER)
         self.consume(COMMA)
+        imm = self.currentToken
+        self.cg.emitInstruction(op + rd.image + rs1.image + imm.image)
         self.consume(HEX)
 
     def SWpattern(self):
+        op = "0100011"
         self.consume(SW)
+        rs1 = self.currentToken
         self.consume(REGISTER)
         self.consume(COMMA)
+        rs2 = self.currentToken
         self.consume(REGISTER)
         self.consume(COMMA)
+        imm = self.currentToken
+        self.cg.emitInstruction(op + rs1.image + rs2.image + imm.image)
         self.consume(HEX)
 
     def LUIpattern(self):
+        op = "0110111"
         self.consume(LUI)
+        rd = self.currentToken
         self.consume(REGISTER)
         self.consume(COMMA)
+        imm = self.currentToken
+        self.cg.emitInstruction(op + rd.image + imm.image)
         self.consume(HEX)
 
     def ADDpattern(self):
+        op = "0110011"
         self.consume(ADD)
+        rd = self.currentToken
         self.consume(REGISTER)
         self.consume(COMMA)
+        rs1 = self.currentToken
         self.consume(REGISTER)
         self.consume(COMMA)
+        rs2 = self.currentToken
+        self.cg.emitInstruction(op + rd.image + rs1.image + rs2.image)
         self.consume(REGISTER)
 
     def program(self):
