@@ -62,8 +62,9 @@ class CodeGenerator:
         self.outFile = outFile
         #print "[ start ] CodeGenerator"
 
-    def emitInstruction(self, op):
-        print op
+    def emitInstruction(self, cnt, op):
+        self.outFile.write("+" + "{0:0{1}X}".format(cnt,8) + " " + op + "\n")
+        print "+" + "{0:0{1}X}".format(cnt,8) + " " + op
         #self.outFile.write(
 
 class TokenMgr:
@@ -153,7 +154,7 @@ class TokenMgr:
             self.inputLine = self.inFileHandle.readline()
             if self.inputLine:
                 #print "inputLine:" + self.inputLine[:len(self.inputLine)-1]
-                print "; " + self.inputLine[:len(self.inputLine)-1]
+                #print "; " + self.inputLine[:len(self.inputLine)-1]
                 self.currentColumnNumber = 0
                 self.currentLineNumber = self.currentLineNumber + 1
             else:
@@ -168,13 +169,14 @@ class asmblr:
     def __init__(self):
         self.currentToken = Token()
         self.previousToken = Token()
-        self.tmgr = TokenMgr("tstPattern0003.asm", "outfile.txt")
+        self.tmgr = TokenMgr("tstPattern0003.asm", "outfiletstPattern0003.txt")
         self.tmgr.getNextChar()
         self.currentToken = self.tmgr.getNextToken()
         self.cg = CodeGenerator(self.tmgr.outFileHandle)
+        self.programcounter = 0
         
     def instformat(self,s,i):
-        return "{0:0{1}x}".format(int(s,2),i)
+        return "{0:0{1}X}".format(int(s,2),i)
 
     def binformat(self,s,i):
         return s.zfill(i)
@@ -212,33 +214,48 @@ class asmblr:
         rdstr = self.tobinstr(rd.image[1:])
 
         instruction = self.binformat(immstr,12) + self.binformat(rs1str,5) + "010" + self.binformat(rdstr,5) + self.binformat(op,7)
-        self.cg.emitInstruction(op + rd.image + rs1.image + imm.image)
+
+        self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
         self.consume(HEX)
 
     def SWpattern(self):
         op = "0100011"
         self.consume(SW)
-        rs1 = self.currentToken
+        rs2 = self.currentToken
         self.consume(REGISTER)
         self.consume(COMMA)
-        rs2 = self.currentToken
+        rs1 = self.currentToken
         self.consume(REGISTER)
         self.consume(COMMA)
         imm = self.currentToken
 
         immstr = self.hextobinstr(imm.image[2:])
+        immstr = self.binformat(immstr,20)
+        #print "immstr[3]: " + immstr[len(immstr)-3]
         rs1str = self.tobinstr(rs1.image[1:])
         rs2str = self.tobinstr(rs2.image[1:])
 
-        #immstr = self.binformat(immstr,12)
-        print "immstr - " + immstr
-        #print "immstr[0:4] - " + immstr[0:4]
-        #print "immstr[5:] - " + immstr[5:11]
-        print "immstr[0:4]: " + immstr[0:5]
-        print "immstr[5:11]: " + immstr[6:12]
-        instruction = immstr[6:12] + self.binformat(rs2str,5) + self.binformat(rs1str,5) + "010" + immstr[0:5] + self.binformat(op,7)
+        #imm = {inst[31:25],inst[11:7]}
+        #rs2 = inst[24:20]
+        #rs1 = inst[19:15]
+        #funct3 = inst[14:12]
+        #opcode = inst[6:0]
+        #
+        #0001000 00000 00010010010000100011
+        #0001000 00010 00000 010 01000 0100011
+        #
+        #0001 0000 0010 0000 0010 0100 0010 0011
+        #   0    0    2    0    2    4    2    3
+
+        # 0001000 01000
+        # imm[5:11] 0001000
+        # imm[0:4] 01000
+        instruction =  immstr[8:15] + self.binformat(rs2str,5) + self.binformat(rs1str,5) + "010" + immstr[15:20] + self.binformat(op,7)
+
+        #print "self.binformat(rs2str,5): " + self.binformat(rs2str,5) + " rs2.image[1:]: " + rs2.image[1:]
+        #print "instruction: " + instruction
         
-        self.cg.emitInstruction(self.instformat(instruction,8))
+        self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
         self.consume(HEX)
 
     def LUIpattern(self):
@@ -255,7 +272,7 @@ class asmblr:
         rdstr = self.tobinstr(rd.image[1:])
         instruction = self.binformat(immstr,20) + self.binformat(rdstr,5) + self.binformat(op,7)
 
-        self.cg.emitInstruction(self.instformat(instruction,8))
+        self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
         self.consume(HEX)
 
     def ADDpattern(self):
@@ -275,7 +292,7 @@ class asmblr:
         
         instruction = "0000000" + self.binformat(rs2str,5) + self.binformat(rs1str,5) + "000" + self.binformat(rdstr,5) + self.binformat(op,7)
 
-        self.cg.emitInstruction(self.instformat(instruction,8))
+        self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
         self.consume(REGISTER)
 
     def program(self):
@@ -294,14 +311,12 @@ class asmblr:
             else:
                 print "unexpected termination"
                 exit()
+            self.programcounter += 1
 
     def parse(self):
         self.program()
+        self.cg.emitInstruction(self.programcounter, "FFFFFFFF")
 
+# let's start the assembler
 ass = asmblr()
-ass.parse()    
-
-#for i in range(50):
-#    tkn = tmgr.getNextToken()
-#    print "Token.image:" + tkn.image + " Token.kind:" + tkn.getKind(tkn.kind)
-
+ass.parse()
