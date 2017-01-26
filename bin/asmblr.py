@@ -79,12 +79,12 @@ class TokenMgr:
         self.currentLineNumber = 0
         self.inputLine = ""
         self.buff = ""
-        print "started"
+        #print "started"
 
     def __del__(self):
         self.inFileHandle.close()
         self.outFileHandle.close()
-        print "finished"
+        #print "finished"
 
     def getNextToken(self):
         while self.currentChar.isspace():
@@ -166,10 +166,14 @@ class TokenMgr:
         #print "currentChar:" + self.currentChar
 
 class asmblr:
-    def __init__(self):
+    def __init__(self, infile):
         self.currentToken = Token()
         self.previousToken = Token()
-        self.tmgr = TokenMgr("tstPattern0003.asm", "outfiletstPattern0003.txt")
+        #self.tmgr = TokenMgr("tstPattern0003.asm", "outfiletstPattern0003.txt")
+        outfile = "outfile" + infile[0:len(infile)-4] + ".txt"
+        print "input file: " + infile
+        print "output file: " + outfile
+        self.tmgr = TokenMgr(infile, outfile)
         self.tmgr.getNextChar()
         self.currentToken = self.tmgr.getNextToken()
         self.cg = CodeGenerator(self.tmgr.outFileHandle)
@@ -317,6 +321,15 @@ class asmblr:
         self.program()
         self.cg.emitInstruction(self.programcounter, "FFFFFFFF")
 
+def printHelp():
+    print "usage: python2 ../bin/asmblr.py <asm file>"
+
 # let's start the assembler
-ass = asmblr()
+if len(sys.argv) == 1:
+    printHelp()
+    sys.exit()
+
+asmfile = sys.argv[1]
+
+ass = asmblr(asmfile)
 ass.parse()
