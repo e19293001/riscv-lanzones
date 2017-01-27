@@ -170,7 +170,8 @@ class asmblr:
         self.currentToken = Token()
         self.previousToken = Token()
         #self.tmgr = TokenMgr("tstPattern0003.asm", "outfiletstPattern0003.txt")
-        outfile = "outfile" + infile[0:len(infile)-4] + ".txt"
+        #outfile = "outfile" + infile[0:len(infile)-4] + ".txt"
+        outfile = "outfile.txt"
         print "input file: " + infile
         print "output file: " + outfile
         self.tmgr = TokenMgr(infile, outfile)

@@ -1,4 +1,9 @@
-all: comp run
+TESTFILE=tstPattern0005.asm
+
+all: asm comp run
+
+asm: $(TESTFILE)
+	python2 ../bin/asmblr.py $(TESTFILE)
 
 comp:
 	iverilog -f files -o lanzones

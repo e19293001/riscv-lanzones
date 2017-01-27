@@ -141,7 +141,9 @@ module initialTest;
       //file2mem("tstPattern0001.txt");
       //file2mem("tstPattern0002.txt");
       //file2mem("tstPattern0003.txt");
-      file2mem("outfiletstPattern0004.txt");
+      //file2mem("outfiletstPattern0004.txt");
+      //file2mem("outfiletstADD.txt");
+      file2mem("outfile.txt");
    end
    
    task file2mem(input [8*128:1] str);

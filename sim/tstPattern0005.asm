@@ -1,0 +1,4 @@
+   LUI x2,0x5
+   LUI x3,0x6
+   SW x2,x0,0x108
+   SW x3,x0,0x107

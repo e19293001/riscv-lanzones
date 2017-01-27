@@ -1,0 +1,12 @@
+LUI x2,0x4
+LUI x3,0x5
+ADD x4,x3,x2
+ADD x5,x4,x3
+ADD x6,x5,x4
+ADD x7,x6,x5
+ADD x8,x7,x6
+LUI x10,0x4
+LUI x11,0x5
+ADD x12,x11,x10   
+ADD x13,x12,x11
+ADD x14,x13,x12

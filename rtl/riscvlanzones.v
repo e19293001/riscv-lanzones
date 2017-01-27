@@ -203,7 +203,7 @@ module lanzones(
       else begin
          if (!Halt) begin
             if (stallctrl && DI_SW_ctrl) begin
-               RWData <= xRData;
+               RWData <= xRData0;
             end
             else if (RVld) begin
                RWData <= 0;
@@ -329,7 +329,8 @@ module lanzones(
    always @* begin
       alu_outctrl = 0;
       if (DI_ADD_ctrl) begin
-         alu_outctrl = rs1_ctrl + rs2_ctrl;
+         //alu_outctrl = rs1_ctrl + rs2_ctrl;
+         alu_outctrl = xRData0 + xRData1;
       end
       else if (DI_SW_ctrl | DI_LW_ctrl) begin
          alu_outctrl = rs1_ctrl + imm_ctrl;
@@ -436,42 +437,81 @@ module lanzones(
    end
 
 // register file
-   reg [31:0] xRData;
+   reg [31:0] xRData0;
+   always @* begin
+      case (rs1_ctrl)
+        0: xRData0 = x0ff;
+        1: xRData0 = x1ff;
+        2: xRData0 = x2ff;
+        3: xRData0 = x3ff;
+        4: xRData0 = x4ff;
+        5: xRData0 = x5ff;
+        6: xRData0 = x6ff;
+        7: xRData0 = x7ff;
+        8: xRData0 = x8ff;
+        9: xRData0 = x9ff;
+        10: xRData0 = x10ff;
+        11: xRData0 = x11ff;
+        12: xRData0 = x12ff;
+        13: xRData0 = x13ff;
+        14: xRData0 = x14ff;
+        15: xRData0 = x15ff;
+        16: xRData0 = x16ff;
+        17: xRData0 = x17ff;
+        18: xRData0 = x18ff;
+        19: xRData0 = x19ff;
+        20: xRData0 = x20ff;
+        21: xRData0 = x21ff;
+        22: xRData0 = x22ff;
+        23: xRData0 = x23ff;
+        24: xRData0 = x24ff;
+        25: xRData0 = x25ff;
+        26: xRData0 = x26ff;
+        27: xRData0 = x27ff;
+        28: xRData0 = x28ff;
+        29: xRData0 = x29ff;
+        30: xRData0 = x30ff;
+        31: xRData0 = x31ff;
+        default: xRData0 = 0;
+      endcase
+   end
+
+   reg [31:0] xRData1;
    always @* begin
       case (rs2_ctrl)
-        0: xRData = x0ff;
-        1: xRData = x1ff;
-        2: xRData = x2ff;
-        3: xRData = x3ff;
-        4: xRData = x4ff;
-        5: xRData = x5ff;
-        6: xRData = x6ff;
-        7: xRData = x7ff;
-        8: xRData = x8ff;
-        9: xRData = x9ff;
-        10: xRData = x10ff;
-        11: xRData = x11ff;
-        12: xRData = x12ff;
-        13: xRData = x13ff;
-        14: xRData = x14ff;
-        15: xRData = x15ff;
-        16: xRData = x16ff;
-        17: xRData = x17ff;
-        18: xRData = x18ff;
-        19: xRData = x19ff;
-        20: xRData = x20ff;
-        21: xRData = x21ff;
-        22: xRData = x22ff;
-        23: xRData = x23ff;
-        24: xRData = x24ff;
-        25: xRData = x25ff;
-        26: xRData = x26ff;
-        27: xRData = x27ff;
-        28: xRData = x28ff;
-        29: xRData = x29ff;
-        30: xRData = x30ff;
-        31: xRData = x31ff;
-        default: xRData = 0;
+        0: xRData1 = x0ff;
+        1: xRData1 = x1ff;
+        2: xRData1 = x2ff;
+        3: xRData1 = x3ff;
+        4: xRData1 = x4ff;
+        5: xRData1 = x5ff;
+        6: xRData1 = x6ff;
+        7: xRData1 = x7ff;
+        8: xRData1 = x8ff;
+        9: xRData1 = x9ff;
+        10: xRData1 = x10ff;
+        11: xRData1 = x11ff;
+        12: xRData1 = x12ff;
+        13: xRData1 = x13ff;
+        14: xRData1 = x14ff;
+        15: xRData1 = x15ff;
+        16: xRData1 = x16ff;
+        17: xRData1 = x17ff;
+        18: xRData1 = x18ff;
+        19: xRData1 = x19ff;
+        20: xRData1 = x20ff;
+        21: xRData1 = x21ff;
+        22: xRData1 = x22ff;
+        23: xRData1 = x23ff;
+        24: xRData1 = x24ff;
+        25: xRData1 = x25ff;
+        26: xRData1 = x26ff;
+        27: xRData1 = x27ff;
+        28: xRData1 = x28ff;
+        29: xRData1 = x29ff;
+        30: xRData1 = x30ff;
+        31: xRData1 = x31ff;
+        default: xRData1 = 0;
       endcase
    end
 
