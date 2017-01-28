@@ -203,7 +203,7 @@ module lanzones(
       else begin
          if (!Halt) begin
             if (stallctrl && DI_SW_ctrl) begin
-               RWData <= xRData0;
+               RWData <= xRData1;
             end
             else if (RVld) begin
                RWData <= 0;
@@ -333,7 +333,8 @@ module lanzones(
          alu_outctrl = xRData0 + xRData1;
       end
       else if (DI_SW_ctrl | DI_LW_ctrl) begin
-         alu_outctrl = rs1_ctrl + imm_ctrl;
+         //alu_outctrl = rs1_ctrl + imm_ctrl;
+         alu_outctrl = xRData0 + imm_ctrl;
       end
    end
 
