@@ -11,6 +11,7 @@ LW = 6
 ERROR = 7
 COMMA = 8
 REGISTER = 9
+LH = 10
 
 class Token:
     def __init__(self):
@@ -30,7 +31,8 @@ class Token:
                            "LW",
                            "ERROR",
                            "COMMA",
-                           "REGISTER"]
+                           "REGISTER",
+                           "LH"]
           
     def getKind(self,k):
         if (k == 0):
@@ -53,6 +55,8 @@ class Token:
             return "COMMA"
         elif (k == 9):
             return "REGISTER"
+        elif (k == 10):
+            return "LH"
         else:
             return "UNKNOWN"
     
@@ -131,6 +135,8 @@ class TokenMgr:
                     tkn.kind = SW
                 elif tkn.image == "LW":
                     tkn.kind = LW
+                elif tkn.image == "LH":
+                    tkn.kind = LH
                 elif tkn.image[0] == "x" and tkn.image[1:].isdigit():
                     tkn.kind = REGISTER
                 else:
@@ -164,6 +170,9 @@ class TokenMgr:
         self.currentChar = self.inputLine[self.currentColumnNumber]
         self.currentColumnNumber = self.currentColumnNumber + 1
         #print "currentChar:" + self.currentChar
+
+        if self.currentChar == ";":
+            self.currentChar = "\n"
 
 class asmblr:
     def __init__(self, infile):
@@ -219,6 +228,26 @@ class asmblr:
         rdstr = self.tobinstr(rd.image[1:])
 
         instruction = self.binformat(immstr,12) + self.binformat(rs1str,5) + "010" + self.binformat(rdstr,5) + self.binformat(op,7)
+
+        self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
+        self.consume(HEX)
+
+    def LHpattern(self):
+        op = "0000011"
+        self.consume(LH)
+        rd = self.currentToken
+        self.consume(REGISTER)
+        self.consume(COMMA)
+        rs1 = self.currentToken
+        self.consume(REGISTER)
+        self.consume(COMMA)
+        imm = self.currentToken
+
+        immstr = self.hextobinstr(imm.image[2:])
+        rs1str = self.tobinstr(rs1.image[1:])
+        rdstr = self.tobinstr(rd.image[1:])
+
+        instruction = self.binformat(immstr,12) + self.binformat(rs1str,5) + "001" + self.binformat(rdstr,5) + self.binformat(op,7)
 
         self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
         self.consume(HEX)
@@ -310,6 +339,8 @@ class asmblr:
                 self.SWpattern()
             elif self.currentToken.kind == LW:
                 self.LWpattern()
+            elif self.currentToken.kind == LH:
+                self.LHpattern()
             elif self.currentToken.kind == ERROR:
                 print "syntax Error"
                 exit()

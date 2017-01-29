@@ -86,6 +86,8 @@ module lanzones(
    wire        DI_LW_w;
    wire        DI_LW_xW_ctrl;
 
+   reg         DI_LH_ctrl;
+
    reg [6:0]   funct7_ctrl;
    reg [4:0]   rs1_ctrl;
    reg [4:0]   rs2_ctrl;
@@ -275,7 +277,7 @@ module lanzones(
 
    assign opcode_instw = FIff[6:0];
 
-   // decoder
+   // instruction decoder
    always @* begin
       DI_LUI_ctrl = 0;
       DI_ADD_ctrl = 0;
