@@ -82,9 +82,9 @@ module lanzones(
    reg         DI_SW_ctrl;
 
    reg         DI_LW_ctrl;
-   reg         DI_LWff;
+   reg         DI_LW_LHff;
    wire        DI_LW_w;
-   wire        DI_LW_xW_ctrl;
+   wire        DI_LW_LHxW_ctrl;
 
    reg         DI_LH_ctrl;
 
@@ -107,15 +107,15 @@ module lanzones(
 
    assign fetchctrl = stallff ? 0 : 1;
 
-   assign DI_LW_w = (DI_LW_ctrl | DI_LWff) ? 1 : 0;
-   assign DI_LW_xW_ctrl = (DI_LWff & RVld) ? 1 : 0;
+   assign DI_LW_w = (DI_LW_ctrl | DI_LW_LHff) ? 1 : 0;
+   assign DI_LW_LHxW_ctrl = (DI_LW_LHff & RVld) ? 1 : 0;
 
    always @(posedge clk) begin
       if (!rstn) begin
          rdff <= 0;
       end
       else begin
-         if (DI_LW_ctrl) begin
+         if (DI_LW_ctrl || DI_LH_ctrl) begin
             rdff = rd_ctrl;
          end
       end
@@ -123,14 +123,14 @@ module lanzones(
    
    always @(posedge clk) begin
       if (!rstn) begin
-         DI_LWff <= 0;
+         DI_LW_LHff <= 0;
       end
       else begin
-         if (DI_LW_ctrl) begin
-            DI_LWff <= 1;
+         if (DI_LW_ctrl | DI_LH_ctrl) begin
+            DI_LW_LHff <= 1;
          end
-         else if (DI_LWff && RVld) begin
-            DI_LWff <= 0;
+         else if (DI_LW_LHff && RVld) begin
+            DI_LW_LHff <= 0;
          end
       end
    end
@@ -283,6 +283,7 @@ module lanzones(
       DI_ADD_ctrl = 0;
       DI_SW_ctrl = 0;
       DI_LW_ctrl = 0;
+      DI_LH_ctrl = 0;
       rd_ctrl = 0;
       imm_ctrl = 0;
       funct7_ctrl = 0;
@@ -315,7 +316,17 @@ module lanzones(
               stallctrl = 1; // stop the fetch to write to memory
            end
            7'b0000011: begin // LW
-              DI_LW_ctrl = 1;
+              case (FIff[14:12])
+                3'b010: begin
+                   DI_LW_ctrl = 1;
+                end
+                3'b001: begin
+                   DI_LH_ctrl = 1;
+                end
+                default: begin 
+                   DI_LW_ctrl = 1; // should throw an error for unknown funct3_ctrl
+                end
+              endcase
               imm_ctrl = FIff[31:20];
               rs1_ctrl = FIff[19:15];
               funct3_ctrl = FIff[14:12];
@@ -325,7 +336,6 @@ module lanzones(
          endcase
       end
    end
-   
 
    // ALU
    always @* begin
@@ -338,6 +348,9 @@ module lanzones(
          //alu_outctrl = rs1_ctrl + imm_ctrl;
          alu_outctrl = xRData0 + imm_ctrl;
       end
+      else if (DI_LH_ctrl) begin
+         alu_outctrl = xRData0[16:0] + imm_ctrl;
+      end
    end
 
    // x register controller
@@ -346,7 +359,7 @@ module lanzones(
          xWEn <= 0;
       end
       else begin
-         if (DI_LUI_ctrl || DI_ADD_ctrl || DI_LW_xW_ctrl) begin
+         if (DI_LUI_ctrl || DI_ADD_ctrl || DI_LW_LHxW_ctrl) begin
             xWEn <= 1;
          end
          else begin
@@ -361,12 +374,12 @@ module lanzones(
       end
       else begin
          if (DI_LUI_ctrl) begin
-            xWData <= imm_ctrl;
+            xWData <= {imm_ctrl,12'h0};
          end
          else if (DI_ADD_ctrl) begin
             xWData <= alu_outctrl;
          end
-         else if (DI_LW_xW_ctrl) begin
+         else if (DI_LW_LHxW_ctrl) begin
             xWData <= RData;
          end
       end
@@ -386,7 +399,7 @@ module lanzones(
          else if (DI_SW_ctrl) begin
             xAddr <= rs2_ctrl;
          end
-         else if (DI_LW_xW_ctrl) begin
+         else if (DI_LW_LHxW_ctrl) begin
             xAddr <= rdff;
          end
          else begin
