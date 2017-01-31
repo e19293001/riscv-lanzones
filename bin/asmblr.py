@@ -12,6 +12,7 @@ ERROR = 7
 COMMA = 8
 REGISTER = 9
 LH = 10
+SUB = 11
 
 class Token:
     def __init__(self):
@@ -32,7 +33,8 @@ class Token:
                            "ERROR",
                            "COMMA",
                            "REGISTER",
-                           "LH"]
+                           "LH",
+                           "SUB"]
           
     def getKind(self,k):
         if (k == 0):
@@ -57,6 +59,8 @@ class Token:
             return "REGISTER"
         elif (k == 10):
             return "LH"
+        elif (k == 11):
+            return "SUB"
         else:
             return "UNKNOWN"
     
@@ -137,6 +141,8 @@ class TokenMgr:
                     tkn.kind = LW
                 elif tkn.image == "LH":
                     tkn.kind = LH
+                elif tkn.image == "SUB":
+                    tkn.kind = SUB
                 elif tkn.image[0] == "x" and tkn.image[1:].isdigit():
                     tkn.kind = REGISTER
                 else:
@@ -329,6 +335,26 @@ class asmblr:
         self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
         self.consume(REGISTER)
 
+    def SUBpattern(self):
+        op = "0110011"
+        self.consume(SUB)
+        rd = self.currentToken
+        self.consume(REGISTER)
+        self.consume(COMMA)
+        rs1 = self.currentToken
+        self.consume(REGISTER)
+        self.consume(COMMA)
+        rs2 = self.currentToken
+
+        rdstr = self.tobinstr(rd.image[1:])
+        rs1str = self.tobinstr(rs1.image[1:])
+        rs2str = self.tobinstr(rs2.image[1:])
+        
+        instruction = "0100000" + self.binformat(rs2str,5) + self.binformat(rs1str,5) + "000" + self.binformat(rdstr,5) + self.binformat(op,7)
+
+        self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
+        self.consume(REGISTER)
+
     def program(self):
         while self.currentToken.kind != EOF:
             if self.currentToken.kind == LUI:
@@ -341,6 +367,8 @@ class asmblr:
                 self.LWpattern()
             elif self.currentToken.kind == LH:
                 self.LHpattern()
+            elif self.currentToken.kind == SUB:
+                self.SUBpattern()
             elif self.currentToken.kind == ERROR:
                 print "syntax Error"
                 exit()

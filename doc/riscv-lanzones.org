@@ -375,6 +375,45 @@ opcode = 0000011
 
 FFF01203
 
+** SUB
+SUB rd,rs1,rs2
+
+31    25 24    20 19   15 14  12 11    7 6    0
+________ ________ _______ ______ _______ ______
+ funct7    rs2      rs1   funct3   rd    opcode
+
+funct7 = inst[31:25]
+rs2 = inst[24:20]
+rs1 = inst[19:15]
+funct3 = inst[14:12]
+rd = inst[11:7]
+opcode = inst[6:0]
+
+*** Example
+
+**** SUB x4,x3,x2
+
+Add x3 and x2 then store the result to x4
+
+ADD x4,x3,x2
+
+funct7 = 0100000
+rs2 = 00010
+rs1 = 00011
+funct3 = 000
+rd = 00100
+opcode = 0110011
+
+01000000001000011000001000110011
+
+0100000 00010 00011 000 00100 0110011
+
+0100 0000 0010 0001 1000 0010 0011 0011
+   4    0    2    1    8    2    3    3
+
+40218233
+
+
 ** tstPattern0002.txt
 +00000000 000031B7 ; LUI x3,0x3     -> x3 = 3
 +00000001 00002137 ; LUI x2,0x2     -> x2 = 2
