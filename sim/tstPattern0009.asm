@@ -1,0 +1,3 @@
+ORI x4,x3,0xAA
+ORI x4,x3,0x55
+ORI x4,x4,0xAA

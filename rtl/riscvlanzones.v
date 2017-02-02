@@ -83,6 +83,8 @@ module lanzones(
    reg         DI_SLL_ctrl;
    reg         DI_SW_ctrl;
 
+   reg         DI_ORI_ctrl;
+
    reg         DI_LW_ctrl;
    reg         DI_LW_LHff;
    wire        DI_LW_w;
@@ -288,6 +290,9 @@ module lanzones(
       DI_SW_ctrl = 0;
       DI_LW_ctrl = 0;
       DI_LH_ctrl = 0;
+
+      DI_ORI_ctrl = 0;
+
       rd_ctrl = 0;
       imm_ctrl = 0;
       funct7_ctrl = 0;
@@ -298,6 +303,13 @@ module lanzones(
       
       if (DIctrlff) begin
          case (opcode_instw)
+           7'b0010011: begin
+              DI_ORI_ctrl = 1;
+              imm_ctrl = FIff[31:20];
+              rs1_ctrl = FIff[19:15];
+              funct3_ctrl = FIff[14:12];
+              rd_ctrl = FIff[11:7];
+           end
            7'b0110111: begin // LUI
               DI_LUI_ctrl = 1;
               rd_ctrl = FIff[11:7];
@@ -358,11 +370,13 @@ module lanzones(
          alu_outctrl = xRData0 << xRData1;
       end
       else if (DI_SW_ctrl | DI_LW_ctrl) begin
-         //alu_outctrl = rs1_ctrl + imm_ctrl;
          alu_outctrl = xRData0 + imm_ctrl;
       end
       else if (DI_LH_ctrl) begin
          alu_outctrl = xRData0[16:0] + imm_ctrl;
+      end
+      else if (DI_ORI_ctrl) begin
+         alu_outctrl = xRData0 | imm_ctrl;
       end
    end
 
@@ -375,7 +389,8 @@ module lanzones(
          if (DI_LUI_ctrl || 
              DI_ADD_ctrl || 
              DI_SUB_ctrl || 
-             DI_SLL_ctrl || 
+             DI_SLL_ctrl ||
+             DI_ORI_ctrl ||
              DI_LW_LHxW_ctrl) begin
             xWEn <= 1;
          end
@@ -395,11 +410,15 @@ module lanzones(
          end
          else if (DI_ADD_ctrl ||
                   DI_SUB_ctrl ||
-                  DI_SLL_ctrl) begin
+                  DI_SLL_ctrl ||
+                  DI_ORI_ctrl) begin
             xWData <= alu_outctrl;
          end
          else if (DI_LW_LHxW_ctrl) begin
             xWData <= RData;
+         end
+         else begin
+            xWData <= 0;
          end
       end
    end
@@ -414,7 +433,8 @@ module lanzones(
          end
          else if (DI_ADD_ctrl || 
                   DI_SUB_ctrl ||
-                  DI_SLL_ctrl) begin
+                  DI_SLL_ctrl ||
+                  DI_ORI_ctrl) begin
             xAddr <= rd_ctrl;
          end
          else if (DI_SW_ctrl) begin

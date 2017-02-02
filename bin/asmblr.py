@@ -14,6 +14,7 @@ REGISTER = 9
 LH = 10
 SUB = 11
 SLL = 12
+ORI = 13
 
 class Token:
     def __init__(self):
@@ -36,7 +37,8 @@ class Token:
                            "REGISTER",
                            "LH",
                            "SUB",
-                           "SLL"]
+                           "SLL",
+                           "ORI"]
           
     def getKind(self,k):
         if (k == 0):
@@ -65,6 +67,8 @@ class Token:
             return "SUB"
         elif (k == 12):
             return "SLL"
+        elif (k == 13):
+            return "ORI"
         else:
             return "UNKNOWN"
     
@@ -98,6 +102,13 @@ class TokenMgr:
         self.outFileHandle.close()
         #print "finished"
 
+    def is_hex(self,s):
+        hex_digits = set("0123456789abcdefABCDEF")
+        for char in s:
+            if not (char in hex_digits):
+                return False
+        return True
+
     def getNextToken(self):
         while self.currentChar.isspace():
             self.getNextChar()
@@ -121,7 +132,7 @@ class TokenMgr:
                         tkn.endLine = self.currentLineNumber
                         tkn.endColumn = self.currentColumnNumber
                         self.getNextChar()
-                        if not (self.currentChar.isdigit() or self.currentChar == "x"):
+                        if not (self.is_hex(self.currentChar) or self.currentChar == "x"):
                             break
                     tkn.image = self.buff
                     tkn.kind = HEX
@@ -149,6 +160,8 @@ class TokenMgr:
                     tkn.kind = SUB
                 elif tkn.image == "SLL":
                     tkn.kind = SLL
+                elif tkn.image == "ORI":
+                    tkn.kind = ORI
                 elif tkn.image[0] == "x" and tkn.image[1:].isdigit():
                     tkn.kind = REGISTER
                 else:
@@ -208,6 +221,7 @@ class asmblr:
         return s.zfill(i)
 
     def hextobinstr(self, h):
+        print "h: " + str(h)
         return str(bin(int(h,16)))[2:]
 
     def tobinstr(self,spltd):
@@ -381,6 +395,27 @@ class asmblr:
         self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
         self.consume(REGISTER)
 
+    def ORIpattern(self):
+        op = "0010011"
+        self.consume(ORI)
+        rd = self.currentToken
+        self.consume(REGISTER)
+        self.consume(COMMA)
+        rs1 = self.currentToken
+        self.consume(REGISTER)
+        self.consume(COMMA)
+        imm = self.currentToken
+
+        rdstr = self.tobinstr(rd.image[1:])
+        rs1str = self.tobinstr(rs1.image[1:])
+        print "immstr:" + imm.image
+        immstr = self.hextobinstr(imm.image[2:])
+        
+        instruction = self.binformat(immstr,12) + self.binformat(rs1str,5) + "110" + self.binformat(rdstr,5) + self.binformat(op,7)
+
+        self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
+        self.consume(HEX)
+
     def program(self):
         while self.currentToken.kind != EOF:
             if self.currentToken.kind == LUI:
@@ -397,6 +432,8 @@ class asmblr:
                 self.SUBpattern()
             elif self.currentToken.kind == SLL:
                 self.SLLpattern()
+            elif self.currentToken.kind == ORI:
+                self.ORIpattern()
             elif self.currentToken.kind == ERROR:
                 print "syntax Error"
                 exit()
