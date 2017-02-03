@@ -15,6 +15,7 @@ LH = 10
 SUB = 11
 SLL = 12
 ORI = 13
+ANDI = 14
 
 class Token:
     def __init__(self):
@@ -38,7 +39,8 @@ class Token:
                            "LH",
                            "SUB",
                            "SLL",
-                           "ORI"]
+                           "ORI",
+                           "ANDI"]
           
     def getKind(self,k):
         if (k == 0):
@@ -69,6 +71,8 @@ class Token:
             return "SLL"
         elif (k == 13):
             return "ORI"
+        elif (k == 14):
+            return "ANDI"
         else:
             return "UNKNOWN"
     
@@ -162,6 +166,8 @@ class TokenMgr:
                     tkn.kind = SLL
                 elif tkn.image == "ORI":
                     tkn.kind = ORI
+                elif tkn.image == "ANDI":
+                    tkn.kind = ANDI
                 elif tkn.image[0] == "x" and tkn.image[1:].isdigit():
                     tkn.kind = REGISTER
                 else:
@@ -416,6 +422,27 @@ class asmblr:
         self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
         self.consume(HEX)
 
+    def ANDIpattern(self):
+        op = "0010011"
+        self.consume(ANDI)
+        rd = self.currentToken
+        self.consume(REGISTER)
+        self.consume(COMMA)
+        rs1 = self.currentToken
+        self.consume(REGISTER)
+        self.consume(COMMA)
+        imm = self.currentToken
+
+        rdstr = self.tobinstr(rd.image[1:])
+        rs1str = self.tobinstr(rs1.image[1:])
+        print "immstr:" + imm.image
+        immstr = self.hextobinstr(imm.image[2:])
+        
+        instruction = self.binformat(immstr,12) + self.binformat(rs1str,5) + "000" + self.binformat(rdstr,5) + self.binformat(op,7)
+
+        self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
+        self.consume(HEX)
+
     def program(self):
         while self.currentToken.kind != EOF:
             if self.currentToken.kind == LUI:
@@ -434,6 +461,8 @@ class asmblr:
                 self.SLLpattern()
             elif self.currentToken.kind == ORI:
                 self.ORIpattern()
+            elif self.currentToken.kind == ANDI:
+                self.ANDIpattern()
             elif self.currentToken.kind == ERROR:
                 print "syntax Error"
                 exit()
