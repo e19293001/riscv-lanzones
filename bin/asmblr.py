@@ -16,6 +16,7 @@ SUB = 11
 SLL = 12
 ORI = 13
 ANDI = 14
+SLLI = 15
 
 class Token:
     def __init__(self):
@@ -40,7 +41,8 @@ class Token:
                            "SUB",
                            "SLL",
                            "ORI",
-                           "ANDI"]
+                           "ANDI",
+                           "SLLI"]
           
     def getKind(self,k):
         if (k == 0):
@@ -73,6 +75,8 @@ class Token:
             return "ORI"
         elif (k == 14):
             return "ANDI"
+        elif (k == 15):
+            return "SLLI"
         else:
             return "UNKNOWN"
     
@@ -168,6 +172,8 @@ class TokenMgr:
                     tkn.kind = ORI
                 elif tkn.image == "ANDI":
                     tkn.kind = ANDI
+                elif tkn.image == "SLLI":
+                    tkn.kind = SLLI
                 elif tkn.image[0] == "x" and tkn.image[1:].isdigit():
                     tkn.kind = REGISTER
                 else:
@@ -227,7 +233,6 @@ class asmblr:
         return s.zfill(i)
 
     def hextobinstr(self, h):
-        print "h: " + str(h)
         return str(bin(int(h,16)))[2:]
 
     def tobinstr(self,spltd):
@@ -414,7 +419,6 @@ class asmblr:
 
         rdstr = self.tobinstr(rd.image[1:])
         rs1str = self.tobinstr(rs1.image[1:])
-        print "immstr:" + imm.image
         immstr = self.hextobinstr(imm.image[2:])
         
         instruction = self.binformat(immstr,12) + self.binformat(rs1str,5) + "110" + self.binformat(rdstr,5) + self.binformat(op,7)
@@ -435,10 +439,29 @@ class asmblr:
 
         rdstr = self.tobinstr(rd.image[1:])
         rs1str = self.tobinstr(rs1.image[1:])
-        print "immstr:" + imm.image
         immstr = self.hextobinstr(imm.image[2:])
         
-        instruction = self.binformat(immstr,12) + self.binformat(rs1str,5) + "000" + self.binformat(rdstr,5) + self.binformat(op,7)
+        instruction = self.binformat(immstr,12) + self.binformat(rs1str,5) + "001" + self.binformat(rdstr,5) + self.binformat(op,7)
+
+        self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
+        self.consume(HEX)
+
+    def SLLIpattern(self):
+        op = "0010011"
+        self.consume(SLLI)
+        rd = self.currentToken
+        self.consume(REGISTER)
+        self.consume(COMMA)
+        rs1 = self.currentToken
+        self.consume(REGISTER)
+        self.consume(COMMA)
+        imm = self.currentToken
+
+        rdstr = self.tobinstr(rd.image[1:])
+        rs1str = self.tobinstr(rs1.image[1:])
+        immstr = self.hextobinstr(imm.image[2:])
+        
+        instruction = "0000000" + self.binformat(immstr,5) + self.binformat(rs1str,5) + "001" + self.binformat(rdstr,5) + self.binformat(op,7)
 
         self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
         self.consume(HEX)
@@ -463,6 +486,8 @@ class asmblr:
                 self.ORIpattern()
             elif self.currentToken.kind == ANDI:
                 self.ANDIpattern()
+            elif self.currentToken.kind == SLLI:
+                self.SLLIpattern()
             elif self.currentToken.kind == ERROR:
                 print "syntax Error"
                 exit()
