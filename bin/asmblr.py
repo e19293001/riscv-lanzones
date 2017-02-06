@@ -115,7 +115,6 @@ class TokenMgr:
         #print "finished"
 
     def is_hex(self,s):
-        print "[is_hex]=" + s
         hex_digits = set("0123456789abcdefABCDEF")
         for char in s:
             if not (char in hex_digits):
@@ -145,7 +144,6 @@ class TokenMgr:
                         tkn.endLine = self.currentLineNumber
                         tkn.endColumn = self.currentColumnNumber
                         self.getNextChar()
-                        print "currentChar:" + currentChar
                         if not (self.is_hex(self.currentChar) or self.currentChar == "x"):
                             break
                     tkn.image = self.buff
@@ -347,7 +345,7 @@ class asmblr:
 
         #self.binformat(imm,12)
 
-        print "imm.image[2:]=" + imm.image[2:]
+        print "imm.image[2:]=" + imm.image
         immstr = self.hextobinstr(imm.image[2:])
         rdstr = self.tobinstr(rd.image[1:])
         instruction = self.binformat(immstr,20) + self.binformat(rdstr,5) + self.binformat(op,7)

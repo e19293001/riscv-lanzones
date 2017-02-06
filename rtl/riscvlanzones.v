@@ -86,6 +86,7 @@ module lanzones(
    reg         DI_ORI_ctrl;
    reg         DI_ANDI_ctrl;
    reg         DI_SLLI_ctrl;
+   reg         DI_SRLI_ctrl;
 
    reg         DI_LW_ctrl;
    reg         DI_LW_LHff;
@@ -296,6 +297,7 @@ module lanzones(
       DI_ORI_ctrl = 0;
       DI_ANDI_ctrl = 0;
       DI_SLLI_ctrl = 0;
+      DI_SRLI_ctrl = 0;
 
       rd_ctrl = 0;
       imm_ctrl = 0;
@@ -311,6 +313,7 @@ module lanzones(
               case (FIff[14:12])
                 3'b000: DI_ANDI_ctrl = 1;
                 3'b001: DI_SLLI_ctrl = 1;
+                3'b101: DI_SRLI_ctrl = 1;
                 3'b110: DI_ORI_ctrl = 1;
                 default: DI_ORI_ctrl = 1; // WARNING: should throw an error for unknown funct3
               endcase
@@ -393,6 +396,9 @@ module lanzones(
       else if (DI_SLLI_ctrl) begin
          alu_outctrl = xRData0 << imm_ctrl;
       end
+      else if (DI_SRLI_ctrl) begin
+         alu_outctrl = xRData0 >> imm_ctrl;
+      end
    end
 
    // x register controller
@@ -408,6 +414,7 @@ module lanzones(
              DI_ORI_ctrl ||
              DI_ANDI_ctrl ||
              DI_SLLI_ctrl ||
+             DI_SRLI_ctrl ||
              DI_LW_LHxW_ctrl) begin
             xWEn <= 1;
          end
@@ -430,6 +437,7 @@ module lanzones(
                   DI_SLL_ctrl ||
                   DI_ANDI_ctrl ||
                   DI_SLLI_ctrl ||
+                  DI_SRLI_ctrl ||
                   DI_ORI_ctrl) begin
             xWData <= alu_outctrl;
          end
@@ -455,6 +463,7 @@ module lanzones(
                   DI_SLL_ctrl ||
                   DI_ANDI_ctrl ||
                   DI_SLLI_ctrl ||
+                  DI_SRLI_ctrl ||
                   DI_ORI_ctrl) begin
             xAddr <= rd_ctrl;
          end
