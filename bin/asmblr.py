@@ -18,6 +18,7 @@ ORI = 13
 ANDI = 14
 SLLI = 15
 SRLI = 16
+SRAI = 17
 
 class Token:
     def __init__(self):
@@ -44,7 +45,8 @@ class Token:
                            "ORI",
                            "ANDI",
                            "SLLI",
-                           "SRLI"]
+                           "SRLI",
+                           "SRAI"]
           
     def getKind(self,k):
         if (k == 0):
@@ -81,6 +83,8 @@ class Token:
             return "SLLI"
         elif (k == 16):
             return "SRLI"
+        elif (k == 17):
+            return "SRAI"
         else:
             return "UNKNOWN"
     
@@ -180,6 +184,8 @@ class TokenMgr:
                     tkn.kind = SLLI
                 elif tkn.image == "SRLI":
                     tkn.kind = SRLI
+                elif tkn.image == "SRAI":
+                    tkn.kind = SRAI
                 elif tkn.image[0] == "x" and tkn.image[1:].isdigit():
                     tkn.kind = REGISTER
                 else:
@@ -493,6 +499,26 @@ class asmblr:
         self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
         self.consume(HEX)
 
+    def SRAIpattern(self):
+        op = "0010011"
+        self.consume(SRAI)
+        rd = self.currentToken
+        self.consume(REGISTER)
+        self.consume(COMMA)
+        rs1 = self.currentToken
+        self.consume(REGISTER)
+        self.consume(COMMA)
+        imm = self.currentToken
+
+        rdstr = self.tobinstr(rd.image[1:])
+        rs1str = self.tobinstr(rs1.image[1:])
+        immstr = self.hextobinstr(imm.image[2:])
+        
+        instruction = "0100000" + self.binformat(immstr,5) + self.binformat(rs1str,5) + "101" + self.binformat(rdstr,5) + self.binformat(op,7)
+
+        self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
+        self.consume(HEX)
+
     def program(self):
         while self.currentToken.kind != EOF:
             if self.currentToken.kind == LUI:
@@ -517,12 +543,14 @@ class asmblr:
                 self.SLLIpattern()
             elif self.currentToken.kind == SRLI:
                 self.SRLIpattern()
+            elif self.currentToken.kind == SRAI:
+                self.SRAIpattern()
             elif self.currentToken.kind == ERROR:
                 print "syntax Error"
-                exit()
+                exit(1)
             else:
                 print "unexpected termination"
-                exit()
+                exit(1)
             self.programcounter += 1
 
     def parse(self):
@@ -535,7 +563,7 @@ def printHelp():
 # let's start the assembler
 if len(sys.argv) == 1:
     printHelp()
-    sys.exit()
+    sys.exit(1)
 
 asmfile = sys.argv[1]
 
