@@ -132,7 +132,13 @@ of RISC-V 32I.
 *** TODO SH
 *** DONE SW
     CLOSED: [2017-01-29 Sun 00:07]
-*** TODO ADDI
+*** NEXT ADDI
+    :LOGBOOK:  
+    CLOCK: [2017-02-13 Mon 10:23]--[2017-02-13 Mon 11:05] =>  0:42
+    :END:      
+    :PROPERTIES:
+    :Effort:   0:30
+    :END:
 *** TODO SLTI
 *** TODO SLTIU
 *** TODO XORI
@@ -653,6 +659,36 @@ opcode = 0010011
 
 4011D213
 
+** ADDI
+ADDI rd,rs1,imm
+
+31    20 19   15 14  12 11    7 6    0
+________ _______ ______ _______ ______
+  imm      rs1   funct3   rd    opcode
+
+imm = inst[31:20]
+rs1 = inst[19:15]
+funct3 = inst[14:12]
+rd = inst[11:7]
+opcode = inst[6:0]
+
+*** Example
+
+**** ADDI x4,x3,0x1
+
+imm = 000000000001
+rs1 = 00011
+funct3 = 000
+rd = 00100
+opcode = 0010011
+
+000000000001 00011 000 00100 0010011
+
+0000 0000 0001 0001 1000 0010 0001 0011
+   0    0    1    1    8    2    1    3
+
+00118213
+
 ** tstPattern0002.txt
 +00000000 000031B7 ; LUI x3,0x3     -> x3 = 3
 +00000001 00002137 ; LUI x2,0x2     -> x2 = 2
@@ -735,5 +771,6 @@ LUI x3,0x100
 ORI x4,x3,0x1
 SRAI x4,x3,0x1
 
+** (ADDI) tstPattern0015.asm
 * Misc
 ** TODO test with RVld fixed to 1

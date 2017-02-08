@@ -19,6 +19,7 @@ ANDI = 14
 SLLI = 15
 SRLI = 16
 SRAI = 17
+ADDI = 18
 
 class Token:
     def __init__(self):
@@ -46,7 +47,8 @@ class Token:
                            "ANDI",
                            "SLLI",
                            "SRLI",
-                           "SRAI"]
+                           "SRAI",
+                           "ADDI"]
           
     def getKind(self,k):
         if (k == 0):
@@ -85,6 +87,8 @@ class Token:
             return "SRLI"
         elif (k == 17):
             return "SRAI"
+        elif (k == 18):
+            return "ADDI"
         else:
             return "UNKNOWN"
     
@@ -186,6 +190,8 @@ class TokenMgr:
                     tkn.kind = SRLI
                 elif tkn.image == "SRAI":
                     tkn.kind = SRAI
+                elif tkn.image == "ADDI":
+                    tkn.kind = ADDI
                 elif tkn.image[0] == "x" and tkn.image[1:].isdigit():
                     tkn.kind = REGISTER
                 else:
@@ -519,6 +525,26 @@ class asmblr:
         self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
         self.consume(HEX)
 
+    def ADDIpattern(self):
+        op = "0010011"
+        self.consume(ADDI)
+        rd = self.currentToken
+        self.consume(REGISTER)
+        self.consume(COMMA)
+        rs1 = self.currentToken
+        self.consume(REGISTER)
+        self.consume(COMMA)
+        imm = self.currentToken
+
+        rdstr = self.tobinstr(rd.image[1:])
+        rs1str = self.tobinstr(rs1.image[1:])
+        immstr = self.hextobinstr(imm.image[2:])
+        
+        instruction = self.binformat(immstr,12) + self.binformat(rs1str,5) + "000" + self.binformat(rdstr,5) + self.binformat(op,7)
+
+        self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
+        self.consume(HEX)
+
     def program(self):
         while self.currentToken.kind != EOF:
             if self.currentToken.kind == LUI:
@@ -545,6 +571,8 @@ class asmblr:
                 self.SRLIpattern()
             elif self.currentToken.kind == SRAI:
                 self.SRAIpattern()
+            elif self.currentToken.kind == ADDI:
+                self.ADDIpattern()
             elif self.currentToken.kind == ERROR:
                 print "syntax Error"
                 exit(1)
