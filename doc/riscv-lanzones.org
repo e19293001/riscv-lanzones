@@ -74,7 +74,7 @@ of RISC-V 32I.
 #+END_LATEX
 
 *** Internal Hand Shake
-** Instructions [23%]
+** Instructions [25%]
 *** DONE LUI
     CLOSED: [2017-01-29 Sun 00:02]
 #+BEGIN_LATEX
@@ -132,7 +132,8 @@ of RISC-V 32I.
 *** TODO SH
 *** DONE SW
     CLOSED: [2017-01-29 Sun 00:07]
-*** NEXT ADDI
+*** DONE ADDI
+    CLOSED: [2017-02-13 Mon 12:28]
     :LOGBOOK:  
     CLOCK: [2017-02-13 Mon 10:23]--[2017-02-13 Mon 11:05] =>  0:42
     :END:      
@@ -141,7 +142,13 @@ of RISC-V 32I.
     :END:
 *** TODO SLTI
 *** TODO SLTIU
-*** TODO XORI
+*** NEXT XORI
+    :LOGBOOK:  
+    CLOCK: [2017-02-14 Tue 11:29]
+    :END:      
+    :PROPERTIES:
+    :Effort:   0:30
+    :END:
 *** DONE ORI
     CLOSED: [2017-02-05 Sun 17:55]
     :LOGBOOK:
@@ -689,6 +696,8 @@ opcode = 0010011
 
 00118213
 
+** XORI
+
 ** tstPattern0002.txt
 +00000000 000031B7 ; LUI x3,0x3     -> x3 = 3
 +00000001 00002137 ; LUI x2,0x2     -> x2 = 2
@@ -772,5 +781,21 @@ ORI x4,x3,0x1
 SRAI x4,x3,0x1
 
 ** (ADDI) tstPattern0015.asm
+ADDI x3,x0,0x1                  ;x3 = 1
+ADDI x3,x3,0x2                  ;x3 = 1 + 2 = 3
+ADDI x3,x3,0x3                  ;x3 = 3 + 3 = 6
+ADDI x3,x3,0x4                  ;x3 = 6 + 4 = 10
+ADDI x3,x3,0x5                  ;x3 = 10 + 5
+ADDI x4,x3,0x6                  ;x4 = 21
+ADDI x4,x3,0x7                  ;x4 = 22
+ADDI x4,x3,0x8                  ;x4 = 23
+ADDI x4,x3,0x9                  ;x4 = 24
+ADDI x3,x4,0x9                  ;x3 = 33
+** (XORI) tstPattern0016.asm
+ORI x3,0xDEAD
+XORI x4,x3,0xBEAF
+XORI x4,x3,0xBEAF
 * Misc
 ** TODO test with RVld fixed to 1
+** TODO add error handler in testbench
+** TODO add generating error in rtl

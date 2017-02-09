@@ -1,0 +1,3 @@
+ORI x3,x0,0xDEA                 ;x3 = 0xDEA
+XORI x4,x3,0xBEA                ;x4 = 0xDEA ^ 0xBEA
+XORI x4,x3,0xEAF

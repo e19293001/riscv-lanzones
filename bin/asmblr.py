@@ -20,6 +20,7 @@ SLLI = 15
 SRLI = 16
 SRAI = 17
 ADDI = 18
+XORI = 19
 
 class Token:
     def __init__(self):
@@ -48,7 +49,8 @@ class Token:
                            "SLLI",
                            "SRLI",
                            "SRAI",
-                           "ADDI"]
+                           "ADDI", 
+                           "XORI"]
           
     def getKind(self,k):
         if (k == 0):
@@ -89,6 +91,8 @@ class Token:
             return "SRAI"
         elif (k == 18):
             return "ADDI"
+        elif (k == 19):
+            return "XORI"
         else:
             return "UNKNOWN"
     
@@ -192,6 +196,8 @@ class TokenMgr:
                     tkn.kind = SRAI
                 elif tkn.image == "ADDI":
                     tkn.kind = ADDI
+                elif tkn.image == "XORI":
+                    tkn.kind = XORI
                 elif tkn.image[0] == "x" and tkn.image[1:].isdigit():
                     tkn.kind = REGISTER
                 else:
@@ -266,6 +272,7 @@ class asmblr:
             self.advance()
         else:
             print "Error. Expecting" + self.currentToken.getKind(expected)
+            exit(1)
 
     def LWpattern(self):
         op = "0000011"
@@ -545,6 +552,26 @@ class asmblr:
         self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
         self.consume(HEX)
 
+    def XORIpattern(self):
+        op = "0010011"
+        self.consume(XORI)
+        rd = self.currentToken
+        self.consume(REGISTER)
+        self.consume(COMMA)
+        rs1 = self.currentToken
+        self.consume(REGISTER)
+        self.consume(COMMA)
+        imm = self.currentToken
+
+        rdstr = self.tobinstr(rd.image[1:])
+        rs1str = self.tobinstr(rs1.image[1:])
+        immstr = self.hextobinstr(imm.image[2:])
+        
+        instruction = self.binformat(immstr,12) + self.binformat(rs1str,5) + "100" + self.binformat(rdstr,5) + self.binformat(op,7)
+
+        self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
+        self.consume(HEX)
+
     def program(self):
         while self.currentToken.kind != EOF:
             if self.currentToken.kind == LUI:
@@ -573,6 +600,8 @@ class asmblr:
                 self.SRAIpattern()
             elif self.currentToken.kind == ADDI:
                 self.ADDIpattern()
+            elif self.currentToken.kind == XORI:
+                self.XORIpattern()
             elif self.currentToken.kind == ERROR:
                 print "syntax Error"
                 exit(1)
