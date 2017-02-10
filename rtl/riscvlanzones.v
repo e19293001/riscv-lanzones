@@ -79,6 +79,7 @@ module lanzones(
 
    reg         DI_LUI_ctrl;
    reg         DI_ADD_ctrl;
+   reg         DI_XOR_ctrl;
    reg         DI_SUB_ctrl;
    reg         DI_SLL_ctrl;
    reg         DI_SW_ctrl;
@@ -291,6 +292,7 @@ module lanzones(
    always @* begin
       DI_LUI_ctrl = 0;
       DI_ADD_ctrl = 0;
+      DI_XOR_ctrl = 0;
       DI_SUB_ctrl = 0;
       DI_SLL_ctrl = 0;
       DI_SW_ctrl = 0;
@@ -316,18 +318,29 @@ module lanzones(
       if (DIctrlff) begin
          case (opcode_instw)
            7'b0010011: begin
+              imm_ctrl = FIff[31:20];
+              rs1_ctrl = FIff[19:15];
+              funct3_ctrl = FIff[14:12];
+              rd_ctrl = FIff[11:7];
+
               case (FIff[14:12])
                 3'b000: DI_ADDI_ctrl = 1;
-                3'b001: DI_SLLI_ctrl = 1;
+                3'b001: begin
+                   DI_SLLI_ctrl = 1;
+                   imm_ctrl = {7'b0,FIff[24:20]};
+                   end
                 3'b101: begin
                    if (FIff[31:25] == 7'b0000000) begin
                       DI_SRLI_ctrl = 1;
+                      imm_ctrl = {7'b0,FIff[24:20]};
                    end
                    else if (FIff[31:25] == 7'b0100000) begin
                       DI_SRAI_ctrl = 1;
+                      imm_ctrl = {7'b0,FIff[24:20]};
                    end
                    else begin
                       DI_SRLI_ctrl = 1; // WARNING: should throw an error for invalid instruction
+                      imm_ctrl = {7'b0,FIff[24:20]};
                    end
                 end
                 3'b100: DI_XORI_ctrl = 1;
@@ -335,21 +348,18 @@ module lanzones(
                 3'b111: DI_ANDI_ctrl = 1;
                 default: DI_ORI_ctrl = 1; // WARNING: should throw an error for unknown funct3
               endcase
-              imm_ctrl = {7'b0,FIff[24:20]};
-              rs1_ctrl = FIff[19:15];
-              funct3_ctrl = FIff[14:12];
-              rd_ctrl = FIff[11:7];
            end
            7'b0110111: begin // LUI
               DI_LUI_ctrl = 1;
               rd_ctrl = FIff[11:7];
               imm_ctrl = FIff[31:12];
            end
-           7'b0110011: begin // ADD
+           7'b0110011: begin // R-type
               case (FIff[31:25])
                 7'b0000000: begin
                    case (FIff[14:12])
                      3'b000: DI_ADD_ctrl = 1;
+                     3'b100: DI_XOR_ctrl = 1;
                      3'b001: DI_SLL_ctrl = 1;
                      default: DI_ADD_ctrl = 1; // WARNING: should throw an error for unknown funct3
                    endcase
@@ -392,6 +402,9 @@ module lanzones(
       alu_outctrl = 0;
       if (DI_ADD_ctrl) begin
          alu_outctrl = xRData0 + xRData1;
+      end
+      else if (DI_XOR_ctrl) begin
+         alu_outctrl = xRData0 ^ xRData1;
       end
       else if (DI_SUB_ctrl) begin
          alu_outctrl = xRData0 - xRData1;
@@ -436,6 +449,7 @@ module lanzones(
       else begin
          if (DI_LUI_ctrl || 
              DI_ADD_ctrl || 
+             DI_XOR_ctrl || 
              DI_SUB_ctrl || 
              DI_SLL_ctrl ||
              DI_ORI_ctrl ||
@@ -463,6 +477,7 @@ module lanzones(
             xWData <= {imm_ctrl,12'h0};
          end
          else if (DI_ADD_ctrl ||
+                  DI_XOR_ctrl ||
                   DI_SUB_ctrl ||
                   DI_SLL_ctrl ||
                   DI_ANDI_ctrl ||
@@ -491,7 +506,8 @@ module lanzones(
          if (DI_LUI_ctrl) begin
             xAddr <= rd_ctrl;
          end
-         else if (DI_ADD_ctrl || 
+         else if (DI_ADD_ctrl ||
+                  DI_XOR_ctrl || 
                   DI_SUB_ctrl ||
                   DI_SLL_ctrl ||
                   DI_ANDI_ctrl ||
