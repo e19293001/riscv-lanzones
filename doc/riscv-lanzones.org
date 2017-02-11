@@ -74,7 +74,7 @@ of RISC-V 32I.
 #+END_LATEX
 
 *** Internal Hand Shake
-** Instructions [27%]
+** Instructions [29%]
 *** DONE LUI
     CLOSED: [2017-01-29 Sun 00:02]
 #+BEGIN_LATEX
@@ -196,16 +196,23 @@ of RISC-V 32I.
     :END:
 *** TODO SLT
 *** TODO SLTU
-*** NEXT XOR
+*** DONE XOR
+    CLOSED: [2017-02-15 Wed 09:04]
     :LOGBOOK:  
-    CLOCK: [2017-02-15 Wed 08:04]
+    CLOCK: [2017-02-15 Wed 08:04]--[2017-02-15 Wed 09:04] =>  1:00
     :END:      
     :PROPERTIES:
     :Effort:   0:30
     :END:
 *** TODO SRL
 *** TODO SRA
-*** TODO OR
+*** NEXT OR
+    :LOGBOOK:  
+    CLOCK: [2017-02-15 Wed 09:04]
+    :END:      
+    :PROPERTIES:
+    :Effort:   0:30
+    :END:
 *** TODO AND
 *** TODO FENCE
 *** TODO FENCE.I
@@ -746,6 +753,47 @@ opcode = 0110011
 
 0021C233
 
+** OR
+
+OR rd,rs1,rs2
+
+31    25 24    20 19   15 14  12 11    7 6    0
+________ ________ _______ ______ _______ ______
+ funct7    rs2      rs1   funct3   rd    opcode
+
+funct7 = inst[31:25]
+rs2 = inst[24:20]
+rs1 = inst[19:15]
+funct3 = inst[14:12]
+rd = inst[11:7]
+opcode = inst[6:0]
+
+*** Example
+
+**** OR x4,x3,x2
+
+OR x3 and x2 then store the result to x4
+
+OR x4,x3,x2
+
+funct7 = 0000000
+rs2 = 00010
+rs1 = 00011
+funct3 = 110
+rd = 00100
+opcode = 0110011
+
+0000000 00010 00011 100 00100 0110011
+
+0000 0000 0010 0001 1110 0010 0011 0011
+
+
+
+0000 0000 0010 0001 1100 0010 0011 0011
+   0    0    2    1    E    2    3    3
+
+0021E233
+
 ** tstPattern0002.txt
 +00000000 000031B7 ; LUI x3,0x3     -> x3 = 3
 +00000001 00002137 ; LUI x2,0x2     -> x2 = 2
@@ -849,6 +897,12 @@ ORI x2,x0,0x0F0
 XOR x4,x3,x2
 ORI x2,x0,0xF0F   
 XOR x4,x3,x2
+** (OR) tstPattern0018.asm
+ORI x3,x0,0xFFF
+ORI x2,x0,0x0F0   
+OR x4,x3,x2
+ORI x2,x0,0xF0F   
+OR x4,x3,x2
 * Misc
 ** TODO test with RVld fixed to 1
 ** TODO add error handler in testbench
