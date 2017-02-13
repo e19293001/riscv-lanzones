@@ -112,6 +112,8 @@ module lanzones(
    reg                 stallff;
    wire                fetchctrl;
 
+   reg                 invalid_inst;
+
    assign FIctrl = (RRdy & RVld) ? 1 : 0;
    //assign DIctrl = 1;
    assign EXctrl = 1;
@@ -157,6 +159,9 @@ module lanzones(
             Halt <= 0;
          end
          else if (opcode_instw == 7'h7F) begin
+            Halt <= 1;
+         end
+         else if (invalid_inst) begin
             Halt <= 1;
          end
       end
@@ -318,6 +323,7 @@ module lanzones(
       rs1_ctrl = 0;
       rs2_ctrl = 0;
       stallctrl = 0;
+      invalid_inst = 0;
       
       if (DIctrlff) begin
          case (opcode_instw)
@@ -343,14 +349,15 @@ module lanzones(
                       imm_ctrl = {7'b0,FIff[24:20]};
                    end
                    else begin
-                      DI_SRLI_ctrl = 1; // WARNING: should throw an error for invalid instruction
+                      DI_SRLI_ctrl = 1; 
+                      invalid_inst = 1;
                       imm_ctrl = {7'b0,FIff[24:20]};
                    end
                 end
                 3'b100: DI_XORI_ctrl = 1;
                 3'b110: DI_ORI_ctrl = 1;
                 3'b111: DI_ANDI_ctrl = 1;
-                default: DI_ORI_ctrl = 1; // WARNING: should throw an error for unknown funct3
+                default: invalid_inst = 1; 
               endcase
            end
            7'b0110111: begin // LUI
@@ -367,11 +374,11 @@ module lanzones(
                      3'b110: DI_OR_ctrl = 1;
                      3'b111: DI_AND_ctrl = 1;
                      3'b001: DI_SLL_ctrl = 1;
-                     default: DI_ADD_ctrl = 1; // WARNING: should throw an error for unknown funct3
+                     default: invalid_inst = 1;
                    endcase
                 end
                 7'b0100000: DI_SUB_ctrl = 1;
-                default: DI_ADD_ctrl = 1; // WARNING: should throw an error for unknown funct7 
+                default: invalid_inst = 1;
               endcase
               funct7_ctrl = FIff[31:25];
               rs2_ctrl = FIff[24:20];
@@ -391,7 +398,7 @@ module lanzones(
               case (FIff[14:12])
                 3'b010: DI_LW_ctrl = 1;
                 3'b001: DI_LH_ctrl = 1;
-                default: DI_LW_ctrl = 1; // WARNING: should throw an error for unknown funct3_ctrl
+                default: invalid_inst = 1;
               endcase
               imm_ctrl = FIff[31:20];
               rs1_ctrl = FIff[19:15];

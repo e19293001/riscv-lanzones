@@ -217,7 +217,7 @@ of RISC-V 32I.
     :END:
 *** NEXT AND
     :LOGBOOK:  
-    CLOCK: [2017-02-15 Wed 09:15]
+    CLOCK: [2017-02-15 Wed 09:15]--[2017-02-15 Wed 09:26] =>  0:11
     :END:      
     :PROPERTIES:
     :Effort:   0:30
@@ -960,5 +960,20 @@ ORI x2,x0,0xF0F
 AND x4,x3,x2
 * Misc
 ** TODO test with RVld fixed to 1
-** TODO add error handler in testbench
-** TODO add generating error in rtl
+** DONE add error handler in testbench
+   CLOSED: [2017-02-15 Wed 09:30]
+   :LOGBOOK:  
+   CLOCK: [2017-02-15 Wed 09:30]
+   CLOCK: [2017-02-15 Wed 09:29]--[2017-02-15 Wed 09:30] =>  0:01
+   :END:      
+   :PROPERTIES:
+   :Effort:   0:10
+   :END:
+** DONE add generating error in rtl
+   CLOSED: [2017-02-15 Wed 09:29]
+   :LOGBOOK:  
+   CLOCK: [2017-02-15 Wed 09:26]--[2017-02-15 Wed 09:29] =>  0:03
+   :END:      
+   :PROPERTIES:
+   :Effort:   0:10
+   :END:

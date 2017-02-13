@@ -112,6 +112,13 @@ module initialTest;
 	   $dumpvars(-1, dut, mem, initialTest);
    end
 
+   initial begin
+      @(posedge Halt);
+      repeat (10) @(posedge clk);
+      $display("Halt detected");
+      $finish;
+   end
+
    lanzones dut(
       .clk(clk),
       .rstn(rstn),
