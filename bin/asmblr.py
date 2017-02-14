@@ -24,6 +24,7 @@ XORI = 19
 XOR = 20
 OR = 21
 AND = 22
+SLTI = 23
 
 class Token:
     def __init__(self):
@@ -56,7 +57,8 @@ class Token:
                            "XORI", 
                            "XOR",
                            "OR",
-                           "AND"]
+                           "AND",
+                           "SLTI"]
           
     def getKind(self,k):
         if (k == 0):
@@ -105,6 +107,8 @@ class Token:
             return "OR"
         elif (k == 22):
             return "AND"
+        elif (k == 23):
+            return "SLTI"
         else:
             return "UNKNOWN"
     
@@ -216,6 +220,8 @@ class TokenMgr:
                     tkn.kind = OR
                 elif tkn.image == "AND":
                     tkn.kind = AND
+                elif tkn.image == "SLTI":
+                    tkn.kind = SLTI
                 elif tkn.image[0] == "x" and tkn.image[1:].isdigit():
                     tkn.kind = REGISTER
                 else:
@@ -650,6 +656,27 @@ class asmblr:
         self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
         self.consume(REGISTER)
 
+    def SLTIpattern(self):
+        op = "0010011"
+        self.consume(SLTI)
+        rd = self.currentToken
+        self.consume(REGISTER)
+        self.consume(COMMA)
+        rs1 = self.currentToken
+        self.consume(REGISTER)
+        self.consume(COMMA)
+        imm = self.currentToken
+
+        rdstr = self.tobinstr(rd.image[1:])
+        rs1str = self.tobinstr(rs1.image[1:])
+        immstr = self.hextobinstr(imm.image[2:])
+        
+        instruction = self.binformat(immstr,12) + self.binformat(rs1str,5) + "010" + self.binformat(rdstr,5) + self.binformat(op,7)
+
+        self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
+        self.consume(HEX)
+
+
     def program(self):
         while self.currentToken.kind != EOF:
             if self.currentToken.kind == LUI:
@@ -686,6 +713,8 @@ class asmblr:
                 self.ORpattern()
             elif self.currentToken.kind == AND:
                 self.ANDpattern()
+            elif self.currentToken.kind == SLTI:
+                self.SLTIpattern()
             elif self.currentToken.kind == ERROR:
                 print "syntax Error"
                 exit(1)

@@ -113,9 +113,10 @@ module initialTest;
    end
 
    initial begin
+      @(posedge clk);
       @(posedge Halt);
-      repeat (10) @(posedge clk);
-      $display("Halt detected");
+      repeat (30) @(posedge clk);
+      $display("@%0t: Halt detected", $time);
       $finish;
    end
 
