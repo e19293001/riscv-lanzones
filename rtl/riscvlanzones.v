@@ -88,6 +88,7 @@ module lanzones(
 
    reg         DI_ORI_ctrl;
    reg         DI_SLTI_ctrl;
+   reg         DI_SLTIU_ctrl;
    reg         DI_ANDI_ctrl;
    reg         DI_ADDI_ctrl;
    reg         DI_SLLI_ctrl;
@@ -311,6 +312,7 @@ module lanzones(
 
       DI_ORI_ctrl = 0;
       DI_SLTI_ctrl = 0;
+      DI_SLTIU_ctrl = 0;
       DI_ANDI_ctrl = 0;
       DI_ADDI_ctrl = 0;
       DI_SLLI_ctrl = 0;
@@ -359,6 +361,7 @@ module lanzones(
                 3'b100: DI_XORI_ctrl = 1;
                 3'b110: DI_ORI_ctrl = 1;
                 3'b010: DI_SLTI_ctrl = 1;
+                3'b011: DI_SLTIU_ctrl = 1;
                 3'b111: DI_ANDI_ctrl = 1;
                 default: invalid_inst = 1; 
               endcase
@@ -444,6 +447,9 @@ module lanzones(
          alu_outctrl = xRData0 | imm_ctrl;
       end
       else if (DI_SLTI_ctrl) begin
+         alu_outctrl = ($signed(xRData0) < $signed(imm_ctrl)) ? 1 : 0;
+      end
+      else if (DI_SLTIU_ctrl) begin
          alu_outctrl = (xRData0 < imm_ctrl) ? 1 : 0;
       end
       else if (DI_ANDI_ctrl) begin
@@ -481,6 +487,7 @@ module lanzones(
              DI_SLL_ctrl ||
              DI_ORI_ctrl ||
              DI_SLTI_ctrl ||
+             DI_SLTIU_ctrl ||
              DI_ANDI_ctrl ||
              DI_ADDI_ctrl ||
              DI_SLLI_ctrl ||
@@ -517,6 +524,7 @@ module lanzones(
                   DI_SRAI_ctrl ||
                   DI_XORI_ctrl ||
                   DI_SLTI_ctrl ||
+                  DI_SLTIU_ctrl ||
                   DI_ORI_ctrl) begin
             xWData <= alu_outctrl;
          end
@@ -550,6 +558,7 @@ module lanzones(
                   DI_SRAI_ctrl ||
                   DI_XORI_ctrl ||
                   DI_SLTI_ctrl ||
+                  DI_SLTIU_ctrl ||
                   DI_ORI_ctrl) begin
             xAddr <= rd_ctrl;
          end
