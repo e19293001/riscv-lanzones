@@ -74,7 +74,7 @@ of RISC-V 32I.
 #+END_LATEX
 
 *** Internal Hand Shake
-** Instructions [38%]
+** Instructions [40%]
 *** DONE LUI
     CLOSED: [2017-01-29 Sun 00:02]
 #+BEGIN_LATEX
@@ -209,14 +209,21 @@ of RISC-V 32I.
     :PROPERTIES:
     :Effort:   0:30
     :END:
-*** NEXT SLT
+*** DONE SLT
+    CLOSED: [2017-02-20 Mon 08:18]
     :LOGBOOK:  
     CLOCK: [2017-02-17 Fri 08:00]--[2017-02-17 Fri 08:18] =>  0:18
     :END:      
     :PROPERTIES:
     :Effort:   0:30
     :END:
-*** TODO SLTU
+*** NEXT SLTU
+    :LOGBOOK:  
+    CLOCK: [2017-02-20 Mon 08:18]
+    :END:      
+    :PROPERTIES:
+    :Effort:   0:30
+    :END:
 *** DONE XOR
     CLOSED: [2017-02-15 Wed 09:04]
     :LOGBOOK:  
@@ -950,7 +957,7 @@ SLT x4,x3,x2
 funct7 = 0000000
 rs2 = 00010
 rs1 = 00011
-funct3 = 110
+funct3 = 010
 rd = 00100
 opcode = 0110011
 
@@ -965,6 +972,46 @@ opcode = 0110011
 
 0021A233
 
+
+** SLTU
+SLTU rd,rs1,rs2
+
+31    25 24    20 19   15 14  12 11    7 6    0
+________ ________ _______ ______ _______ ______
+ funct7    rs2      rs1   funct3   rd    opcode
+
+funct7 = inst[31:25]
+rs2 = inst[24:20]
+rs1 = inst[19:15]
+funct3 = inst[14:12]
+rd = inst[11:7]
+opcode = inst[6:0]
+
+*** Example
+
+**** SLTU x4,x3,x2
+
+SLT x3 and x2 then store the result to x4
+
+SLT x4,x3,x2
+
+funct7 = 0000000
+rs2 = 00010
+rs1 = 00011
+funct3 = 011
+rd = 00100
+opcode = 0110011
+
+0000000 00010 00011 011 00100 0110011
+
+0000 0000 0010 0001 1011 0010 0011 0011
+
+
+
+0000 0000 0010 0001 1011 0010 0011 0011
+   0    0    2    1    B    2    3    3
+
+0021B233
 
 ** tstPattern0002.txt
 +00000000 000031B7 ; LUI x3,0x3     -> x3 = 3
