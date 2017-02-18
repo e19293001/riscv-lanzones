@@ -99,6 +99,7 @@ module lanzones(
    reg         DI_XORI_ctrl;
 
    reg         DI_LW_ctrl;
+   reg         DI_LB_ctrl;
    reg         DI_LW_LHff;
    wire        DI_LW_w;
    wire        DI_LW_LHxW_ctrl;
@@ -312,6 +313,7 @@ module lanzones(
       DI_SLL_ctrl = 0;
       DI_SW_ctrl = 0;
       DI_LW_ctrl = 0;
+      DI_LB_ctrl = 0;
       DI_LH_ctrl = 0;
 
       DI_ORI_ctrl = 0;
@@ -408,6 +410,7 @@ module lanzones(
            end
            7'b0000011: begin // LW
               case (FIff[14:12])
+                3'b000: DI_LB_ctrl = 1;
                 3'b010: DI_LW_ctrl = 1;
                 3'b001: DI_LH_ctrl = 1;
                 default: invalid_inst = 1;
@@ -449,7 +452,7 @@ module lanzones(
       else if (DI_SLL_ctrl) begin
          alu_outctrl = xRData0 << xRData1;
       end
-      else if (DI_SW_ctrl | DI_LW_ctrl) begin
+      else if (DI_SW_ctrl | DI_LW_ctrl | DI_LB_ctrl) begin
          alu_outctrl = xRData0 + imm_ctrl;
       end
       else if (DI_LH_ctrl) begin
@@ -545,7 +548,12 @@ module lanzones(
             xWData <= alu_outctrl;
          end
          else if (DI_LW_LHxW_ctrl) begin
-            xWData <= RData;
+            if (funct3_ctrl == 3'b000) begin
+               xWData <= RData & 8'hFF;
+            end
+            else begin
+               xWData <= RData;
+            end
          end
          else begin
             xWData <= 0;

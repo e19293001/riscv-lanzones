@@ -74,7 +74,7 @@ of RISC-V 32I.
 #+END_LATEX
 
 *** Internal Hand Shake
-** Instructions [40%]
+** Instructions [42%]
 *** DONE LUI
     CLOSED: [2017-01-29 Sun 00:02]
 #+BEGIN_LATEX
@@ -118,6 +118,13 @@ of RISC-V 32I.
 *** TODO BLTU
 *** TODO BGEU
 *** NEXT LB
+    :LOGBOOK:  
+    CLOCK: [2017-02-20 Mon 10:10]
+    CLOCK: [2017-02-20 Mon 08:46]--[2017-02-20 Mon 08:58] =>  0:12
+    :END:      
+    :PROPERTIES:
+    :Effort:   0:30
+    :END:
 *** NEXT LH
     :LOGBOOK:
     :END:
@@ -217,9 +224,11 @@ of RISC-V 32I.
     :PROPERTIES:
     :Effort:   0:30
     :END:
-*** NEXT SLTU
+*** DONE SLTU
+    CLOSED: [2017-02-20 Mon 08:45]
     :LOGBOOK:  
-    CLOCK: [2017-02-20 Mon 08:18]
+    CLOCK: [2017-02-20 Mon 08:45]--[2017-02-20 Mon 08:46] =>  0:01
+    CLOCK: [2017-02-20 Mon 08:18]--[2017-02-20 Mon 08:45] =>  0:27
     :END:      
     :PROPERTIES:
     :Effort:   0:30
@@ -972,7 +981,6 @@ opcode = 0110011
 
 0021A233
 
-
 ** SLTU
 SLTU rd,rs1,rs2
 
@@ -1012,6 +1020,36 @@ opcode = 0110011
    0    0    2    1    B    2    3    3
 
 0021B233
+
+** LB
+LB rd,rs1,imm
+
+31    20 19   15 14   12 11   7 6      0
+_______  ______  _______ ______ _______   
+  imm     rs1      func    rd   opcode
+
+inst[31:20] = imm[11:0]
+inst[19:15] = rs1
+inst[14:12] = funct3
+inst[11:7] = rd
+inst[6:0] = opcode
+
+*** Examples:
+**** LB x4,x0,0x108
+
+imm = 0001 0000 1000
+rs1 = 00000
+funct3 = 010
+rd = 00100
+opcode = 0000011
+
+000100001000 00000 000 00100 0000011
+
+0001 0000 1000 0000 0000 0010 0000 0011
+   1    0    8    0    0    2    0    3
+
+10800203
+
 
 ** tstPattern0002.txt
 +00000000 000031B7 ; LUI x3,0x3     -> x3 = 3
@@ -1147,6 +1185,16 @@ ORI x4,x0,0x3
 SLT x5,x3,x4
 ORI x2,x0,0x3
 SLT x4,x3,x2
+** (SLTU) tstPattern0023.asm
+ORI x3,x0,0x3                   ;x3 = 0x3
+ORI x4,x0,0x4                   ;x4 = 0x4
+SLTU x5,x3,x4                    ;x5 = 1
+ORI x3,x0,0x4                   ;x3 = 0x4
+ORI x4,x0,0x3                   ;x4 = 0x3
+SLTU x5,x3,x4                    ;x5 = 0
+ORI x2,x0,0x3
+SLTU x4,x3,x2
+
 * Misc
 ** TODO test with RVld fixed to 1
 ** DONE add error handler in testbench
