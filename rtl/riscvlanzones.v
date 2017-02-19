@@ -103,7 +103,8 @@ module lanzones(
    reg         DI_LW_LHff;
    wire        DI_LW_w;
    wire        DI_LW_LHxW_ctrl;
-
+   wire        DI_LB_xctrl;
+   reg         DI_LB_ff;
    reg         DI_LH_ctrl;
 
    reg [6:0]   funct7_ctrl;
@@ -127,16 +128,31 @@ module lanzones(
 
    assign fetchctrl = stallff ? 0 : 1;
 
-   assign DI_LW_w = (DI_LW_ctrl | DI_LW_LHff) ? 1 : 0;
+   assign DI_LW_w = (DI_LW_ctrl | DI_LW_LHff) ? 1 : 0; // ?? 
    assign DI_LW_LHxW_ctrl = (DI_LW_LHff & RVld) ? 1 : 0;
+   assign DI_LB_xctrl = (DI_LB_ff & RVld) ? 1 : 0;
 
    always @(posedge clk) begin
       if (!rstn) begin
          rdff <= 0;
       end
       else begin
-         if (DI_LW_ctrl || DI_LH_ctrl) begin
+         if (DI_LW_ctrl || DI_LH_ctrl || DI_LB_ctrl) begin
             rdff = rd_ctrl;
+         end
+      end
+   end
+
+   always @(posedge clk) begin
+      if (!rstn) begin
+         DI_LB_ff <= 0;
+      end
+      else begin
+         if (DI_LB_ctrl) begin
+            DI_LB_ff <= 1;
+         end
+         else if (DI_LB_ff && RVld) begin
+            DI_LB_ff <= 0;
          end
       end
    end
@@ -511,6 +527,7 @@ module lanzones(
              DI_SRLI_ctrl ||
              DI_SRAI_ctrl ||
              DI_XORI_ctrl ||
+             DI_LB_xctrl || 
              DI_LW_LHxW_ctrl) begin
             xWEn <= 1;
          end
@@ -547,13 +564,16 @@ module lanzones(
                   DI_ORI_ctrl) begin
             xWData <= alu_outctrl;
          end
+         else if (DI_LB_xctrl) begin
+            xWData <= $signed(RData) & 8'hFF;
+         end
          else if (DI_LW_LHxW_ctrl) begin
-            if (funct3_ctrl == 3'b000) begin
-               xWData <= RData & 8'hFF;
-            end
-            else begin
-               xWData <= RData;
-            end
+//            if (funct3_ctrl == 3'b000) begin
+//               xWData <= RData & 8'hFF;
+//            end
+//            else begin
+            xWData <= RData;
+//            end
          end
          else begin
             xWData <= 0;
@@ -591,7 +611,7 @@ module lanzones(
          else if (DI_SW_ctrl) begin
             xAddr <= rs2_ctrl;
          end
-         else if (DI_LW_LHxW_ctrl) begin
+         else if (DI_LW_LHxW_ctrl || DI_LB_xctrl) begin
             xAddr <= rdff;
          end
          else begin
