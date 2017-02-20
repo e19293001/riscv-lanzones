@@ -74,7 +74,7 @@ of RISC-V 32I.
 #+END_LATEX
 
 *** Internal Hand Shake
-** Instructions [44%]
+** Instructions [46%]
 *** DONE LUI
     CLOSED: [2017-01-29 Sun 00:02]
 #+BEGIN_LATEX
@@ -126,8 +126,10 @@ of RISC-V 32I.
     :PROPERTIES:
     :Effort:   0:30
     :END:
-*** NEXT LH
+*** DONE LH
+    CLOSED: [2017-02-20 Mon 12:18]
     :LOGBOOK:
+    CLOCK: [2017-02-20 Mon 12:02]--[2017-02-20 Mon 12:18] =>  0:16
     :END:
     :PROPERTIES:
     :Effort:   10
@@ -1051,6 +1053,34 @@ opcode = 0000011
 
 10800203
 
+** LH
+LH rd,rs1,imm
+
+31    20 19   15 14   12 11   7 6      0
+_______  ______  _______ ______ _______   
+  imm     rs1      func    rd   opcode
+
+inst[31:20] = imm[11:0]
+inst[19:15] = rs1
+inst[14:12] = funct3
+inst[11:7] = rd
+inst[6:0] = opcode
+
+*** Examples:
+**** LH x4,x0,0x108
+
+imm = 0001 0000 1000
+rs1 = 00000
+funct3 = 001
+rd = 00100
+opcode = 0000011
+
+0001 0000 1000 00000 001 00100 0000011
+
+0001 0000 1000 0000 0001 0010 0000 0011
+   1    0    8    0    1    2    0    3
+
+10801203
 
 ** tstPattern0002.txt
 +00000000 000031B7 ; LUI x3,0x3     -> x3 = 3
@@ -1196,6 +1226,13 @@ SLTU x5,x3,x4                    ;x5 = 0
 ORI x2,x0,0x3
 SLTU x4,x3,x2
 
+** (LH) tstPattern0025.asm
+LUI x3,0xABCDE
+ORI x3,x3,0xFDE
+SW x3,x0,0x108
+LW x4,x0,0x108
+LH x5,x0,0x108
+LH x4,x0,0x108
 * Misc
 ** TODO test with RVld fixed to 1
 ** DONE add error handler in testbench
