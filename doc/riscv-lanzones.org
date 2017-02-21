@@ -138,7 +138,13 @@ of RISC-V 32I.
     CLOSED: [2017-01-29 Sun 00:08]
 *** TODO LBU
 *** TODO LHU
-*** TODO SB
+*** NEXT SB
+    :LOGBOOK:  
+    CLOCK: [2017-02-21 Tue 07:51]
+    :END:      
+    :PROPERTIES:
+    :Effort:   0:30
+    :END:
 *** TODO SH
 *** DONE SW
     CLOSED: [2017-01-29 Sun 00:07]
@@ -1082,6 +1088,41 @@ opcode = 0000011
 
 10801203
 
+** SB
+
+SB rs1,rs2,imm
+
+31    25 24   20 19    15 14   12 11   7 6    0
+________ _______ ________ _______ ______ ______
+  imm      rs2     rs1     funct3  imm   opcode
+
+*** Examples
+
+**** SB x2,x0,imm
+
+Store the contents of register x2 to memory address 0x0108
+
+SB x2,x0,0x8
+
+imm = 0001 0000 1000
+rs1 = 00000
+rs2 = 00010
+funct3 = 010
+opcode = 0100011
+
+imm = {inst[31:25],inst[11:7]}
+rs2 = inst[24:20]
+rs1 = inst[19:15]
+funct3 = inst[14:12]
+opcode = inst[6:0]
+
+0001000 00010 00000 000 01000 0100011
+
+0001 0000 0010 0000 0000 0100 0010 0011
+   0    0    2    0    0    4    2    3
+
+10200423
+
 ** tstPattern0002.txt
 +00000000 000031B7 ; LUI x3,0x3     -> x3 = 3
 +00000001 00002137 ; LUI x2,0x2     -> x2 = 2
@@ -1233,6 +1274,14 @@ SW x3,x0,0x108
 LW x4,x0,0x108
 LH x5,x0,0x108
 LH x4,x0,0x108
+** (SB) tstPattern0026.asm
+SB x2,x0,0x8
+LUI x3,0xABCDE
+ORI x3,x3,0xFDE
+SB x3,x0,0x108
+LUI x4,0xABCDE
+ORI x4,x4,0xFDE
+SB x4,x0,0x108
 * Misc
 ** TODO test with RVld fixed to 1
 ** DONE add error handler in testbench

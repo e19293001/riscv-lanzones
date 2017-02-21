@@ -87,6 +87,7 @@ module lanzones(
    reg         DI_SUB_ctrl;
    reg         DI_SLL_ctrl;
    reg         DI_SW_ctrl;
+   reg         DI_SB_ctrl;
 
    reg         DI_ORI_ctrl;
    reg         DI_SLTI_ctrl;
@@ -244,7 +245,7 @@ module lanzones(
       end
       else begin
          if (!Halt) begin
-            if (stallctrl && DI_SW_ctrl) begin
+            if (stallctrl && (DI_SW_ctrl || DI_SB_ctrl)) begin
                RWEn <= 1;
             end
             else if (RVld) begin
@@ -262,6 +263,9 @@ module lanzones(
          if (!Halt) begin
             if (stallctrl && DI_SW_ctrl) begin
                RWData <= xRData1;
+            end
+            else if (DI_SB_ctrl) begin
+               RWData <= xRData1 & 8'hFF;
             end
             else if (RVld) begin
                RWData <= 0;
@@ -345,6 +349,7 @@ module lanzones(
       DI_SUB_ctrl = 0;
       DI_SLL_ctrl = 0;
       DI_SW_ctrl = 0;
+      DI_SB_ctrl = 0;
       DI_LW_ctrl = 0;
       DI_LB_ctrl = 0;
       DI_LH_ctrl = 0;
@@ -434,7 +439,11 @@ module lanzones(
               rd_ctrl = FIff[11:7];
            end
            7'b0100011: begin // SW
-              DI_SW_ctrl = 1;
+              case (FIff[14:12])
+                3'b000: DI_SB_ctrl = 1;
+                3'b010: DI_SW_ctrl = 1;
+                default: invalid_inst = 1;
+              endcase
               imm_ctrl = {FIff[31:25],FIff[11:7]};
               rs2_ctrl = FIff[24:20];
               rs1_ctrl = FIff[19:15];
@@ -485,7 +494,7 @@ module lanzones(
       else if (DI_SLL_ctrl) begin
          alu_outctrl = xRData0 << xRData1;
       end
-      else if (DI_SW_ctrl | DI_LW_ctrl | DI_LB_ctrl | DI_LH_ctrl) begin
+      else if (DI_SB_ctrl | DI_SW_ctrl | DI_LW_ctrl | DI_LB_ctrl | DI_LH_ctrl) begin
          alu_outctrl = xRData0 + imm_ctrl;
       end
 //      else if (DI_LH_ctrl) begin
@@ -624,7 +633,7 @@ module lanzones(
                   DI_ORI_ctrl) begin
             xAddr <= rd_ctrl;
          end
-         else if (DI_SW_ctrl) begin
+         else if (DI_SW_ctrl | DI_SB_ctrl) begin
             xAddr <= rs2_ctrl;
          end
          else if (DI_LW_xctrl || DI_LB_xctrl || DI_LH_xctrl) begin
