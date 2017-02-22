@@ -6,18 +6,24 @@ module MemoryModel(
                    input [31:0]      RAddr,
                    input [31:0]      RWData,
                    input             RWEn,
+                   input [3:0] 		 RWStrobe,
                    output reg [31:0] RData
                    );
 
    reg [31:0] mem ['hFFFF:0];
 
+   wire [31:0] strb_w;
+
+   assign strb_w = {{8{RWStrobe[3]}},{8{RWStrobe[2]}},{8{RWStrobe[1]}},{8{RWStrobe[0]}}};
+   
    always @(posedge clk) begin
       if (!rstn) begin
          RData <= 0;
       end
       else begin
          if (RWEn) begin
-            mem[RAddr] <= RWData;
+            //mem[RAddr] <= RWData;
+            mem[RAddr] <= (mem[RAddr] & ~strb_w) | (RWData & strb_w);
          end
          else begin
             if (RRdy && !RVld) begin
@@ -75,6 +81,7 @@ module initialTest;
    wire 			RVld;
    wire [31:0] RData;
    wire [31:0]  RWData;
+   wire [3:0]   RWStrobe;
    wire        RRdy;
    wire [31:0] RAddr;
    reg         LEn;
@@ -129,6 +136,7 @@ module initialTest;
       .RWData(RWData),
       .RRdy(RRdy),
       .RWEn(RWEn),
+      .RWStrobe(RWStrobe),
       .RAddr(RAddr),
       .LEn(LEn),
       .Halt(Halt));
@@ -138,6 +146,7 @@ module initialTest;
                    .rstn(rstn),
                    .RVld(RVld),
                    .RRdy(RRdy),
+                   .RWStrobe(RWStrobe),
                    .RAddr(RAddr),
                    .RWData(RWData),
                    .RWEn(RWEn),

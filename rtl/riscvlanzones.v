@@ -8,6 +8,7 @@ module lanzones(
                 output        RRdy,
                 output [31:0] RAddr,
                 output        Halt,
+                output [3:0]  RWStrobe,
                 input         LEn
                 );
 
@@ -15,6 +16,7 @@ module lanzones(
    reg [31:0]          RAddr;
    reg                 RWEn;
    reg [31:0]          RWData;
+   reg [3:0]           RWStrobe;
 
    reg                 Halt;
 
@@ -269,6 +271,25 @@ module lanzones(
             end
             else if (RVld) begin
                RWData <= 0;
+            end
+         end
+      end
+   end
+
+   always @(posedge clk) begin
+      if (!rstn) begin
+         RWStrobe <= 0;
+      end
+      else begin
+         if (!Halt) begin
+            if (stallctrl && DI_SW_ctrl) begin
+               RWStrobe <= 4'hF;
+            end
+            else if (DI_SB_ctrl) begin
+               RWStrobe <= 4'b0001;
+            end
+            else if (RVld) begin
+               RWStrobe <= 0;
             end
          end
       end
