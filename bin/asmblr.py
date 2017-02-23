@@ -30,6 +30,7 @@ SLT = 25
 SLTU = 26
 LB = 27
 SB = 28
+SH = 29
 
 class Token:
     def __init__(self):
@@ -68,7 +69,8 @@ class Token:
                            "SLT",
                            "SLTU",
                            "LB",
-                           "SB"]
+                           "SB",
+                           "SH"]
           
     def getKind(self,k):
         if (k == 0):
@@ -129,6 +131,8 @@ class Token:
             return "LB"
         elif (k == 28):
             return "SB"
+        elif (k == 29):
+            return "SH"
         else:
             return "UNKNOWN"
     
@@ -252,6 +256,8 @@ class TokenMgr:
                     tkn.kind = LB
                 elif tkn.image == "SB":
                     tkn.kind = SB
+                elif tkn.image == "SH":
+                    tkn.kind = SH
                 elif tkn.image[0] == "x" and tkn.image[1:].isdigit():
                     tkn.kind = REGISTER
                 else:
@@ -418,7 +424,7 @@ class asmblr:
 
         #self.binformat(imm,12)
 
-        print "imm.image[2:]=" + imm.image
+        #print "imm.image[2:]=" + imm.image
         immstr = self.hextobinstr(imm.image[2:])
         rdstr = self.tobinstr(rd.image[1:])
         instruction = self.binformat(immstr,20) + self.binformat(rdstr,5) + self.binformat(op,7)
@@ -807,6 +813,27 @@ class asmblr:
         self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
         self.consume(HEX)
 
+    def SHpattern(self):
+        op = "0100011"
+        self.consume(SH)
+        rs2 = self.currentToken
+        self.consume(REGISTER)
+        self.consume(COMMA)
+        rs1 = self.currentToken
+        self.consume(REGISTER)
+        self.consume(COMMA)
+        imm = self.currentToken
+
+        immstr = self.hextobinstr(imm.image[2:])
+        immstr = self.binformat(immstr,20)
+        rs1str = self.tobinstr(rs1.image[1:])
+        rs2str = self.tobinstr(rs2.image[1:])
+
+        instruction =  immstr[8:15] + self.binformat(rs2str,5) + self.binformat(rs1str,5) + "001" + immstr[15:20] + self.binformat(op,7)
+        
+        self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
+        self.consume(HEX)
+
     def program(self):
         while self.currentToken.kind != EOF:
             if self.currentToken.kind == LUI:
@@ -855,6 +882,8 @@ class asmblr:
                 self.LBpattern()
             elif self.currentToken.kind == SB:
                 self.SBpattern()
+            elif self.currentToken.kind == SH:
+                self.SHpattern()
             elif self.currentToken.kind == ERROR:
                 print "syntax Error"
                 exit(1)

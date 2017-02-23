@@ -62,6 +62,17 @@ module MemoryModel(
    wire [31:0] mem0x108;
    wire [31:0] mem0x109;
 
+   wire [31:0] mem0x000;
+   wire [31:0] mem0x001;
+   wire [31:0] mem0x002;
+   wire [31:0] mem0x003;
+   wire [31:0] mem0x004;
+   wire [31:0] mem0x005;
+   wire [31:0] mem0x006;
+   wire [31:0] mem0x007;
+   wire [31:0] mem0x008;
+   wire [31:0] mem0x009;
+
    assign mem0x100 = mem['h100];
    assign mem0x101 = mem['h101];
    assign mem0x102 = mem['h102];
@@ -72,6 +83,17 @@ module MemoryModel(
    assign mem0x107 = mem['h107];
    assign mem0x108 = mem['h108];
    assign mem0x109 = mem['h109];
+
+   assign mem0x000 = mem['h000];
+   assign mem0x001 = mem['h001];
+   assign mem0x002 = mem['h002];
+   assign mem0x003 = mem['h003];
+   assign mem0x004 = mem['h004];
+   assign mem0x005 = mem['h005];
+   assign mem0x006 = mem['h006];
+   assign mem0x007 = mem['h007];
+   assign mem0x008 = mem['h008];
+   assign mem0x009 = mem['h009];
 
 endmodule
 
