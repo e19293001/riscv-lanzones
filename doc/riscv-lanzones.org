@@ -74,7 +74,7 @@ of RISC-V 32I.
 #+END_LATEX
 
 *** Internal Hand Shake
-** Instructions [48%]
+** Instructions [53%]
 *** DONE LUI
     CLOSED: [2017-01-29 Sun 00:02]
 #+BEGIN_LATEX
@@ -136,7 +136,14 @@ of RISC-V 32I.
     :END:
 *** DONE LW
     CLOSED: [2017-01-29 Sun 00:08]
-*** TODO LBU
+*** DONE LBU
+    CLOSED: [2017-02-27 Mon 08:06]
+    :LOGBOOK:  
+    CLOCK: [2017-02-27 Mon 07:48]--[2017-02-27 Mon 08:06] =>  0:18
+    :END:      
+    :PROPERTIES:
+    :Effort:   0:30
+    :END:
 *** TODO LHU
 *** DONE SB
     CLOSED: [2017-02-22 Wed 13:16]
@@ -147,9 +154,10 @@ of RISC-V 32I.
     :PROPERTIES:
     :Effort:   0:30
     :END:
-*** NEXT SH
+*** DONE SH
+    CLOSED: [2017-02-23 Thu 09:15]
     :LOGBOOK:  
-    CLOCK: [2017-02-23 Thu 08:33]
+    CLOCK: [2017-02-23 Thu 08:33]--[2017-02-23 Thu 09:15] =>  0:42
     :END:      
     :PROPERTIES:
     :Effort:   0:15
@@ -1166,6 +1174,35 @@ opcode = inst[6:0]
 
 10201423
 
+** LBU
+LBU rd,rs1,imm
+
+31    20 19   15 14   12 11   7 6      0
+_______  ______  _______ ______ _______   
+  imm     rs1      func    rd   opcode
+
+inst[31:20] = imm[11:0]
+inst[19:15] = rs1
+inst[14:12] = funct3
+inst[11:7] = rd
+inst[6:0] = opcode
+
+*** Examples:
+**** LBU x4,x0,0x108
+
+imm = 0001 0000 1000
+rs1 = 00000
+funct3 = 100
+rd = 00100
+opcode = 0000011
+
+000100001000 00000 100 00100 0000011
+
+0001 0000 1000 0000 0100 0010 0000 0011
+   1    0    8    0    4    2    0    3
+
+10804203
+
 ** tstPattern0002.txt
 +00000000 000031B7 ; LUI x3,0x3     -> x3 = 3
 +00000001 00002137 ; LUI x2,0x2     -> x2 = 2
@@ -1333,6 +1370,13 @@ SH x3,x0,0x108
 LUI x4,0xABCDE
 ORI x4,x4,0xFDE
 SH x4,x0,0x108
+
+** (LBU) tstPattern0028.asm
+LUI x3,0xABCDE
+ORI x3,x3,0xFDE
+SW x3,x0,0x108
+LW x4,x0,0x108
+LBU x5,x0,0x108
 
 * Misc
 ** TODO test with RVld fixed to 1

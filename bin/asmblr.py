@@ -31,6 +31,7 @@ SLTU = 26
 LB = 27
 SB = 28
 SH = 29
+LBU = 30
 
 class Token:
     def __init__(self):
@@ -70,7 +71,8 @@ class Token:
                            "SLTU",
                            "LB",
                            "SB",
-                           "SH"]
+                           "SH",
+                           "LBU"]
           
     def getKind(self,k):
         if (k == 0):
@@ -133,6 +135,8 @@ class Token:
             return "SB"
         elif (k == 29):
             return "SH"
+        elif (k == 30):
+            return "LBU"
         else:
             return "UNKNOWN"
     
@@ -258,6 +262,8 @@ class TokenMgr:
                     tkn.kind = SB
                 elif tkn.image == "SH":
                     tkn.kind = SH
+                elif tkn.image == "LBU":
+                    tkn.kind = LBU
                 elif tkn.image[0] == "x" and tkn.image[1:].isdigit():
                     tkn.kind = REGISTER
                 else:
@@ -834,6 +840,26 @@ class asmblr:
         self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
         self.consume(HEX)
 
+    def LBUpattern(self):
+        op = "0000011"
+        self.consume(LBU)
+        rd = self.currentToken
+        self.consume(REGISTER)
+        self.consume(COMMA)
+        rs1 = self.currentToken
+        self.consume(REGISTER)
+        self.consume(COMMA)
+        imm = self.currentToken
+
+        immstr = self.hextobinstr(imm.image[2:])
+        rs1str = self.tobinstr(rs1.image[1:])
+        rdstr = self.tobinstr(rd.image[1:])
+
+        instruction = self.binformat(immstr,12) + self.binformat(rs1str,5) + "100" + self.binformat(rdstr,5) + self.binformat(op,7)
+
+        self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
+        self.consume(HEX)
+
     def program(self):
         while self.currentToken.kind != EOF:
             if self.currentToken.kind == LUI:
@@ -884,6 +910,8 @@ class asmblr:
                 self.SBpattern()
             elif self.currentToken.kind == SH:
                 self.SHpattern()
+            elif self.currentToken.kind == LBU:
+                self.LBUpattern()
             elif self.currentToken.kind == ERROR:
                 print "syntax Error"
                 exit(1)
