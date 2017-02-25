@@ -74,7 +74,7 @@ of RISC-V 32I.
 #+END_LATEX
 
 *** Internal Hand Shake
-** Instructions [53%]
+** Instructions [55%]
 *** DONE LUI
     CLOSED: [2017-01-29 Sun 00:02]
 #+BEGIN_LATEX
@@ -132,7 +132,7 @@ of RISC-V 32I.
     CLOCK: [2017-02-20 Mon 12:02]--[2017-02-20 Mon 12:18] =>  0:16
     :END:
     :PROPERTIES:
-    :Effort:   10
+    :Effort:   0:30
     :END:
 *** DONE LW
     CLOSED: [2017-01-29 Sun 00:08]
@@ -144,7 +144,14 @@ of RISC-V 32I.
     :PROPERTIES:
     :Effort:   0:30
     :END:
-*** TODO LHU
+*** DONE LHU
+    CLOSED: [2017-02-27 Mon 09:45]
+    :LOGBOOK:  
+    CLOCK: [2017-02-27 Mon 09:28]--[2017-02-27 Mon 09:45] =>  0:17
+    :END:      
+    :PROPERTIES:
+    :Effort:   0:30
+    :END:
 *** DONE SB
     CLOSED: [2017-02-22 Wed 13:16]
     :LOGBOOK:  
@@ -192,7 +199,7 @@ of RISC-V 32I.
 *** DONE XORI
     CLOSED: [2017-02-15 Wed 08:04]
     :LOGBOOK:  
-    CLOCK: [2017-02-14 Tue 11:29]--[2017-02-14 Tue 17:45] =>  6:16
+    CLOCK: [2017-02-14 Tue 11:29]--[2017-02-14 Tue 12:45] =>  1:16
     :END:      
     :PROPERTIES:
     :Effort:   0:30
@@ -236,7 +243,7 @@ of RISC-V 32I.
 *** DONE SLL
     CLOSED: [2017-02-05 Sun 17:57]
     :LOGBOOK:  
-    CLOCK: [2017-02-01 Wed 16:33]--[2017-02-05 Sun 17:57] => 97:24
+    CLOCK: [2017-02-01 Wed 16:33]--[2017-02-01 Wed 17:57] =>  1:24
     :END:      
     :PROPERTIES:
     :Effort:   0:30
@@ -1203,6 +1210,35 @@ opcode = 0000011
 
 10804203
 
+** LHU
+LHU rd,rs1,imm
+
+31    20 19   15 14   12 11   7 6      0
+_______  ______  _______ ______ _______   
+  imm     rs1      func    rd   opcode
+
+inst[31:20] = imm[11:0]
+inst[19:15] = rs1
+inst[14:12] = funct3
+inst[11:7] = rd
+inst[6:0] = opcode
+
+*** Examples:
+**** LHU x4,x0,0x108
+
+imm = 0001 0000 1000
+rs1 = 00000
+funct3 = 101
+rd = 00100
+opcode = 0000011
+
+000100001000 00000 101 00100 0000011
+
+0001 0000 1000 0000 0101 0010 0000 0011
+   1    0    8    0    5    2    0    3
+
+10805203
+
 ** tstPattern0002.txt
 +00000000 000031B7 ; LUI x3,0x3     -> x3 = 3
 +00000001 00002137 ; LUI x2,0x2     -> x2 = 2
@@ -1377,6 +1413,13 @@ ORI x3,x3,0xFDE
 SW x3,x0,0x108
 LW x4,x0,0x108
 LBU x5,x0,0x108
+
+** (LHU) tstPattern0029.asm
+LUI x3,0xABCDE
+ORI x3,x3,0xFDE
+SW x3,x0,0x108
+LW x4,x0,0x108
+LHU x5,x0,0x108
 
 * Misc
 ** TODO test with RVld fixed to 1

@@ -115,6 +115,9 @@ module lanzones(
    reg         DI_LH_ctrl;
    wire        DI_LH_xctrl;
    reg         DI_LH_ff;
+   reg         DI_LHU_ctrl;
+   wire        DI_LHU_xctrl;
+   reg         DI_LHU_ff;
 
    reg [6:0]   funct7_ctrl;
    reg [4:0]   rs1_ctrl;
@@ -142,13 +145,14 @@ module lanzones(
    assign DI_LB_xctrl = (DI_LB_ff & RVld) ? 1 : 0;
    assign DI_LBU_xctrl = (DI_LBU_ff & RVld) ? 1 : 0;
    assign DI_LH_xctrl = (DI_LH_ff & RVld) ? 1 : 0;
+   assign DI_LHU_xctrl = (DI_LHU_ff & RVld) ? 1 : 0;
    
    always @(posedge clk) begin
       if (!rstn) begin
          rdff <= 0;
       end
       else begin
-         if (DI_LW_ctrl || DI_LH_ctrl || DI_LB_ctrl || DI_LBU_ctrl) begin
+         if (DI_LW_ctrl || DI_LH_ctrl || DI_LHU_ctrl || DI_LB_ctrl || DI_LBU_ctrl) begin
             rdff = rd_ctrl;
          end
       end
@@ -192,6 +196,20 @@ module lanzones(
          end
          else if (DI_LH_ff && RVld) begin
             DI_LH_ff <= 0;
+         end
+      end
+   end
+   
+   always @(posedge clk) begin
+      if (!rstn) begin
+         DI_LHU_ff <= 0;
+      end
+      else begin
+         if (DI_LHU_ctrl) begin
+            DI_LHU_ff <= 1;
+         end
+         else if (DI_LHU_ff && RVld) begin
+            DI_LHU_ff <= 0;
          end
       end
    end
@@ -401,6 +419,7 @@ module lanzones(
       DI_LB_ctrl = 0;
       DI_LBU_ctrl = 0;
       DI_LH_ctrl = 0;
+      DI_LHU_ctrl = 0;
 
       DI_ORI_ctrl = 0;
       DI_SLTI_ctrl = 0;
@@ -505,6 +524,7 @@ module lanzones(
                 3'b001: DI_LH_ctrl = 1;
                 3'b010: DI_LW_ctrl = 1;
                 3'b100: DI_LBU_ctrl = 1;
+                3'b101: DI_LHU_ctrl = 1;
                 default: invalid_inst = 1;
               endcase
               imm_ctrl = FIff[31:20];
@@ -544,7 +564,7 @@ module lanzones(
       else if (DI_SLL_ctrl) begin
          alu_outctrl = xRData0 << xRData1;
       end
-      else if (DI_SB_ctrl | DI_SH_ctrl | DI_SW_ctrl | DI_LW_ctrl | DI_LB_ctrl | DI_LBU_ctrl| DI_LH_ctrl) begin
+      else if (DI_SB_ctrl | DI_SH_ctrl | DI_SW_ctrl | DI_LW_ctrl | DI_LB_ctrl | DI_LBU_ctrl | DI_LH_ctrl | DI_LHU_ctrl) begin
          alu_outctrl = xRData0 + imm_ctrl;
       end
 //      else if (DI_LH_ctrl) begin
@@ -606,6 +626,7 @@ module lanzones(
              DI_LB_xctrl ||
              DI_LBU_xctrl ||
              DI_LH_xctrl ||
+             DI_LHU_xctrl ||
              DI_LW_xctrl) begin
             xWEn <= 1;
          end
@@ -649,6 +670,9 @@ module lanzones(
             xWData <= RData & 8'hFF;
          end
          else if (DI_LH_xctrl) begin
+            xWData <= RData[15] ? (RData & 32'hFFFF) | 32'hFFFF0000 : RData & 8'hFFFF;
+         end
+         else if (DI_LHU_xctrl) begin
             xWData <= $signed(RData) & 16'hFFFF;
          end
          else if (DI_LW_xctrl) begin
@@ -690,7 +714,7 @@ module lanzones(
          else if (DI_SW_ctrl | DI_SB_ctrl | DI_SH_ctrl) begin
             xAddr <= rs2_ctrl;
          end
-         else if (DI_LW_xctrl || DI_LB_xctrl || DI_LBU_xctrl || DI_LH_xctrl) begin
+         else if (DI_LW_xctrl || DI_LB_xctrl || DI_LBU_xctrl || DI_LH_xctrl || DI_LHU_xctrl) begin
             xAddr <= rdff;
          end
          else begin
