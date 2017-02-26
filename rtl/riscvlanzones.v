@@ -86,6 +86,7 @@ module lanzones(
    reg         DI_SLT_ctrl;
    reg         DI_SLTU_ctrl;
    reg         DI_AND_ctrl;
+   reg         DI_SRL_ctrl;
    reg         DI_SUB_ctrl;
    reg         DI_SLL_ctrl;
    reg         DI_SW_ctrl;
@@ -410,6 +411,7 @@ module lanzones(
       DI_SLT_ctrl = 0;
       DI_SLTU_ctrl = 0;
       DI_AND_ctrl = 0;
+      DI_SRL_ctrl = 0;
       DI_SUB_ctrl = 0;
       DI_SLL_ctrl = 0;
       DI_SW_ctrl = 0;
@@ -492,6 +494,7 @@ module lanzones(
                      3'b010: DI_SLT_ctrl = 1;
                      3'b011: DI_SLTU_ctrl = 1;
                      3'b111: DI_AND_ctrl = 1;
+                     3'b101: DI_SRL_ctrl = 1;
                      3'b001: DI_SLL_ctrl = 1;
                      default: invalid_inst = 1;
                    endcase
@@ -558,6 +561,9 @@ module lanzones(
       else if (DI_AND_ctrl) begin
          alu_outctrl = xRData0 & xRData1;
       end
+      else if (DI_SRL_ctrl) begin
+         alu_outctrl = xRData0 >> xRData1;
+      end
       else if (DI_SUB_ctrl) begin
          alu_outctrl = xRData0 - xRData1;
       end
@@ -612,6 +618,7 @@ module lanzones(
              DI_SLT_ctrl || 
              DI_SLTU_ctrl || 
              DI_AND_ctrl || 
+             DI_SRL_ctrl || 
              DI_SUB_ctrl || 
              DI_SLL_ctrl ||
              DI_ORI_ctrl ||
@@ -650,6 +657,7 @@ module lanzones(
                   DI_SLT_ctrl ||
                   DI_SLTU_ctrl ||
                   DI_AND_ctrl ||
+                  DI_SRL_ctrl ||
                   DI_SUB_ctrl ||
                   DI_SLL_ctrl ||
                   DI_ANDI_ctrl ||
@@ -698,6 +706,7 @@ module lanzones(
                   DI_SLT_ctrl || 
                   DI_SLTU_ctrl || 
                   DI_AND_ctrl || 
+                  DI_SRL_ctrl || 
                   DI_SUB_ctrl ||
                   DI_SLL_ctrl ||
                   DI_ANDI_ctrl ||

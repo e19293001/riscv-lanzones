@@ -74,7 +74,7 @@ of RISC-V 32I.
 #+END_LATEX
 
 *** Internal Hand Shake
-** Instructions [55%]
+** Instructions [57%]
 *** DONE LUI
     CLOSED: [2017-01-29 Sun 00:02]
 #+BEGIN_LATEX
@@ -273,8 +273,21 @@ of RISC-V 32I.
     :PROPERTIES:
     :Effort:   0:30
     :END:
-*** TODO SRL
-*** TODO SRA
+*** DONE SRL
+    CLOSED: [2017-02-28 Tue 07:58]
+    :LOGBOOK:  
+    CLOCK: [2017-02-27 Mon 17:54]--[2017-02-27 Mon 18:11] =>  0:17
+    :END:      
+    :PROPERTIES:
+    :Effort:   0:30
+    :END:
+*** NEXT SRA
+    :LOGBOOK:  
+    CLOCK: [2017-02-28 Tue 08:00]
+    :END:      
+    :PROPERTIES:
+    :Effort:   0:30
+    :END:
 *** DONE OR
     CLOSED: [2017-02-15 Wed 09:13]
     :LOGBOOK:  
@@ -1239,6 +1252,88 @@ opcode = 0000011
 
 10805203
 
+** SRL
+
+SRL rd,rs1,rs2
+
+31    25 24    20 19   15 14  12 11    7 6    0
+________ ________ _______ ______ _______ ______
+ funct7    rs2      rs1   funct3   rd    opcode
+
+funct7 = inst[31:25]
+rs2 = inst[24:20]
+rs1 = inst[19:15]
+funct3 = inst[14:12]
+rd = inst[11:7]
+opcode = inst[6:0]
+
+*** Example
+
+**** SRL x4,x3,x2
+
+SRL x3 and x2 then store the result to x4
+
+SRL x4,x3,x2
+
+funct7 = 0000000
+rs2 = 00010
+rs1 = 00011
+funct3 = 101
+rd = 00100
+opcode = 0110011
+
+0000000 00010 00011 101 00100 0110011
+
+0000 0000 0010 0001 1101 0010 0011 0011
+
+
+
+0000 0000 0010 0001 1101 0010 0011 0011
+   0    0    2    1    D    2    3    3
+
+0021D233
+
+** SRA
+
+SRA rd,rs1,rs2
+
+31    25 24    20 19   15 14  12 11    7 6    0
+________ ________ _______ ______ _______ ______
+ funct7    rs2      rs1   funct3   rd    opcode
+
+funct7 = inst[31:25]
+rs2 = inst[24:20]
+rs1 = inst[19:15]
+funct3 = inst[14:12]
+rd = inst[11:7]
+opcode = inst[6:0]
+
+*** Example
+
+**** SRA x4,x3,x2
+
+SRA x3 and x2 then store the result to x4
+
+SRA x4,x3,x2
+
+funct7 = 0100000
+rs2 = 00010
+rs1 = 00011
+funct3 = 101
+rd = 00100
+opcode = 0110011
+
+0000000 00010 00011 101 00100 0110011
+
+0000 0000 0010 0001 1101 0010 0011 0011
+
+
+
+0100 0000 0010 0001 1101 0010 0011 0011
+   4    0    2    1    D    2    3    3
+
+4021D233
+
 ** tstPattern0002.txt
 +00000000 000031B7 ; LUI x3,0x3     -> x3 = 3
 +00000001 00002137 ; LUI x2,0x2     -> x2 = 2
@@ -1421,6 +1516,44 @@ SW x3,x0,0x108
 LW x4,x0,0x108
 LHU x5,x0,0x108
 
+** (SRL) tstPattern0030.asm
+LUI x3,0xFFF
+ORI x3,x3,0xFFF
+ORI x2,x0,0x1	
+SRL x4,x3,x2
+SRL x4,x4,x2
+SRL x4,x4,x2
+SRL x4,x4,x2
+SRL x4,x4,x2
+SRL x4,x4,x2
+SRL x4,x4,x2
+SRL x4,x4,x2
+SRL x4,x4,x2
+SRL x4,x4,x2
+SRL x4,x4,x2
+SRL x4,x4,x2
+SRL x4,x4,x2
+SRL x4,x4,x2
+SRL x4,x4,x2
+SRL x4,x4,x2
+SRL x4,x4,x2
+SRL x4,x4,x2
+SRL x4,x4,x2
+SRL x4,x4,x2
+SRL x4,x4,x2
+SRL x4,x4,x2
+SRL x4,x4,x2
+SRL x4,x4,x2
+** (SRA) tstPattern0031.asm
+LUI x3,x0,0xFFF
+ORI x3,x3,0xABC
+ORI x2,x0,0x1
+SRA x4,x3,x2
+SRA x4,x4,x2
+SRA x4,x4,x2
+SRA x4,x4,x2
+SRA x4,x4,x2
+SRA x4,x4,x2
 * Misc
 ** TODO test with RVld fixed to 1
 ** DONE add error handler in testbench
