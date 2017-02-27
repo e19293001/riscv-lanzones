@@ -34,6 +34,7 @@ SH = 29
 LBU = 30
 LHU = 31
 SRL = 32
+SRA = 33
 
 class Token:
     def __init__(self):
@@ -76,7 +77,8 @@ class Token:
                            "SH",
                            "LBU",
                            "LHU",
-                           "SRL"]
+                           "SRL",
+                           "SRA"]
           
     def getKind(self,k):
         if (k == 0):
@@ -145,6 +147,8 @@ class Token:
             return "LHU"
         elif (k == 32):
             return "SRL"
+        elif (k == 33):
+            return "SRA"
         else:
             return "UNKNOWN"
     
@@ -276,6 +280,8 @@ class TokenMgr:
                     tkn.kind = LHU
                 elif tkn.image == "SRL":
                     tkn.kind = SRL
+                elif tkn.image == "SRA":
+                    tkn.kind = SRA
                 elif tkn.image[0] == "x" and tkn.image[1:].isdigit():
                     tkn.kind = REGISTER
                 else:
@@ -442,10 +448,14 @@ class asmblr:
 
         #self.binformat(imm,12)
 
-        #print "imm.image[2:]=" + imm.image
-        immstr = self.hextobinstr(imm.image[2:])
-        rdstr = self.tobinstr(rd.image[1:])
-        instruction = self.binformat(immstr,20) + self.binformat(rdstr,5) + self.binformat(op,7)
+        if imm.kind == HEX:
+            #print "imm.image[2:]=" + imm.image
+            immstr = self.hextobinstr(imm.image[2:])
+            rdstr = self.tobinstr(rd.image[1:])
+            instruction = self.binformat(immstr,20) + self.binformat(rdstr,5) + self.binformat(op,7)
+        else:
+            print "Error. Hex value is expected."
+            exit(1)
 
         self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
         self.consume(HEX)
@@ -912,6 +922,26 @@ class asmblr:
         self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
         self.consume(REGISTER)
 
+    def SRApattern(self):
+        op = "0110011"
+        self.consume(SRA)
+        rd = self.currentToken
+        self.consume(REGISTER)
+        self.consume(COMMA)
+        rs1 = self.currentToken
+        self.consume(REGISTER)
+        self.consume(COMMA)
+        rs2 = self.currentToken
+
+        rdstr = self.tobinstr(rd.image[1:])
+        rs1str = self.tobinstr(rs1.image[1:])
+        rs2str = self.tobinstr(rs2.image[1:])
+        
+        instruction = "0100000" + self.binformat(rs2str,5) + self.binformat(rs1str,5) + "101" + self.binformat(rdstr,5) + self.binformat(op,7)
+
+        self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
+        self.consume(REGISTER)
+
     def program(self):
         while self.currentToken.kind != EOF:
             if self.currentToken.kind == LUI:
@@ -968,6 +998,8 @@ class asmblr:
                 self.LHUpattern()
             elif self.currentToken.kind == SRL:
                 self.SRLpattern()
+            elif self.currentToken.kind == SRA:
+                self.SRApattern()
             elif self.currentToken.kind == ERROR:
                 print "syntax Error"
                 exit(1)

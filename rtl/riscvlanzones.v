@@ -87,6 +87,7 @@ module lanzones(
    reg         DI_SLTU_ctrl;
    reg         DI_AND_ctrl;
    reg         DI_SRL_ctrl;
+   reg         DI_SRA_ctrl;
    reg         DI_SUB_ctrl;
    reg         DI_SLL_ctrl;
    reg         DI_SW_ctrl;
@@ -412,6 +413,7 @@ module lanzones(
       DI_SLTU_ctrl = 0;
       DI_AND_ctrl = 0;
       DI_SRL_ctrl = 0;
+      DI_SRA_ctrl = 0;
       DI_SUB_ctrl = 0;
       DI_SLL_ctrl = 0;
       DI_SW_ctrl = 0;
@@ -499,7 +501,13 @@ module lanzones(
                      default: invalid_inst = 1;
                    endcase
                 end
-                7'b0100000: DI_SUB_ctrl = 1;
+                7'b0100000: begin
+                   case (FIff[14:12])
+                     3'b000: DI_SUB_ctrl = 1;
+                     3'b101: DI_SRA_ctrl = 1;
+                     default: invalid_inst = 1;
+                   endcase
+                end
                 default: invalid_inst = 1;
               endcase
               funct7_ctrl = FIff[31:25];
@@ -564,6 +572,9 @@ module lanzones(
       else if (DI_SRL_ctrl) begin
          alu_outctrl = xRData0 >> xRData1;
       end
+      else if (DI_SRA_ctrl) begin
+         alu_outctrl = $signed(xRData0) >>> xRData1;
+      end
       else if (DI_SUB_ctrl) begin
          alu_outctrl = xRData0 - xRData1;
       end
@@ -619,6 +630,7 @@ module lanzones(
              DI_SLTU_ctrl || 
              DI_AND_ctrl || 
              DI_SRL_ctrl || 
+             DI_SRA_ctrl || 
              DI_SUB_ctrl || 
              DI_SLL_ctrl ||
              DI_ORI_ctrl ||
@@ -658,6 +670,7 @@ module lanzones(
                   DI_SLTU_ctrl ||
                   DI_AND_ctrl ||
                   DI_SRL_ctrl ||
+                  DI_SRA_ctrl ||
                   DI_SUB_ctrl ||
                   DI_SLL_ctrl ||
                   DI_ANDI_ctrl ||
@@ -707,6 +720,7 @@ module lanzones(
                   DI_SLTU_ctrl || 
                   DI_AND_ctrl || 
                   DI_SRL_ctrl || 
+                  DI_SRA_ctrl || 
                   DI_SUB_ctrl ||
                   DI_SLL_ctrl ||
                   DI_ANDI_ctrl ||
