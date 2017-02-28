@@ -35,6 +35,7 @@ LBU = 30
 LHU = 31
 SRL = 32
 SRA = 33
+LABEL = 34
 
 class Token:
     def __init__(self):
@@ -78,7 +79,8 @@ class Token:
                            "LBU",
                            "LHU",
                            "SRL",
-                           "SRA"]
+                           "SRA",
+                           "LABEL"]
           
     def getKind(self,k):
         if (k == 0):
@@ -149,9 +151,10 @@ class Token:
             return "SRL"
         elif (k == 33):
             return "SRA"
+        elif (k == 34):
+            return "LABEL"
         else:
             return "UNKNOWN"
-    
 
 class CodeGenerator:
     def __init__(self, outFile):
@@ -216,7 +219,7 @@ class TokenMgr:
                             break
                     tkn.image = self.buff
                     tkn.kind = HEX
-            elif self.currentChar.isalnum():
+            elif self.currentChar.isalnum() or self.currentChar == "_" or self.currentChar == '@':
                 self.buff = ""
                 while True:
                     self.buff = self.buff + self.currentChar
@@ -285,7 +288,11 @@ class TokenMgr:
                 elif tkn.image[0] == "x" and tkn.image[1:].isdigit():
                     tkn.kind = REGISTER
                 else:
-                    tkn.kind = ERROR
+                    if self.currentChar == ":":
+                        tkn.kind = LABEL
+                    else:
+                        tkn.kind = ERROR
+                    self.getNextChar()
             elif self.currentChar == ",":
                 tkn.endLine = self.currentLineNumber
                 tkn.endColumn = self.currentColumnNumber
@@ -333,6 +340,7 @@ class asmblr:
         self.currentToken = self.tmgr.getNextToken()
         self.cg = CodeGenerator(self.tmgr.outFileHandle)
         self.programcounter = 0
+        self.symboltable = {}
         
     def instformat(self,s,i):
         return "{0:0{1}X}".format(int(s,2),i)
@@ -942,8 +950,23 @@ class asmblr:
         self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
         self.consume(REGISTER)
 
-    def program(self):
+    def LABELpattern(self):
+        lbl = self.currentToken
+        self.consume(LABEL)
+        if lbl.image not in self.symboltable:
+            self.symboltable[lbl.image] = self.programcounter
+        else:
+            print "Error. Symbol [" + lbl.image + "]already exists."
+            exit(1)
+
+    def program(self,labels = 0):
+        incPC = 1
         while self.currentToken.kind != EOF:
+            incPC = 1
+            if labels == 1:
+                if self.currentToken.kind == LABEL:
+                    self.LABELpattern()
+                    incPC = 0
             if self.currentToken.kind == LUI:
                 self.LUIpattern()
             elif self.currentToken.kind == ADD:
@@ -1001,16 +1024,26 @@ class asmblr:
             elif self.currentToken.kind == SRA:
                 self.SRApattern()
             elif self.currentToken.kind == ERROR:
+                print "Line: " + str(self.currentToken.beginLine)
                 print "syntax Error"
+                print "Unexpected: " + self.currentToken.image
+
                 exit(1)
             else:
                 print "unexpected termination"
                 exit(1)
-            self.programcounter += 1
+
+            if incPC:
+                self.programcounter += 1
 
     def parse(self):
         self.program()
         self.cg.emitInstruction(self.programcounter, "FFFFFFFF")
+
+    def parseLabels(self):
+        self.program(1)
+        print "symboltable:"
+        print self.symboltable
 
 def printHelp():
     print "usage: python2 ../bin/asmblr.py <asm file>"
@@ -1023,4 +1056,5 @@ if len(sys.argv) == 1:
 asmfile = sys.argv[1]
 
 ass = asmblr(asmfile)
-ass.parse()
+#ass.parse()
+ass.parseLabels()

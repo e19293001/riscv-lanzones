@@ -1555,6 +1555,7 @@ SRA x4,x4,x2
 SRA x4,x4,x2
 SRA x4,x4,x2
 SRA x4,x4,x2
+** (labels) tstPattern0032.asm
 * Misc
 ** TODO test with RVld fixed to 1
 ** DONE add error handler in testbench
@@ -1575,3 +1576,14 @@ SRA x4,x4,x2
    :Effort:   0:10
    :END:
 ** TODO add debugging signals & strings
+** NEXT add support to labels in assembler
+   :LOGBOOK:  
+   CLOCK: [2017-03-01 Wed 09:21]
+   CLOCK: [2017-02-28 Tue 08:54]--[2017-02-28 Tue 08:58] =>  0:04
+   :END:      
+   :PROPERTIES:
+   :Effort:   0:30
+   :END:
+* Notes
+** The Assembler
+   
