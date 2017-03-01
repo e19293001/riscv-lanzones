@@ -1576,13 +1576,22 @@ SRA x4,x4,x2
    :Effort:   0:10
    :END:
 ** TODO add debugging signals & strings
-** NEXT add support to labels in assembler
+** DONE add support to labels in assembler
+   CLOSED: [2017-03-01 Wed 11:28]
    :LOGBOOK:  
-   CLOCK: [2017-03-01 Wed 09:21]
+   CLOCK: [2017-03-01 Wed 09:21]--[2017-03-01 Wed 11:28] =>  2:07
    CLOCK: [2017-02-28 Tue 08:54]--[2017-02-28 Tue 08:58] =>  0:04
    :END:      
    :PROPERTIES:
    :Effort:   0:30
+   :END:
+** NEXT add symbol table and program code array
+   :LOGBOOK:  
+   CLOCK: [2017-03-01 Wed 12:59]
+   CLOCK: [2017-03-01 Wed 11:31]--[2017-03-01 Wed 11:45] =>  0:14
+   :END:      
+   :PROPERTIES:
+   :Effort:   1:00
    :END:
 * Notes
 ** The Assembler

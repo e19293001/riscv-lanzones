@@ -159,11 +159,19 @@ class Token:
 class CodeGenerator:
     def __init__(self, outFile):
         self.outFile = outFile
+        self.memarray = []
         #print "[ start ] CodeGenerator"
 
+    def __del__(self):
+        for index in range(len(self.memarray)):
+            print "+" + "{0:0{1}X}".format(index,8) + " " + self.memarray[index]
+        
     def emitInstruction(self, cnt, op):
-        self.outFile.write("+" + "{0:0{1}X}".format(cnt,8) + " " + op + "\n")
-        print "+" + "{0:0{1}X}".format(cnt,8) + " " + op
+        #self.outFile.write("+" + "{0:0{1}X}".format(cnt,8) + " " + op + "\n")
+        #print "+" + "{0:0{1}X}".format(cnt,8) + " " + op
+        #self.memdic["{0:0{1}X}".format(cnt,8)] = op
+        self.memarray.append(op)
+        
         #self.outFile.write(
 
 class TokenMgr:
