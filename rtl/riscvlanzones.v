@@ -80,6 +80,7 @@ module lanzones(
    reg [19:0]  imm_ctrl;
 
    reg         DI_LUI_ctrl;
+   reg			DI_AUIPC_ctrl;
    reg         DI_ADD_ctrl;
    reg         DI_XOR_ctrl;
    reg         DI_OR_ctrl;
@@ -406,6 +407,7 @@ module lanzones(
    // instruction decoder
    always @* begin
       DI_LUI_ctrl = 0;
+      DI_AUIPC_ctrl = 0;
       DI_ADD_ctrl = 0;
       DI_XOR_ctrl = 0;
       DI_OR_ctrl = 0;
@@ -486,6 +488,11 @@ module lanzones(
               rd_ctrl = FIff[11:7];
               imm_ctrl = FIff[31:12];
            end
+           7'b0010111: begin // AUIPC
+              DI_AUIPC_ctrl = 1;
+              rd_ctrl = FIff[11:7];
+              imm_ctrl = FIff[31:12];
+           end
            7'b0110011: begin // R-type
               case (FIff[31:25])
                 7'b0000000: begin
@@ -543,7 +550,8 @@ module lanzones(
               funct3_ctrl = FIff[14:12];
               rd_ctrl = FIff[11:7];
               stallctrl = 1; // stop the fetch to read from memory
-           end
+           end          
+           default: invalid_inst = 1;
          endcase
       end
    end
@@ -614,6 +622,9 @@ module lanzones(
       else if (DI_XORI_ctrl) begin
          alu_outctrl = xRData0 ^ imm_ctrl;
       end
+      else if (DI_AUIPC_ctrl) begin
+         alu_outctrl = PCff + imm_ctrl;
+      end
    end
 
    // x register controller
@@ -622,7 +633,8 @@ module lanzones(
          xWEn <= 0;
       end
       else begin
-         if (DI_LUI_ctrl || 
+         if (DI_LUI_ctrl ||
+             DI_AUIPC_ctrl ||
              DI_ADD_ctrl || 
              DI_XOR_ctrl || 
              DI_OR_ctrl || 
@@ -681,6 +693,7 @@ module lanzones(
                   DI_XORI_ctrl ||
                   DI_SLTI_ctrl ||
                   DI_SLTIU_ctrl ||
+                  DI_AUIPC_ctrl ||
                   DI_ORI_ctrl) begin
             xWData <= alu_outctrl;
          end
@@ -714,6 +727,7 @@ module lanzones(
             xAddr <= rd_ctrl;
          end
          else if (DI_ADD_ctrl ||
+                  DI_AUIPC_ctrl ||
                   DI_XOR_ctrl || 
                   DI_OR_ctrl || 
                   DI_SLT_ctrl || 

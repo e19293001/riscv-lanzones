@@ -36,6 +36,7 @@ LHU = 31
 SRL = 32
 SRA = 33
 LABEL = 34
+AUIPC = 35
 
 class Token:
     def __init__(self):
@@ -80,7 +81,8 @@ class Token:
                            "LHU",
                            "SRL",
                            "SRA",
-                           "LABEL"]
+                           "LABEL",
+                           "AUIPC"]
           
     def getKind(self,k):
         if (k == 0):
@@ -153,6 +155,8 @@ class Token:
             return "SRA"
         elif (k == 34):
             return "LABEL"
+        elif (k == 35):
+            return "AUIPC"
         else:
             return "UNKNOWN"
 
@@ -165,6 +169,7 @@ class CodeGenerator:
     def __del__(self):
         for index in range(len(self.memarray)):
             print "+" + "{0:0{1}X}".format(index,8) + " " + self.memarray[index]
+            self.outFile.write("+" + "{0:0{1}X}".format(index,8) + " " + self.memarray[index] + "\n")
         
     def emitInstruction(self, cnt, op):
         #self.outFile.write("+" + "{0:0{1}X}".format(cnt,8) + " " + op + "\n")
@@ -293,6 +298,8 @@ class TokenMgr:
                     tkn.kind = SRL
                 elif tkn.image == "SRA":
                     tkn.kind = SRA
+                elif tkn.image == "AUIPC":
+                    tkn.kind = AUIPC
                 elif tkn.image[0] == "x" and tkn.image[1:].isdigit():
                     tkn.kind = REGISTER
                 else:
@@ -967,6 +974,28 @@ class asmblr:
             print "Error. Symbol [" + lbl.image + "]already exists."
             exit(1)
 
+    def AUIPCpattern(self):
+        op = "0010111"
+        self.consume(AUIPC)
+        rd = self.currentToken
+        self.consume(REGISTER)
+        self.consume(COMMA)
+        imm = self.currentToken
+
+        #self.binformat(imm,12)
+
+        if imm.kind == HEX:
+            #print "imm.image[2:]=" + imm.image
+            immstr = self.hextobinstr(imm.image[2:])
+            rdstr = self.tobinstr(rd.image[1:])
+            instruction = self.binformat(immstr,20) + self.binformat(rdstr,5) + self.binformat(op,7)
+        else:
+            print "Error. Hex value is expected."
+            exit(1)
+
+        self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
+        self.consume(HEX)
+
     def program(self,labels = 0):
         incPC = 1
         while self.currentToken.kind != EOF:
@@ -1031,6 +1060,8 @@ class asmblr:
                 self.SRLpattern()
             elif self.currentToken.kind == SRA:
                 self.SRApattern()
+            elif self.currentToken.kind == AUIPC:
+                self.AUIPCpattern()
             elif self.currentToken.kind == ERROR:
                 print "Line: " + str(self.currentToken.beginLine)
                 print "syntax Error"
@@ -1050,7 +1081,7 @@ class asmblr:
 
     def parseLabels(self):
         self.program(1)
-        print "symboltable:"
+        #print "symboltable:"
         print self.symboltable
 
 def printHelp():
