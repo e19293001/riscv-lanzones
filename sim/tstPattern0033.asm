@@ -1,0 +1,32 @@
+abc:  LUI x3,_abc2
+abc1: 
+   LUI x3,_abc2
+   LUI x2,@labelhere
+_abc2: 
+   LUI x3,0x3
+   LUI x2,0x2
+   LUI x3,0x3
+   LUI x2,0x2
+   LUI x3,0x3
+   LUI x2,0x2
+   LUI x3,0x3
+   LUI x2,0x2
+   LUI x3,0x3
+   LUI x2,0x2
+   LUI x3,0x3
+   LUI x2,0x2
+   LUI x3,0x3
+   LUI x2,0x2
+   LUI x3,0x3
+   LUI x2,0x2
+   LUI x3,0x3
+   LUI x2,0x2
+   LUI x3,0x3
+   LUI x2,0x2
+   LUI x3,0x3
+   LUI x2,0x2
+   LUI x3,0x3
+   LUI x2,abc
+@labelhere:
+   LUI x3,abc1
+   LUI x2,_abc2

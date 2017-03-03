@@ -111,6 +111,11 @@ of RISC-V 32I.
 *** NEXT AUIPC
     :LOGBOOK:
     CLOCK: [2017-03-04 Sat 06:57]--[2017-03-04 Sat 07:08] =>  0:11
+    :LOGBOOK:  
+    CLOCK: [2017-03-02 Thu 14:00]--[2017-03-02 Thu 14:01] =>  0:01
+    :END:      
+    :PROPERTIES:
+    :Effort:   0:30
     :END:
 *** TODO JAL
 *** TODO JALR
@@ -1631,15 +1636,24 @@ SRA x4,x4,x2
    :PROPERTIES:
    :Effort:   0:30
    :END:
-** NEXT add symbol table and program code array
+** DONE add symbol table and program code array
+   CLOSED: [2017-03-01 Wed 13:11]
    :LOGBOOK:  
-   CLOCK: [2017-03-01 Wed 12:59]
+   CLOCK: [2017-03-01 Wed 12:59]--[2017-03-01 Wed 13:11] =>  0:12
    CLOCK: [2017-03-01 Wed 11:31]--[2017-03-01 Wed 11:45] =>  0:14
    :END:      
    :PROPERTIES:
    :Effort:   1:00
    :END:
 ** TODO add labels support for AUIPC
+** NEXT labels support to LUI
+   :LOGBOOK:  
+   CLOCK: [2017-03-08 Wed 09:02]
+   :END:      
+   :PROPERTIES:
+   :Effort:   1:00
+   :END:
+
 * Notes
 ** The Assembler
    

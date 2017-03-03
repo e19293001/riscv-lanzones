@@ -37,6 +37,8 @@ SRL = 32
 SRA = 33
 LABEL = 34
 AUIPC = 35
+ID = 36
+COLON = 37
 
 class Token:
     def __init__(self):
@@ -82,7 +84,9 @@ class Token:
                            "SRL",
                            "SRA",
                            "LABEL",
-                           "AUIPC"]
+                           "AUIPC",
+                           "ID",
+                           "COLON"]
           
     def getKind(self,k):
         if (k == 0):
@@ -157,6 +161,10 @@ class Token:
             return "LABEL"
         elif (k == 35):
             return "AUIPC"
+        elif (k == 36):
+            return "ID"
+        elif (k == 37):
+            return "COLON"
         else:
             return "UNKNOWN"
 
@@ -192,6 +200,15 @@ class TokenMgr:
         self.inputLine = ""
         self.buff = ""
         #print "started"
+
+    def restartread(self):
+        self.inFileHandle.seek(0)
+        self.currentChar = "\n"
+        self.currentColumnNumber = 0
+        self.currentLineNumber = 0
+        self.inputLine = ""
+        self.buff = ""
+        self.getNextChar()
 
     def __del__(self):
         self.inFileHandle.close()
@@ -241,6 +258,7 @@ class TokenMgr:
                     self.getNextChar()
                     if not self.currentChar.isalnum():
                         break
+                #print "self.buff:" + self.buff
                 tkn.image = self.buff
                 if tkn.image == "LUI":
                     tkn.kind = LUI
@@ -303,11 +321,13 @@ class TokenMgr:
                 elif tkn.image[0] == "x" and tkn.image[1:].isdigit():
                     tkn.kind = REGISTER
                 else:
-                    if self.currentChar == ":":
-                        tkn.kind = LABEL
-                    else:
-                        tkn.kind = ERROR
-                    self.getNextChar()
+                    tkn.kind = ID
+            elif self.currentChar == ":":
+                tkn.endLine = self.currentLineNumber
+                tkn.endColumn = self.currentColumnNumber
+                tkn.image = self.currentChar
+                tkn.kind = COLON
+                self.getNextChar()
             elif self.currentChar == ",":
                 tkn.endLine = self.currentLineNumber
                 tkn.endColumn = self.currentColumnNumber
@@ -316,6 +336,9 @@ class TokenMgr:
                 self.getNextChar()
             else:
                 tkn.kind = ERROR
+
+        #print "tkn.image: " + tkn.image + " tkn.kind: " + tkn.getKind(tkn.kind) + " line: " + str(self.currentLineNumber)
+
         return tkn
 
     def getNextChar(self):
@@ -341,6 +364,10 @@ class TokenMgr:
         if self.currentChar == ";":
             self.currentChar = "\n"
 
+PARSESTATE_NONE = 0
+PARSESTATE_LABELS = 1
+PARSESTATE_ASM = 2
+
 class asmblr:
     def __init__(self, infile):
         self.currentToken = Token()
@@ -356,6 +383,7 @@ class asmblr:
         self.cg = CodeGenerator(self.tmgr.outFileHandle)
         self.programcounter = 0
         self.symboltable = {}
+        self.asmblrstate = PARSESTATE_NONE
         
     def instformat(self,s,i):
         return "{0:0{1}X}".format(int(s,2),i)
@@ -378,7 +406,7 @@ class asmblr:
         if (self.currentToken.kind == expected):
             self.advance()
         else:
-            print "Error. Expecting" + self.currentToken.getKind(expected)
+            print "Error. Expecting " + self.currentToken.getKind(expected)
             exit(1)
 
     def LWpattern(self):
@@ -471,17 +499,30 @@ class asmblr:
 
         #self.binformat(imm,12)
 
-        if imm.kind == HEX:
-            #print "imm.image[2:]=" + imm.image
-            immstr = self.hextobinstr(imm.image[2:])
-            rdstr = self.tobinstr(rd.image[1:])
-            instruction = self.binformat(immstr,20) + self.binformat(rdstr,5) + self.binformat(op,7)
+        if self.asmblrstate == PARSESTATE_ASM:
+            if imm.kind == HEX:
+                immstr = self.hextobinstr(imm.image[2:])
+                rdstr = self.tobinstr(rd.image[1:])
+                instruction = self.binformat(immstr,20) + self.binformat(rdstr,5) + self.binformat(op,7)
+                self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
+                self.consume(HEX)
+            elif imm.kind == ID:
+                immstr = self.hextobinstr(str(hex(self.symboltable[imm.image])))
+                rdstr = self.tobinstr(rd.image[1:])
+                instruction = self.binformat(immstr,20) + self.binformat(rdstr,5) + self.binformat(op,7)
+                self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
+                self.consume(ID)
+            else:
+                print "Error. Hex value or a label is expected."
+                exit(1)
+        elif self.asmblrstate == PARSESTATE_LABELS:
+            if imm.kind == HEX:
+                self.consume(HEX)
+            elif imm.kind == ID:
+                self.consume(ID)
         else:
-            print "Error. Hex value is expected."
+            print "Error. Invalid state"
             exit(1)
-
-        self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
-        self.consume(HEX)
 
     def ADDpattern(self):
         op = "0110011"
@@ -967,12 +1008,16 @@ class asmblr:
 
     def LABELpattern(self):
         lbl = self.currentToken
-        self.consume(LABEL)
-        if lbl.image not in self.symboltable:
-            self.symboltable[lbl.image] = self.programcounter
-        else:
-            print "Error. Symbol [" + lbl.image + "]already exists."
-            exit(1)
+        self.consume(ID)
+        self.consume(COLON)
+        if self.asmblrstate == PARSESTATE_LABELS:
+            #print "adding label:" + lbl.image
+            if lbl.image not in self.symboltable:
+                print "found label programcounter: " + str(self.programcounter)
+                self.symboltable[lbl.image] = self.programcounter
+            else:
+                print "Error. Symbol [" + lbl.image + "] already exists."
+                exit(1)
 
     def AUIPCpattern(self):
         op = "0010111"
@@ -997,71 +1042,96 @@ class asmblr:
         self.consume(HEX)
 
     def program(self,labels = 0):
-        incPC = 1
         while self.currentToken.kind != EOF:
-            incPC = 1
-            if labels == 1:
-                if self.currentToken.kind == LABEL:
-                    self.LABELpattern()
-                    incPC = 0
+            if self.currentToken.kind == ID:
+                self.LABELpattern()
+
             if self.currentToken.kind == LUI:
                 self.LUIpattern()
+                self.programcounter += 1
             elif self.currentToken.kind == ADD:
                 self.ADDpattern()
+                self.programcounter += 1
             elif self.currentToken.kind == SW:
                 self.SWpattern()
+                self.programcounter += 1
             elif self.currentToken.kind == LW:
                 self.LWpattern()
+                self.programcounter += 1
             elif self.currentToken.kind == LH:
                 self.LHpattern()
+                self.programcounter += 1
             elif self.currentToken.kind == SUB:
                 self.SUBpattern()
+                self.programcounter += 1
             elif self.currentToken.kind == SLL:
                 self.SLLpattern()
+                self.programcounter += 1
             elif self.currentToken.kind == ORI:
                 self.ORIpattern()
+                self.programcounter += 1
             elif self.currentToken.kind == ANDI:
                 self.ANDIpattern()
+                self.programcounter += 1
             elif self.currentToken.kind == SLLI:
                 self.SLLIpattern()
+                self.programcounter += 1
             elif self.currentToken.kind == SRLI:
                 self.SRLIpattern()
+                self.programcounter += 1
             elif self.currentToken.kind == SRAI:
                 self.SRAIpattern()
+                self.programcounter += 1
             elif self.currentToken.kind == ADDI:
                 self.ADDIpattern()
+                self.programcounter += 1
             elif self.currentToken.kind == XORI:
                 self.XORIpattern()
+                self.programcounter += 1
             elif self.currentToken.kind == XOR:
                 self.XORpattern()
+                self.programcounter += 1
             elif self.currentToken.kind == OR:
                 self.ORpattern()
+                self.programcounter += 1
             elif self.currentToken.kind == AND:
                 self.ANDpattern()
+                self.programcounter += 1
             elif self.currentToken.kind == SLTI:
                 self.SLTIpattern()
+                self.programcounter += 1
             elif self.currentToken.kind == SLTIU:
                 self.SLTIUpattern()
+                self.programcounter += 1
             elif self.currentToken.kind == SLT:
                 self.SLTpattern()
+                self.programcounter += 1
             elif self.currentToken.kind == SLTU:
                 self.SLTUpattern()
+                self.programcounter += 1
             elif self.currentToken.kind == LB:
                 self.LBpattern()
+                self.programcounter += 1
             elif self.currentToken.kind == SB:
                 self.SBpattern()
+                self.programcounter += 1
             elif self.currentToken.kind == SH:
                 self.SHpattern()
+                self.programcounter += 1
             elif self.currentToken.kind == LBU:
                 self.LBUpattern()
+                self.programcounter += 1
             elif self.currentToken.kind == LHU:
                 self.LHUpattern()
+                self.programcounter += 1
             elif self.currentToken.kind == SRL:
                 self.SRLpattern()
+                self.programcounter += 1
             elif self.currentToken.kind == SRA:
                 self.SRApattern()
             elif self.currentToken.kind == AUIPC:
                 self.AUIPCpattern()
+                self.programcounter += 1
             elif self.currentToken.kind == ERROR:
                 print "Line: " + str(self.currentToken.beginLine)
                 print "syntax Error"
@@ -1072,16 +1142,24 @@ class asmblr:
                 print "unexpected termination"
                 exit(1)
 
-            if incPC:
-                self.programcounter += 1
+        print "program end"
 
     def parse(self):
+        self.tmgr.restartread()
+        self.tmgr.getNextChar()
+        self.currentToken = self.tmgr.getNextToken()
+        self.programcounter = 0
+        self.asmblrstate = PARSESTATE_ASM
+        print "start"
         self.program()
+        print "finish"
         self.cg.emitInstruction(self.programcounter, "FFFFFFFF")
 
     def parseLabels(self):
-        self.program(1)
-        #print "symboltable:"
+        self.programcounter = 0
+        self.asmblrstate = PARSESTATE_LABELS
+        self.program()
+        print "symboltable:"
         print self.symboltable
 
 def printHelp():
@@ -1095,5 +1173,5 @@ if len(sys.argv) == 1:
 asmfile = sys.argv[1]
 
 ass = asmblr(asmfile)
-#ass.parse()
 ass.parseLabels()
+ass.parse()
