@@ -1646,14 +1646,52 @@ SRA x4,x4,x2
    :Effort:   1:00
    :END:
 ** TODO add labels support for AUIPC
-** NEXT labels support to LUI
+** DONE labels support to LUI
+   CLOSED: [2017-03-09 Thu 11:17]
    :LOGBOOK:  
-   CLOCK: [2017-03-08 Wed 09:02]
+   CLOCK: [2017-03-08 Wed 09:02]--[2017-03-09 Thu 11:38] => 26:36
    :END:      
    :PROPERTIES:
    :Effort:   1:00
    :END:
-
+** TODO labels support
+*** NEXT AUIPC
+    :LOGBOOK:  
+    CLOCK: [2017-03-09 Thu 11:38]--[2017-03-09 Thu 11:45] =>  0:07
+    :END:      
+    :PROPERTIES:
+    :Effort:   0:15
+    :END:
+*** TODO LB
+*** TODO LH
+*** TODO LW
+*** TODO LHU
+*** TODO SB
+*** TODO SH
+*** TODO SW
+*** TODO SLTI
+*** TODO SLTIU
+*** TODO XORI
+*** TODO ORI
+*** TODO ANDI
+*** TODO SLLI
+*** TODO SRLI
+*** TODO SRAI
+*** TODO ADD
+*** TODO SUB
+*** TODO SLL
+    :LOGBOOK:  
+    CLOCK: [2017-02-01 Wed 16:33]--[2017-02-01 Wed 17:57] =>  1:24
+    :END:      
+    :PROPERTIES:
+    :Effort:   0:30
+    :END:
+*** TODO SLTU
+*** TODO XOR
+*** TODO SRL
+*** TODO SRA
+*** TODO OR
+*** TODO AND
 * Notes
 ** The Assembler
    

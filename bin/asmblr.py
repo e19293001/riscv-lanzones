@@ -1029,17 +1029,34 @@ class asmblr:
 
         #self.binformat(imm,12)
 
-        if imm.kind == HEX:
-            #print "imm.image[2:]=" + imm.image
-            immstr = self.hextobinstr(imm.image[2:])
-            rdstr = self.tobinstr(rd.image[1:])
-            instruction = self.binformat(immstr,20) + self.binformat(rdstr,5) + self.binformat(op,7)
-        else:
-            print "Error. Hex value is expected."
-            exit(1)
+        print "AUIPCpattern"
+        if self.asmblrstate == PARSESTATE_ASM:
+            print "AUIPCpattern"
+            if imm.kind == HEX:
+                #print "imm.image[2:]=" + imm.image
+                immstr = self.hextobinstr(imm.image[2:])
+                rdstr = self.tobinstr(rd.image[1:])
+                instruction = self.binformat(immstr,20) + self.binformat(rdstr,5) + self.binformat(op,7)
+                self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
+                self.consume(HEX)
+            elif imm.kind == ID:
+                immstr = self.hextobinstr(str(hex(self.symboltable[imm.image])))
+                rdstr = self.tobinstr(rd.image[1:])
+                instruction = self.binformat(immstr,20) + self.binformat(rdstr,5) + self.binformat(op,7)
+                self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
+                self.consume(ID)
+            else:
+                print "Error. Hex value is expected."
+                exit(1)
 
-        self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
-        self.consume(HEX)
+        elif self.asmblrstate == PARSESTATE_LABELS:
+            if imm.kind == HEX:
+                self.consume(HEX)
+            elif imm.kind == ID:
+                self.consume(ID)
+        else:
+            print "Error. Invalid state"
+            exit(1)
 
     def program(self,labels = 0):
         while self.currentToken.kind != EOF:
