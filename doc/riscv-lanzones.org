@@ -1663,14 +1663,21 @@ SRA x4,x4,x2
     :PROPERTIES:
     :Effort:   0:15
     :END:
-*** NEXT LB
+*** DONE LB
+    CLOSED: [2017-03-09 Thu 12:32]
     :LOGBOOK:  
-    CLOCK: [2017-03-09 Thu 12:21]
+    CLOCK: [2017-03-09 Thu 12:21]--[2017-03-09 Thu 12:32] =>  0:11
     :END:      
     :PROPERTIES:
     :Effort:   0:15
     :END:
-*** TODO LH
+*** NEXT LH
+    :LOGBOOK:  
+    CLOCK: [2017-03-09 Thu 12:34]
+    :END:      
+    :PROPERTIES:
+    :Effort:   0:15
+    :END:
 *** TODO LW
 *** TODO LHU
 *** TODO SB

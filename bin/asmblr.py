@@ -440,14 +440,36 @@ class asmblr:
         self.consume(COMMA)
         imm = self.currentToken
 
-        immstr = self.hextobinstr(imm.image[2:])
-        rs1str = self.tobinstr(rs1.image[1:])
-        rdstr = self.tobinstr(rd.image[1:])
+        if self.asmblrstate == PARSESTATE_ASM:
+            if imm.kind == HEX:
+                immstr = self.hextobinstr(imm.image[2:])
+                rs1str = self.tobinstr(rs1.image[1:])
+                rdstr = self.tobinstr(rd.image[1:])
+                
+                instruction = self.binformat(immstr,12) + self.binformat(rs1str,5) + "001" + self.binformat(rdstr,5) + self.binformat(op,7)
+                
+                self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
+                self.consume(HEX)
+            elif imm.kind == ID:
+                immstr = self.hextobinstr(str(hex(self.symboltable[imm.image])))
+                rs1str = self.tobinstr(rs1.image[1:])
+                rdstr = self.tobinstr(rd.image[1:])
 
-        instruction = self.binformat(immstr,12) + self.binformat(rs1str,5) + "001" + self.binformat(rdstr,5) + self.binformat(op,7)
-
-        self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
-        self.consume(HEX)
+                instruction = self.binformat(immstr,12) + self.binformat(rs1str,5) + "001" + self.binformat(rdstr,5) + self.binformat(op,7)
+                
+                self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
+                self.consume(ID)
+            else:
+                print "Error. Hex value or a label is expected."
+                exit(1)
+        elif self.asmblrstate == PARSESTATE_LABELS:
+            if imm.kind == HEX:
+                self.consume(HEX)
+            elif imm.kind == ID:
+                self.consume(ID)
+        else:
+            print "Error. Invalid state"
+            exit(1)
 
     def SWpattern(self):
         op = "0100011"
