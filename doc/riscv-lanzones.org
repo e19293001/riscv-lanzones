@@ -1671,14 +1671,22 @@ SRA x4,x4,x2
     :PROPERTIES:
     :Effort:   0:15
     :END:
-*** NEXT LH
+*** DONE LH
+    CLOSED: [2017-03-09 Thu 17:32]
     :LOGBOOK:  
-    CLOCK: [2017-03-09 Thu 12:34]
+    CLOCK: [2017-03-09 Thu 12:34]--[2017-03-09 Thu 13:04] =>  0:30
     :END:      
     :PROPERTIES:
     :Effort:   0:15
     :END:
-*** TODO LW
+*** DONE LW
+    CLOSED: [2017-03-09 Thu 18:06]
+    :LOGBOOK:  
+    CLOCK: [2017-03-09 Thu 17:32]--[2017-03-09 Thu 17:57] =>  0:25
+    :END:      
+    :PROPERTIES:
+    :Effort:   0:15
+    :END:
 *** TODO LHU
 *** TODO SB
 *** TODO SH
@@ -1706,6 +1714,8 @@ SRA x4,x4,x2
 *** TODO SRA
 *** TODO OR
 *** TODO AND
+** TODO add dw to assembler
+** TODO test LUI with dw   
 * Notes
 ** The Assembler
    

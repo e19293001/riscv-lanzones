@@ -212,7 +212,7 @@ module initialTest;
          while (code > 0) begin
             code = $fscanf(fp, "+%08x %08x\n", addr, datain);
             //$display("code: %0d addr: %04x datain: %04x", code, addr, datain);
-            $display("code: %0d addr: %0d datain: %08x", code, addr, datain);
+            //$display("code: %0d addr: %0d datain: %08x", code, addr, datain);
             if (code == 0) begin
                $display("invalid input code: %0d addr: %0d datain: %08x", code, addr, datain);
                $finish;
@@ -225,7 +225,7 @@ module initialTest;
          $display("code: %0d indx: %0d\n", code, indx);
          for (indx = 0; indx < code; indx = indx + 1) begin
 //            $display("mem[%04x]: %04x", indx, mem.mem[indx]);
-            $display("mem[%0d]: %04x", indx, mem.mem[indx]);
+            $display("mem[%04X]: %04X", indx, mem.mem[indx]);
          end
       end
    endtask
