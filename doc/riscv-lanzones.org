@@ -1714,7 +1714,13 @@ SRA x4,x4,x2
 *** TODO SRA
 *** TODO OR
 *** TODO AND
-** TODO add dw to assembler
+** NEXT add dw to assembler
+   :LOGBOOK:  
+   CLOCK: [2017-03-09 Thu 18:23]
+   :END:      
+   :PROPERTIES:
+   :Effort:   0:30
+   :END:
 ** TODO test LUI with dw   
 * Notes
 ** The Assembler

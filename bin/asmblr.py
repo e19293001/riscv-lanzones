@@ -39,6 +39,7 @@ LABEL = 34
 AUIPC = 35
 ID = 36
 COLON = 37
+DW = 38
 
 class Token:
     def __init__(self):
@@ -86,7 +87,8 @@ class Token:
                            "LABEL",
                            "AUIPC",
                            "ID",
-                           "COLON"]
+                           "COLON",
+                           "DW"]
           
     def getKind(self,k):
         if (k == 0):
@@ -165,6 +167,8 @@ class Token:
             return "ID"
         elif (k == 37):
             return "COLON"
+        elif (k == 38):
+            return "DW"
         else:
             return "UNKNOWN"
 
@@ -323,6 +327,8 @@ class TokenMgr:
                     tkn.kind = SRA
                 elif tkn.image == "AUIPC":
                     tkn.kind = AUIPC
+                elif tkn.image == "dw":
+                    tkn.kind = DW
                 elif tkn.image[0] == "x" and tkn.image[1:].isdigit():
                     tkn.kind = REGISTER
                 else:
@@ -373,6 +379,9 @@ PARSESTATE_NONE = 0
 PARSESTATE_LABELS = 1
 PARSESTATE_ASM = 2
 
+SYMBOLTYPE_LABEL = 0
+SYMBOLTYPE_DW = 0
+
 class asmblr:
     def __init__(self, infile):
         self.currentToken = Token()
@@ -387,7 +396,8 @@ class asmblr:
         self.currentToken = self.tmgr.getNextToken()
         self.cg = CodeGenerator(self.tmgr.outFileHandle)
         self.programcounter = 0
-        self.symboltable = {}
+        self.symboltablename = {}
+        self.symboltabletype = {}
         self.asmblrstate = PARSESTATE_NONE
         
     def instformat(self,s,i):
@@ -436,7 +446,7 @@ class asmblr:
                 self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
                 self.consume(HEX)
             elif imm.kind == ID:
-                immstr = self.hextobinstr(str(hex(self.symboltable[imm.image])))
+                immstr = self.hextobinstr(str(hex(self.symboltablename[imm.image])))
                 rs1str = self.tobinstr(rs1.image[1:])
                 rdstr = self.tobinstr(rd.image[1:])
 
@@ -478,7 +488,7 @@ class asmblr:
                 self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
                 self.consume(HEX)
             elif imm.kind == ID:
-                immstr = self.hextobinstr(str(hex(self.symboltable[imm.image])))
+                immstr = self.hextobinstr(str(hex(self.symboltablename[imm.image])))
                 rs1str = self.tobinstr(rs1.image[1:])
                 rdstr = self.tobinstr(rd.image[1:])
 
@@ -563,7 +573,7 @@ class asmblr:
                 self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
                 self.consume(HEX)
             elif imm.kind == ID:
-                immstr = self.hextobinstr(str(hex(self.symboltable[imm.image])))
+                immstr = self.hextobinstr(str(hex(self.symboltablename[imm.image])))
                 rdstr = self.tobinstr(rd.image[1:])
                 instruction = self.binformat(immstr,20) + self.binformat(rdstr,5) + self.binformat(op,7)
                 self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
@@ -944,7 +954,7 @@ class asmblr:
                 self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
                 self.consume(HEX)
             elif imm.kind == ID:
-                immstr = self.hextobinstr(str(hex(self.symboltable[imm.image])))
+                immstr = self.hextobinstr(str(hex(self.symboltablename[imm.image])))
                 rs1str = self.tobinstr(rs1.image[1:])
                 rdstr = self.tobinstr(rd.image[1:])
                 
@@ -1092,13 +1102,26 @@ class asmblr:
         self.consume(COLON)
         if self.asmblrstate == PARSESTATE_LABELS:
             #print "adding label:" + lbl.image
-            if lbl.image not in self.symboltable:
+            if lbl.image not in self.symboltablename:
                 print "found label programcounter: " + str(self.programcounter)
-                self.symboltable[lbl.image] = self.programcounter
+                self.symboltablename[lbl.image] = self.programcounter
+                self.symboltabletype[lbl.image] = SYMBOLTYPE_LABEL
             else:
                 print "Error. Symbol [" + lbl.image + "] already exists."
                 exit(1)
 
+    def DWpattern(self):
+        if self.asmblrstate == PARSESTATE_ASM:
+            self.consume(DW)
+            imm = self.currentToken
+            immstr = self.hextobinstr(imm.image[2:])
+            instruction = self.binformat(immstr,32)
+            self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
+            self.consume(HEX)
+        elif self.asmblrstate == PARSESTATE_LABELS:
+            self.consume(DW)
+            self.consume(HEX)
+    
     def AUIPCpattern(self):
         op = "0010111"
         self.consume(AUIPC)
@@ -1118,7 +1141,7 @@ class asmblr:
                 self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
                 self.consume(HEX)
             elif imm.kind == ID:
-                immstr = self.hextobinstr(str(hex(self.symboltable[imm.image])))
+                immstr = self.hextobinstr(str(hex(self.symboltablename[imm.image])))
                 rdstr = self.tobinstr(rd.image[1:])
                 instruction = self.binformat(immstr,20) + self.binformat(rdstr,5) + self.binformat(op,7)
                 self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
@@ -1140,6 +1163,9 @@ class asmblr:
         while self.currentToken.kind != EOF:
             if self.currentToken.kind == ID:
                 self.LABELpattern()
+            elif self.currentToken.kind == DW:
+                self.DWpattern()
+                self.programcounter += 1
             elif self.currentToken.kind == LUI:
                 self.LUIpattern()
                 self.programcounter += 1
@@ -1230,7 +1256,6 @@ class asmblr:
                 print "Line: " + str(self.currentToken.beginLine)
                 print "syntax Error"
                 print "Unexpected: " + self.currentToken.image
-
                 exit(1)
             else:
                 print "unexpected termination"
@@ -1246,13 +1271,14 @@ class asmblr:
         self.program()
         print "finish"
         self.cg.emitInstruction(self.programcounter, "FFFFFFFF")
+        print self.symboltabletype
 
     def parseLabels(self):
         self.programcounter = 0
         self.asmblrstate = PARSESTATE_LABELS
         self.program()
         print "symboltable:"
-        print self.symboltable
+        print self.symboltablename
 
 def printHelp():
     print "usage: python2 ../bin/asmblr.py <asm file>"
