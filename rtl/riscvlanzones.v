@@ -551,7 +551,10 @@ module lanzones(
               rd_ctrl = FIff[11:7];
               stallctrl = 1; // stop the fetch to read from memory
            end          
-           default: invalid_inst = 1;
+           default: begin
+              $display("----- invalid instruction ----- %0b", opcode_instw);
+              invalid_inst = 1;
+           end
          endcase
       end
    end

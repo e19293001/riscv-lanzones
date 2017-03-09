@@ -1690,7 +1690,14 @@ SRA x4,x4,x2
 *** TODO LHU
 *** TODO SB
 *** TODO SH
-*** TODO SW
+*** DONE SW
+    CLOSED: [2017-03-10 Fri 10:26]
+    :LOGBOOK:  
+    CLOCK: [2017-03-10 Fri 10:10]--[2017-03-10 Fri 10:26] =>  0:16
+    :END:      
+    :PROPERTIES:
+    :Effort:   0:15
+    :END:
 *** TODO SLTI
 *** TODO SLTIU
 *** TODO XORI
@@ -1714,9 +1721,10 @@ SRA x4,x4,x2
 *** TODO SRA
 *** TODO OR
 *** TODO AND
-** NEXT add dw to assembler
+** DONE add dw to assembler
+   CLOSED: [2017-03-10 Fri 10:10]
    :LOGBOOK:  
-   CLOCK: [2017-03-09 Thu 18:23]
+   CLOCK: [2017-03-09 Thu 18:23]--[2017-03-09 Thu 19:00] =>  0:37
    :END:      
    :PROPERTIES:
    :Effort:   0:30
