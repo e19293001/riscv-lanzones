@@ -253,7 +253,7 @@ module lanzones(
          DIctrlff <= 0;
       end
       else begin
-         if (FIctrl) begin
+         if (FIctrl && !stallff) begin
             DIctrlff <= 1;
          end
          else begin
