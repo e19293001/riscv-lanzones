@@ -1729,7 +1729,8 @@ SRA x4,x4,x2
    :PROPERTIES:
    :Effort:   0:30
    :END:
-** TODO test LUI with dw   
+** DONE test LUI with dw
+   CLOSED: [2017-03-10 Fri 22:30]
 * Notes
 ** The Assembler
    
