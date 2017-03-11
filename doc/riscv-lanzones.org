@@ -74,7 +74,7 @@ of RISC-V 32I.
 #+END_LATEX
 
 *** Internal Hand Shake
-** Instructions [59%]
+** Instructions [61%]
 *** DONE LUI
     CLOSED: [2017-01-29 Sun 00:02]
 #+BEGIN_LATEX
@@ -108,7 +108,8 @@ of RISC-V 32I.
       \extracode
     \end{tikztimingtable}
 #+END_LATEX
-*** NEXT AUIPC
+*** DONE AUIPC
+    CLOSED: [2017-03-13 Mon 10:13]
     :LOGBOOK:
     CLOCK: [2017-03-04 Sat 06:57]--[2017-03-04 Sat 07:08] =>  0:11
     :LOGBOOK:  
@@ -1655,6 +1656,12 @@ SRA x4,x4,x2
    :Effort:   1:00
    :END:
 ** TODO labels support
+   :LOGBOOK:  
+   CLOCK: [2017-03-13 Mon 10:32]
+   :END:      
+   :PROPERTIES:
+   :Effort:   0:15
+   :END:
 *** DONE AUIPC
     CLOSED: [2017-03-09 Thu 12:20]
     :LOGBOOK:  
@@ -1689,7 +1696,14 @@ SRA x4,x4,x2
     :END:
 *** TODO LHU
 *** TODO SB
-*** TODO SH
+*** DONE SH
+    CLOSED: [2017-03-13 Mon 10:32]
+    :LOGBOOK:  
+    CLOCK: [2017-03-13 Mon 10:13]--[2017-03-13 Mon 10:32] =>  0:19
+    :END:      
+    :PROPERTIES:
+    :Effort:   0:15
+    :END:
 *** DONE SW
     CLOSED: [2017-03-10 Fri 10:26]
     :LOGBOOK:  
