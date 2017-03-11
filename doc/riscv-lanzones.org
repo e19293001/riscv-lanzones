@@ -1655,6 +1655,9 @@ SRA x4,x4,x2
    :Effort:   1:00
    :END:
 ** TODO labels support
+   :LOGBOOK:
+   CLOCK: [2017-03-10 Fri 23:24]--[2017-03-10 Fri 23:25] =>  0:01
+   :END:
 *** DONE AUIPC
     CLOSED: [2017-03-09 Thu 12:20]
     :LOGBOOK:  
@@ -1687,8 +1690,13 @@ SRA x4,x4,x2
     :PROPERTIES:
     :Effort:   0:15
     :END:
-*** TODO LHU
-*** TODO SB
+*** DONE LHU
+    CLOSED: [2017-03-10 Fri 22:38]
+*** DONE SB
+    CLOSED: [2017-03-10 Fri 23:24]
+    :LOGBOOK:
+    CLOCK: [2017-03-10 Fri 22:38]--[2017-03-10 Fri 23:24] =>  0:46
+    :END:
 *** TODO SH
 *** DONE SW
     CLOSED: [2017-03-10 Fri 10:26]

@@ -135,7 +135,7 @@ module lanzones(
 
    reg                 invalid_inst;
 
-   assign FIctrl = (RRdy & RVld) ? 1 : 0;
+   assign FIctrl = (RRdy & RVld) && !stallff ? 1 : 0;
    //assign DIctrl = 1;
    assign EXctrl = 1;
    assign MActrl = 1;
@@ -253,7 +253,7 @@ module lanzones(
          DIctrlff <= 0;
       end
       else begin
-         if (FIctrl && !stallff) begin
+         if (FIctrl) begin
             DIctrlff <= 1;
          end
          else begin
@@ -375,7 +375,7 @@ module lanzones(
          RAddr <= 0;
       end
       else begin
-         if (!Halt) begin
+         if (!Halt || !invalid_inst) begin
             if (stallctrl) begin
                RAddr <= alu_outctrl;
             end
@@ -387,6 +387,9 @@ module lanzones(
                   RAddr <= 0;
                end
             end
+         end
+         else begin
+            RAddr <= 0;
          end
       end
    end
