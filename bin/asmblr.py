@@ -1001,15 +1001,38 @@ class asmblr:
         self.consume(COMMA)
         imm = self.currentToken
 
-        immstr = self.hextobinstr(imm.image[2:])
-        immstr = self.binformat(immstr,20)
-        rs1str = self.tobinstr(rs1.image[1:])
-        rs2str = self.tobinstr(rs2.image[1:])
+        if self.asmblrstate == PARSESTATE_ASM:
+            if imm.kind == HEX:
+                immstr = self.hextobinstr(imm.image[2:])
+                immstr = self.binformat(immstr,20)
+                rs1str = self.tobinstr(rs1.image[1:])
+                rs2str = self.tobinstr(rs2.image[1:])
 
-        instruction =  immstr[8:15] + self.binformat(rs2str,5) + self.binformat(rs1str,5) + "000" + immstr[15:20] + self.binformat(op,7)
+                instruction =  immstr[8:15] + self.binformat(rs2str,5) + self.binformat(rs1str,5) + "000" + immstr[15:20] + self.binformat(op,7)
         
-        self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
-        self.consume(HEX)
+                self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
+                self.consume(HEX)
+            elif imm.kind == ID:
+                immstr = self.hextobinstr(str(hex(self.symboltablename[imm.image])))
+                immstr = self.binformat(immstr,20)
+                rs1str = self.tobinstr(rs1.image[1:])
+                rs2str = self.tobinstr(rs2.image[1:])
+
+                instruction =  immstr[8:15] + self.binformat(rs2str,5) + self.binformat(rs1str,5) + "000" + immstr[15:20] + self.binformat(op,7)
+        
+                self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
+                self.consume(ID)
+            else:
+                print "Error. Hex value or a label is expected."
+                exit(1)
+        elif self.asmblrstate == PARSESTATE_LABELS:
+            if imm.kind == HEX:
+                self.consume(HEX)
+            elif imm.kind == ID:
+                self.consume(ID)
+        else:
+            print "Error. Invalid state"
+            exit(1)
 
     def SHpattern(self):
         op = "0100011"

@@ -1657,7 +1657,7 @@ SRA x4,x4,x2
    :END:
 ** TODO labels support
    :LOGBOOK:  
-   CLOCK: [2017-03-13 Mon 10:32]
+   CLOCK: [2017-03-13 Mon 10:32]--[2017-03-13 Mon 10:39] =>  0:07
    :END:      
    :PROPERTIES:
    :Effort:   0:15
@@ -1694,8 +1694,15 @@ SRA x4,x4,x2
     :PROPERTIES:
     :Effort:   0:15
     :END:
-*** TODO LHU
-*** TODO SB
+*** DONE LHU
+    CLOSED: [2017-03-13 Mon 10:39]
+*** NEXT SB
+    :LOGBOOK:  
+    CLOCK: [2017-03-13 Mon 10:39]
+    :END:      
+    :PROPERTIES:
+    :Effort:   0:15
+    :END:
 *** DONE SH
     CLOSED: [2017-03-13 Mon 10:32]
     :LOGBOOK:  
