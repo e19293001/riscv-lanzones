@@ -1696,9 +1696,10 @@ SRA x4,x4,x2
     :END:
 *** DONE LHU
     CLOSED: [2017-03-13 Mon 10:39]
-*** NEXT SB
+*** DONE SB
+    CLOSED: [2017-03-13 Mon 10:45]
     :LOGBOOK:  
-    CLOCK: [2017-03-13 Mon 10:39]
+    CLOCK: [2017-03-13 Mon 10:39]--[2017-03-13 Mon 10:45] =>  0:06
     :END:      
     :PROPERTIES:
     :Effort:   0:15
@@ -1719,7 +1720,13 @@ SRA x4,x4,x2
     :PROPERTIES:
     :Effort:   0:15
     :END:
-*** TODO SLTI
+*** NEXT SLTI
+    :LOGBOOK:  
+    CLOCK: [2017-03-13 Mon 10:45]
+    :END:      
+    :PROPERTIES:
+    :Effort:   0:15
+    :END:
 *** TODO SLTIU
 *** TODO XORI
 *** TODO ORI
