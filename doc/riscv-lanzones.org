@@ -1646,11 +1646,12 @@ SRA x4,x4,x2
    :PROPERTIES:
    :Effort:   1:00
    :END:
-** TODO add labels support for AUIPC
+** DONE add labels support for AUIPC
+   CLOSED: [2017-03-14 Tue 10:09]
 ** DONE labels support to LUI
    CLOSED: [2017-03-09 Thu 11:17]
    :LOGBOOK:  
-   CLOCK: [2017-03-08 Wed 09:02]--[2017-03-09 Thu 11:38] => 26:36
+   CLOCK: [2017-03-08 Wed 09:02]--[2017-03-08 Wed 10:00] =>  0:58
    :END:      
    :PROPERTIES:
    :Effort:   1:00
@@ -1720,14 +1721,21 @@ SRA x4,x4,x2
     :PROPERTIES:
     :Effort:   0:15
     :END:
-*** NEXT SLTI
+*** DONE SLTI
+    CLOSED: [2017-03-13 Mon 12:41]
     :LOGBOOK:  
-    CLOCK: [2017-03-13 Mon 10:45]
+    CLOCK: [2017-03-13 Mon 10:45]--[2017-03-13 Mon 11:03] =>  0:18
     :END:      
     :PROPERTIES:
     :Effort:   0:15
     :END:
-*** TODO SLTIU
+*** NEXT SLTIU
+    :LOGBOOK:  
+    CLOCK: [2017-03-14 Tue 10:11]
+    :END:      
+    :PROPERTIES:
+    :Effort:   0:15
+    :END:
 *** TODO XORI
 *** TODO ORI
 *** TODO ANDI
