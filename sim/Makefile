@@ -1,4 +1,4 @@
-TESTFILE=tstPattern0045.asm
+TESTFILE=tstPattern0046.asm
 
 all: asm comp run
 

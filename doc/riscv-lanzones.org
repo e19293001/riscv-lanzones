@@ -1745,7 +1745,14 @@ SRA x4,x4,x2
     :PROPERTIES:
     :Effort:   0:15
     :END:
-*** TODO ORI
+*** DONE ORI
+    CLOSED: [2017-03-15 Wed 12:45]
+    :LOGBOOK:  
+    CLOCK: [2017-03-15 Wed 12:42]--[2017-03-15 Wed 12:45] =>  0:03
+    :END:      
+    :PROPERTIES:
+    :Effort:   0:15
+    :END:
 *** TODO ANDI
 *** TODO SLLI
 *** TODO SRLI
