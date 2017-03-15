@@ -1729,14 +1729,22 @@ SRA x4,x4,x2
     :PROPERTIES:
     :Effort:   0:15
     :END:
-*** NEXT SLTIU
+*** DONE SLTIU
+    CLOSED: [2017-03-14 Tue 10:39]
     :LOGBOOK:  
-    CLOCK: [2017-03-14 Tue 10:11]
+    CLOCK: [2017-03-14 Tue 10:11]--[2017-03-14 Tue 10:39] =>  0:28
     :END:      
     :PROPERTIES:
     :Effort:   0:15
     :END:
-*** TODO XORI
+*** DONE XORI
+    CLOSED: [2017-03-15 Wed 12:35]
+    :LOGBOOK:  
+    CLOCK: [2017-03-15 Wed 12:30]--[2017-03-15 Wed 12:35] =>  0:05
+    :END:      
+    :PROPERTIES:
+    :Effort:   0:15
+    :END:
 *** TODO ORI
 *** TODO ANDI
 *** TODO SLLI

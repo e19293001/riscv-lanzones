@@ -798,12 +798,32 @@ class asmblr:
 
         rdstr = self.tobinstr(rd.image[1:])
         rs1str = self.tobinstr(rs1.image[1:])
-        immstr = self.hextobinstr(imm.image[2:])
-        
-        instruction = self.binformat(immstr,12) + self.binformat(rs1str,5) + "100" + self.binformat(rdstr,5) + self.binformat(op,7)
 
-        self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
-        self.consume(HEX)
+        if self.asmblrstate == PARSESTATE_ASM:
+            if imm.kind == HEX:
+                immstr = self.hextobinstr(imm.image[2:])
+            
+                instruction = self.binformat(immstr,12) + self.binformat(rs1str,5) + "100" + self.binformat(rdstr,5) + self.binformat(op,7)
+
+                self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
+                self.consume(HEX)
+            elif imm.kind == ID:
+                immstr = self.hextobinstr(str(hex(self.symboltablename[imm.image])))
+                instruction = self.binformat(immstr,12) + self.binformat(rs1str,5) + "100" + self.binformat(rdstr,5) + self.binformat(op,7)
+
+                self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
+                self.consume(ID)
+            else:
+                print "Error. Hex value or a label is expected."
+                exit(1)
+        elif self.asmblrstate == PARSESTATE_LABELS:
+            if imm.kind == HEX:
+                self.consume(HEX)
+            elif imm.kind == ID:
+                self.consume(ID)
+        else:
+            print "Error. Invalid state"
+            exit(1)
 
     def XORpattern(self):
         op = "0110011"
