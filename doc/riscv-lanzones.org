@@ -1769,7 +1769,13 @@ SRA x4,x4,x2
     :PROPERTIES:
     :Effort:   0:15
     :END:
-*** TODO SRLI
+*** NEXT SRLI
+    :LOGBOOK:  
+    CLOCK: [2017-03-16 Thu 09:25]
+    :END:      
+    :PROPERTIES:
+    :Effort:   0:15
+    :END:
 *** TODO SRAI
 *** CANCELLED ADD                                                 :CANCELLED:
     CLOSED: [2017-03-16 Thu 09:18]
