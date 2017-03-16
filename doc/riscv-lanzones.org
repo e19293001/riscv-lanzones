@@ -1661,7 +1661,7 @@ SRA x4,x4,x2
    CLOCK: [2017-03-13 Mon 10:32]--[2017-03-13 Mon 10:39] =>  0:07
    :END:      
    :PROPERTIES:
-   :Effort:   0:15
+   :Effort:   3:45
    :END:
 *** DONE AUIPC
     CLOSED: [2017-03-09 Thu 12:20]
@@ -1761,9 +1761,10 @@ SRA x4,x4,x2
     :PROPERTIES:
     :Effort:   0:15
     :END:
-*** NEXT SLLI
+*** DONE SLLI
+    CLOSED: [2017-03-16 Thu 09:24]
     :LOGBOOK:  
-    CLOCK: [2017-03-16 Thu 09:21]
+    CLOCK: [2017-03-16 Thu 09:21]--[2017-03-16 Thu 09:24] =>  0:03
     :END:      
     :PROPERTIES:
     :Effort:   0:15
