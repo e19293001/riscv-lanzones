@@ -1753,25 +1753,56 @@ SRA x4,x4,x2
     :PROPERTIES:
     :Effort:   0:15
     :END:
-*** TODO ANDI
-*** TODO SLLI
+*** DONE ANDI
+    CLOSED: [2017-03-16 Thu 09:21]
+    :LOGBOOK:  
+    CLOCK: [2017-03-16 Thu 09:18]--[2017-03-16 Thu 09:21] =>  0:03
+    :END:      
+    :PROPERTIES:
+    :Effort:   0:15
+    :END:
+*** NEXT SLLI
+    :LOGBOOK:  
+    CLOCK: [2017-03-16 Thu 09:21]
+    :END:      
+    :PROPERTIES:
+    :Effort:   0:15
+    :END:
 *** TODO SRLI
 *** TODO SRAI
-*** TODO ADD
-*** TODO SUB
-*** TODO SLL
+*** CANCELLED ADD                                                 :CANCELLED:
+    CLOSED: [2017-03-16 Thu 09:18]
+    - State "CANCELLED"  from "TODO"       [2017-03-16 Thu 09:18]
+*** CANCELLED SUB                                                 :CANCELLED:
+    CLOSED: [2017-03-16 Thu 09:18]
+    - State "CANCELLED"  from "TODO"       [2017-03-16 Thu 09:18]
+*** CANCELLED SLL                                                 :CANCELLED:
+    CLOSED: [2017-03-16 Thu 09:18]
+    - State "CANCELLED"  from "TODO"       [2017-03-16 Thu 09:18]
     :LOGBOOK:  
     CLOCK: [2017-02-01 Wed 16:33]--[2017-02-01 Wed 17:57] =>  1:24
     :END:      
     :PROPERTIES:
     :Effort:   0:30
     :END:
-*** TODO SLTU
-*** TODO XOR
-*** TODO SRL
-*** TODO SRA
-*** TODO OR
-*** TODO AND
+*** CANCELLED SLTU                                                :CANCELLED:
+    CLOSED: [2017-03-16 Thu 09:18]
+    - State "CANCELLED"  from "TODO"       [2017-03-16 Thu 09:18]
+*** CANCELLED XOR                                                 :CANCELLED:
+    CLOSED: [2017-03-16 Thu 09:18]
+    - State "CANCELLED"  from "TODO"       [2017-03-16 Thu 09:18]
+*** CANCELLED SRL                                                 :CANCELLED:
+    CLOSED: [2017-03-16 Thu 09:18]
+    - State "CANCELLED"  from "TODO"       [2017-03-16 Thu 09:18]
+*** CANCELLED SRA                                                 :CANCELLED:
+    CLOSED: [2017-03-16 Thu 09:18]
+    - State "CANCELLED"  from "TODO"       [2017-03-16 Thu 09:18]
+*** CANCELLED OR                                                  :CANCELLED:
+    CLOSED: [2017-03-16 Thu 09:18]
+    - State "CANCELLED"  from "TODO"       [2017-03-16 Thu 09:18]
+*** CANCELLED AND                                                 :CANCELLED:
+    CLOSED: [2017-03-16 Thu 09:18]
+    - State "CANCELLED"  from "TODO"       [2017-03-16 Thu 09:18]
 ** DONE add dw to assembler
    CLOSED: [2017-03-10 Fri 10:10]
    :LOGBOOK:  
