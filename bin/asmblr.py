@@ -40,6 +40,7 @@ AUIPC = 35
 ID = 36
 COLON = 37
 DW = 38
+JAL = 39
 
 class Token:
     def __init__(self):
@@ -88,7 +89,8 @@ class Token:
                            "AUIPC",
                            "ID",
                            "COLON",
-                           "DW"]
+                           "DW",
+                           "JAL"]
           
     def getKind(self,k):
         if (k == 0):
@@ -169,6 +171,8 @@ class Token:
             return "COLON"
         elif (k == 38):
             return "DW"
+        elif (k == 39):
+            return "JAL"
         else:
             return "UNKNOWN"
 
@@ -329,6 +333,8 @@ class TokenMgr:
                     tkn.kind = AUIPC
                 elif tkn.image == "dw":
                     tkn.kind = DW
+                elif tkn.image == "JAL":
+                    tkn.kind = JAL
                 elif tkn.image[0] == "x" and tkn.image[1:].isdigit():
                     tkn.kind = REGISTER
                 else:
@@ -420,7 +426,8 @@ class asmblr:
         if (self.currentToken.kind == expected):
             self.advance()
         else:
-            print "Error. Expecting " + self.currentToken.getKind(expected) + "line: " + str(self.currentToken.beginLine)
+            print "at line: " + str(self.currentToken.beginLine) + ". Near [" + self.currentToken.image + "]"
+            print "Error. Expecting " + self.currentToken.getKind(expected)
             exit(1)
 
     def LWpattern(self):
@@ -589,7 +596,6 @@ class asmblr:
                 immstr = self.hextobinstr(str(hex(self.symboltablename[imm.image])))
                 rdstr = self.tobinstr(rd.image[1:])
                 instruction = self.binformat(immstr,20) + self.binformat(rdstr,5) + self.binformat(op,7)
-                print "LUIpattern: " + self.instformat(instruction,8)
                 self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
                 self.consume(ID)
             else:
@@ -677,12 +683,32 @@ class asmblr:
 
         rdstr = self.tobinstr(rd.image[1:])
         rs1str = self.tobinstr(rs1.image[1:])
-        immstr = self.hextobinstr(imm.image[2:])
-        
-        instruction = self.binformat(immstr,12) + self.binformat(rs1str,5) + "110" + self.binformat(rdstr,5) + self.binformat(op,7)
 
-        self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
-        self.consume(HEX)
+        if self.asmblrstate == PARSESTATE_ASM:
+            if imm.kind == HEX:
+                immstr = self.hextobinstr(imm.image[2:])
+                
+                instruction = self.binformat(immstr,12) + self.binformat(rs1str,5) + "110" + self.binformat(rdstr,5) + self.binformat(op,7)
+
+                self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
+                self.consume(HEX)
+            elif imm.kind == ID:
+                immstr = self.hextobinstr(str(hex(self.symboltablename[imm.image])))
+                instruction = self.binformat(immstr,12) + self.binformat(rs1str,5) + "110" + self.binformat(rdstr,5) + self.binformat(op,7)
+
+                self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
+                self.consume(ID)
+            else:
+                print "Error. Hex value or a label is expected."
+                exit(1)
+        elif self.asmblrstate == PARSESTATE_LABELS:
+            if imm.kind == HEX:
+                self.consume(HEX)
+            elif imm.kind == ID:
+                self.consume(ID)
+        else:
+            print "Error. Invalid state"
+            exit(1)
 
     def ANDIpattern(self):
         op = "0010011"
@@ -697,12 +723,33 @@ class asmblr:
 
         rdstr = self.tobinstr(rd.image[1:])
         rs1str = self.tobinstr(rs1.image[1:])
-        immstr = self.hextobinstr(imm.image[2:])
-        
-        instruction = self.binformat(immstr,12) + self.binformat(rs1str,5) + "001" + self.binformat(rdstr,5) + self.binformat(op,7)
 
-        self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
-        self.consume(HEX)
+        if self.asmblrstate == PARSESTATE_ASM:
+            if imm.kind == HEX:
+                immstr = self.hextobinstr(imm.image[2:])
+        
+                instruction = self.binformat(immstr,12) + self.binformat(rs1str,5) + "001" + self.binformat(rdstr,5) + self.binformat(op,7)
+
+                self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
+                self.consume(HEX)
+            elif imm.kind == ID:
+                immstr = self.hextobinstr(str(hex(self.symboltablename[imm.image])))
+
+                instruction = self.binformat(immstr,12) + self.binformat(rs1str,5) + "001" + self.binformat(rdstr,5) + self.binformat(op,7)
+
+                self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
+                self.consume(ID)
+            else:
+                print "Error. Hex value or a label is expected."
+                exit(1)
+        elif self.asmblrstate == PARSESTATE_LABELS:
+            if imm.kind == HEX:
+                self.consume(HEX)
+            elif imm.kind == ID:
+                self.consume(ID)
+        else:
+            print "Error. Invalid state"
+            exit(1)
 
     def SLLIpattern(self):
         op = "0010011"
@@ -717,12 +764,33 @@ class asmblr:
 
         rdstr = self.tobinstr(rd.image[1:])
         rs1str = self.tobinstr(rs1.image[1:])
-        immstr = self.hextobinstr(imm.image[2:])
-        
-        instruction = "0000000" + self.binformat(immstr,5) + self.binformat(rs1str,5) + "001" + self.binformat(rdstr,5) + self.binformat(op,7)
 
-        self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
-        self.consume(HEX)
+        if self.asmblrstate == PARSESTATE_ASM:
+            if imm.kind == HEX:
+                immstr = self.hextobinstr(imm.image[2:])
+        
+                instruction = "0000000" + self.binformat(immstr,5) + self.binformat(rs1str,5) + "001" + self.binformat(rdstr,5) + self.binformat(op,7)
+
+                self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
+                self.consume(HEX)
+            elif imm.kind == ID:
+                immstr = self.hextobinstr(str(hex(self.symboltablename[imm.image])))
+
+                instruction = "0000000" + self.binformat(immstr,5) + self.binformat(rs1str,5) + "001" + self.binformat(rdstr,5) + self.binformat(op,7)
+
+                self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
+                self.consume(ID)
+            else:
+                print "Error. Hex value or a label is expected."
+                exit(1)
+        elif self.asmblrstate == PARSESTATE_LABELS:
+            if imm.kind == HEX:
+                self.consume(HEX)
+            elif imm.kind == ID:
+                self.consume(ID)
+        else:
+            print "Error. Invalid state"
+            exit(1)
 
     def SRLIpattern(self):
         op = "0010011"
@@ -737,12 +805,33 @@ class asmblr:
 
         rdstr = self.tobinstr(rd.image[1:])
         rs1str = self.tobinstr(rs1.image[1:])
-        immstr = self.hextobinstr(imm.image[2:])
-        
-        instruction = "0000000" + self.binformat(immstr,5) + self.binformat(rs1str,5) + "101" + self.binformat(rdstr,5) + self.binformat(op,7)
 
-        self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
-        self.consume(HEX)
+        if self.asmblrstate == PARSESTATE_ASM:
+            if imm.kind == HEX:
+                immstr = self.hextobinstr(imm.image[2:])
+        
+                instruction = "0000000" + self.binformat(immstr,5) + self.binformat(rs1str,5) + "101" + self.binformat(rdstr,5) + self.binformat(op,7)
+
+                self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
+                self.consume(HEX)
+            elif imm.kind == ID:
+                immstr = self.hextobinstr(str(hex(self.symboltablename[imm.image])))
+
+                instruction = "0000000" + self.binformat(immstr,5) + self.binformat(rs1str,5) + "101" + self.binformat(rdstr,5) + self.binformat(op,7)
+
+                self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
+                self.consume(ID)
+            else:
+                print "Error. Hex value or a label is expected."
+                exit(1)
+        elif self.asmblrstate == PARSESTATE_LABELS:
+            if imm.kind == HEX:
+                self.consume(HEX)
+            elif imm.kind == ID:
+                self.consume(ID)
+        else:
+            print "Error. Invalid state"
+            exit(1)
 
     def SRAIpattern(self):
         op = "0010011"
@@ -757,12 +846,32 @@ class asmblr:
 
         rdstr = self.tobinstr(rd.image[1:])
         rs1str = self.tobinstr(rs1.image[1:])
-        immstr = self.hextobinstr(imm.image[2:])
-        
-        instruction = "0100000" + self.binformat(immstr,5) + self.binformat(rs1str,5) + "101" + self.binformat(rdstr,5) + self.binformat(op,7)
 
-        self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
-        self.consume(HEX)
+        if self.asmblrstate == PARSESTATE_ASM:
+            if imm.kind == HEX:
+                immstr = self.hextobinstr(imm.image[2:])
+        
+                instruction = "0100000" + self.binformat(immstr,5) + self.binformat(rs1str,5) + "101" + self.binformat(rdstr,5) + self.binformat(op,7)
+
+                self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
+                self.consume(HEX)
+            elif imm.kind == ID:
+                immstr = self.hextobinstr(str(hex(self.symboltablename[imm.image])))
+                instruction = "0100000" + self.binformat(immstr,5) + self.binformat(rs1str,5) + "101" + self.binformat(rdstr,5) + self.binformat(op,7)
+
+                self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
+                self.consume(ID)
+            else:
+                print "Error. Hex value or a label is expected."
+                exit(1)
+        elif self.asmblrstate == PARSESTATE_LABELS:
+            if imm.kind == HEX:
+                self.consume(HEX)
+            elif imm.kind == ID:
+                self.consume(ID)
+        else:
+            print "Error. Invalid state"
+            exit(1)
 
     def ADDIpattern(self):
         op = "0010011"
@@ -777,12 +886,32 @@ class asmblr:
 
         rdstr = self.tobinstr(rd.image[1:])
         rs1str = self.tobinstr(rs1.image[1:])
-        immstr = self.hextobinstr(imm.image[2:])
-        
-        instruction = self.binformat(immstr,12) + self.binformat(rs1str,5) + "000" + self.binformat(rdstr,5) + self.binformat(op,7)
 
-        self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
-        self.consume(HEX)
+        if self.asmblrstate == PARSESTATE_ASM:
+            if imm.kind == HEX:
+                immstr = self.hextobinstr(imm.image[2:])
+        
+                instruction = self.binformat(immstr,12) + self.binformat(rs1str,5) + "000" + self.binformat(rdstr,5) + self.binformat(op,7)
+
+                self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
+                self.consume(HEX)
+            elif imm.kind == ID:
+                immstr = self.hextobinstr(str(hex(self.symboltablename[imm.image])))
+                instruction = self.binformat(immstr,12) + self.binformat(rs1str,5) + "000" + self.binformat(rdstr,5) + self.binformat(op,7)
+
+                self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
+                self.consume(ID)
+            else:
+                print "Error. Hex value or a label is expected."
+                exit(1)
+        elif self.asmblrstate == PARSESTATE_LABELS:
+            if imm.kind == HEX:
+                self.consume(HEX)
+            elif imm.kind == ID:
+                self.consume(ID)
+        else:
+            print "Error. Invalid state"
+            exit(1)
 
     def XORIpattern(self):
         op = "0010011"
@@ -797,12 +926,32 @@ class asmblr:
 
         rdstr = self.tobinstr(rd.image[1:])
         rs1str = self.tobinstr(rs1.image[1:])
-        immstr = self.hextobinstr(imm.image[2:])
-        
-        instruction = self.binformat(immstr,12) + self.binformat(rs1str,5) + "100" + self.binformat(rdstr,5) + self.binformat(op,7)
 
-        self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
-        self.consume(HEX)
+        if self.asmblrstate == PARSESTATE_ASM:
+            if imm.kind == HEX:
+                immstr = self.hextobinstr(imm.image[2:])
+            
+                instruction = self.binformat(immstr,12) + self.binformat(rs1str,5) + "100" + self.binformat(rdstr,5) + self.binformat(op,7)
+
+                self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
+                self.consume(HEX)
+            elif imm.kind == ID:
+                immstr = self.hextobinstr(str(hex(self.symboltablename[imm.image])))
+                instruction = self.binformat(immstr,12) + self.binformat(rs1str,5) + "100" + self.binformat(rdstr,5) + self.binformat(op,7)
+
+                self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
+                self.consume(ID)
+            else:
+                print "Error. Hex value or a label is expected."
+                exit(1)
+        elif self.asmblrstate == PARSESTATE_LABELS:
+            if imm.kind == HEX:
+                self.consume(HEX)
+            elif imm.kind == ID:
+                self.consume(ID)
+        else:
+            print "Error. Invalid state"
+            exit(1)
 
     def XORpattern(self):
         op = "0110011"
@@ -877,12 +1026,32 @@ class asmblr:
 
         rdstr = self.tobinstr(rd.image[1:])
         rs1str = self.tobinstr(rs1.image[1:])
-        immstr = self.hextobinstr(imm.image[2:])
-        
-        instruction = self.binformat(immstr,12) + self.binformat(rs1str,5) + "010" + self.binformat(rdstr,5) + self.binformat(op,7)
 
-        self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
-        self.consume(HEX)
+        if self.asmblrstate == PARSESTATE_ASM:
+            if imm.kind == HEX:
+                immstr = self.hextobinstr(imm.image[2:])
+                
+                instruction = self.binformat(immstr,12) + self.binformat(rs1str,5) + "010" + self.binformat(rdstr,5) + self.binformat(op,7)
+
+                self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
+                self.consume(HEX)
+            elif imm.kind == ID:
+                immstr = self.hextobinstr(str(hex(self.symboltablename[imm.image])))
+                instruction = self.binformat(immstr,12) + self.binformat(rs1str,5) + "010" + self.binformat(rdstr,5) + self.binformat(op,7)
+
+                self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
+                self.consume(ID)
+            else:
+                print "Error. Hex value or a label is expected."
+                exit(1)
+        elif self.asmblrstate == PARSESTATE_LABELS:
+            if imm.kind == HEX:
+                self.consume(HEX)
+            elif imm.kind == ID:
+                self.consume(ID)
+        else:
+            print "Error. Invalid state"
+            exit(1)
 
     def SLTIUpattern(self):
         op = "0010011"
@@ -897,12 +1066,32 @@ class asmblr:
 
         rdstr = self.tobinstr(rd.image[1:])
         rs1str = self.tobinstr(rs1.image[1:])
-        immstr = self.hextobinstr(imm.image[2:])
-        
-        instruction = self.binformat(immstr,12) + self.binformat(rs1str,5) + "011" + self.binformat(rdstr,5) + self.binformat(op,7)
 
-        self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
-        self.consume(HEX)
+        if self.asmblrstate == PARSESTATE_ASM:
+            if imm.kind == HEX:
+                immstr = self.hextobinstr(imm.image[2:])
+        
+                instruction = self.binformat(immstr,12) + self.binformat(rs1str,5) + "011" + self.binformat(rdstr,5) + self.binformat(op,7)
+
+                self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
+                self.consume(HEX)
+            elif imm.kind == ID:
+                immstr = self.hextobinstr(str(hex(self.symboltablename[imm.image])))
+                instruction = self.binformat(immstr,12) + self.binformat(rs1str,5) + "011" + self.binformat(rdstr,5) + self.binformat(op,7)
+
+                self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
+                self.consume(ID)
+            else:
+                print "Error. Hex value or a label is expected."
+                exit(1)
+        elif self.asmblrstate == PARSESTATE_LABELS:
+            if imm.kind == HEX:
+                self.consume(HEX)
+            elif imm.kind == ID:
+                self.consume(ID)
+        else:
+            print "Error. Invalid state"
+            exit(1)
 
     def SLTpattern(self):
         op = "0110011"
@@ -1005,6 +1194,7 @@ class asmblr:
                 immstr = self.binformat(immstr,20)
                 rs1str = self.tobinstr(rs1.image[1:])
                 rs2str = self.tobinstr(rs2.image[1:])
+
                 instruction =  immstr[8:15] + self.binformat(rs2str,5) + self.binformat(rs1str,5) + "000" + immstr[15:20] + self.binformat(op,7)
         
                 self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
@@ -1014,6 +1204,7 @@ class asmblr:
                 immstr = self.binformat(immstr,20)
                 rs1str = self.tobinstr(rs1.image[1:])
                 rs2str = self.tobinstr(rs2.image[1:])
+
                 instruction =  immstr[8:15] + self.binformat(rs2str,5) + self.binformat(rs1str,5) + "000" + immstr[15:20] + self.binformat(op,7)
         
                 self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
@@ -1041,15 +1232,38 @@ class asmblr:
         self.consume(COMMA)
         imm = self.currentToken
 
-        immstr = self.hextobinstr(imm.image[2:])
-        immstr = self.binformat(immstr,20)
-        rs1str = self.tobinstr(rs1.image[1:])
-        rs2str = self.tobinstr(rs2.image[1:])
+        if self.asmblrstate == PARSESTATE_ASM:
+            if imm.kind == HEX:
+                immstr = self.hextobinstr(imm.image[2:])
+                immstr = self.binformat(immstr,20)
+                rs1str = self.tobinstr(rs1.image[1:])
+                rs2str = self.tobinstr(rs2.image[1:])
 
-        instruction =  immstr[8:15] + self.binformat(rs2str,5) + self.binformat(rs1str,5) + "001" + immstr[15:20] + self.binformat(op,7)
+                instruction =  immstr[8:15] + self.binformat(rs2str,5) + self.binformat(rs1str,5) + "001" + immstr[15:20] + self.binformat(op,7)
         
-        self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
-        self.consume(HEX)
+                self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
+                self.consume(HEX)
+            elif imm.kind == ID:
+                immstr = self.hextobinstr(str(hex(self.symboltablename[imm.image])))
+                immstr = self.binformat(immstr,20)
+                rs1str = self.tobinstr(rs1.image[1:])
+                rs2str = self.tobinstr(rs2.image[1:])
+
+                instruction =  immstr[8:15] + self.binformat(rs2str,5) + self.binformat(rs1str,5) + "001" + immstr[15:20] + self.binformat(op,7)
+        
+                self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
+                self.consume(ID)
+            else:
+                print "Error. Hex value or a label is expected."
+                exit(1)
+        elif self.asmblrstate == PARSESTATE_LABELS:
+            if imm.kind == HEX:
+                self.consume(HEX)
+            elif imm.kind == ID:
+                self.consume(ID)
+        else:
+            print "Error. Invalid state"
+            exit(1)
 
     def LBUpattern(self):
         op = "0000011"
@@ -1156,7 +1370,7 @@ class asmblr:
         if self.asmblrstate == PARSESTATE_LABELS:
             #print "adding label:" + lbl.image
             if lbl.image not in self.symboltablename:
-                print "found label programcounter: " + str(self.programcounter)
+                #print "found label programcounter: " + str(self.programcounter)
                 self.symboltablename[lbl.image] = self.programcounter
             else:
                 print "Error. Symbol [" + lbl.image + "] already exists."
@@ -1202,6 +1416,39 @@ class asmblr:
                 print "Error. Hex value is expected."
                 exit(1)
 
+        elif self.asmblrstate == PARSESTATE_LABELS:
+            if imm.kind == HEX:
+                self.consume(HEX)
+            elif imm.kind == ID:
+                self.consume(ID)
+        else:
+            print "Error. Invalid state"
+            exit(1)
+
+    def JALpattern(self):
+        op = "1101111"
+        self.consume(JAL)
+        rd = self.currentToken
+        self.consume(REGISTER)
+        self.consume(COMMA)
+        imm = self.currentToken
+
+        if self.asmblrstate == PARSESTATE_ASM:
+            if imm.kind == HEX:
+                immstr = self.hextobinstr(imm.image[2:])
+                rdstr = self.tobinstr(rd.image[1:])
+                instruction = self.binformat(immstr,20) + self.binformat(rdstr,5) + self.binformat(op,7)
+                self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
+                self.consume(HEX)
+            elif imm.kind == ID:
+                immstr = self.hextobinstr(str(hex(self.symboltablename[imm.image])))
+                rdstr = self.tobinstr(rd.image[1:])
+                instruction = self.binformat(immstr,20) + self.binformat(rdstr,5) + self.binformat(op,7)
+                self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
+                self.consume(ID)
+            else:
+                print "Error. Hex value or a label is expected."
+                exit(1)
         elif self.asmblrstate == PARSESTATE_LABELS:
             if imm.kind == HEX:
                 self.consume(HEX)
@@ -1304,6 +1551,9 @@ class asmblr:
             elif self.currentToken.kind == AUIPC:
                 self.AUIPCpattern()
                 self.programcounter += 1
+            elif self.currentToken.kind == JAL:
+                self.JALpattern()
+                self.programcounter += 1
             elif self.currentToken.kind == ERROR:
                 print "Line: " + str(self.currentToken.beginLine)
                 print "syntax Error"
@@ -1319,17 +1569,17 @@ class asmblr:
         self.currentToken = self.tmgr.getNextToken()
         self.programcounter = 0
         self.asmblrstate = PARSESTATE_ASM
-        print "start"
+        #print "start"
         self.program()
-        print "finish"
+        #print "finish"
         self.cg.emitInstruction(self.programcounter, "FFFFFFFF")
 
     def parseLabels(self):
         self.programcounter = 0
         self.asmblrstate = PARSESTATE_LABELS
         self.program()
-        print "symboltable:"
-        print self.symboltablename
+        #print "symboltable:"
+        #print self.symboltablename
 
 def printHelp():
     print "usage: python2 ../bin/asmblr.py <asm file>"

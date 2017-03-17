@@ -74,7 +74,7 @@ of RISC-V 32I.
 #+END_LATEX
 
 *** Internal Hand Shake
-** Instructions [59%]
+** Instructions [63%]
 *** DONE LUI
     CLOSED: [2017-01-29 Sun 00:02]
 #+BEGIN_LATEX
@@ -108,7 +108,8 @@ of RISC-V 32I.
       \extracode
     \end{tikztimingtable}
 #+END_LATEX
-*** NEXT AUIPC
+*** DONE AUIPC
+    CLOSED: [2017-03-13 Mon 10:13]
     :LOGBOOK:
     CLOCK: [2017-03-04 Sat 06:57]--[2017-03-04 Sat 07:08] =>  0:11
     :LOGBOOK:  
@@ -117,7 +118,14 @@ of RISC-V 32I.
     :PROPERTIES:
     :Effort:   0:30
     :END:
-*** TODO JAL
+*** DONE JAL
+    CLOSED: [2017-03-17 Fri 17:25]
+    :LOGBOOK:  
+    CLOCK: [2017-03-17 Fri 17:01]--[2017-03-17 Fri 17:25] =>  0:24
+    :END:      
+    :PROPERTIES:
+    :Effort:   0:45
+    :END:
 *** TODO JALR
 *** TODO BEQ
 *** TODO BNE
@@ -1645,18 +1653,26 @@ SRA x4,x4,x2
    :PROPERTIES:
    :Effort:   1:00
    :END:
-** TODO add labels support for AUIPC
+** DONE add labels support for AUIPC
+   CLOSED: [2017-03-14 Tue 10:09]
 ** DONE labels support to LUI
    CLOSED: [2017-03-09 Thu 11:17]
    :LOGBOOK:  
-   CLOCK: [2017-03-08 Wed 09:02]--[2017-03-09 Thu 11:38] => 26:36
+   CLOCK: [2017-03-08 Wed 09:02]--[2017-03-08 Wed 10:00] =>  0:58
    :END:      
    :PROPERTIES:
    :Effort:   1:00
    :END:
-** TODO labels support
-   :LOGBOOK:
-   CLOCK: [2017-03-10 Fri 23:24]--[2017-03-10 Fri 23:25] =>  0:01
+** DONE labels support
+   CLOSED: [2017-03-16 Thu 10:05]
+   :LOGBOOK:  
+   CLOCK: [2017-03-16 Thu 10:04]--[2017-03-16 Thu 10:05] =>  0:01
+   CLOCK: [2017-03-16 Thu 09:49]--[2017-03-16 Thu 09:52] =>  0:03
+   CLOCK: [2017-03-16 Thu 09:39]--[2017-03-16 Thu 09:40] =>  0:01
+   CLOCK: [2017-03-13 Mon 10:32]--[2017-03-13 Mon 10:39] =>  0:07
+   :END:      
+   :PROPERTIES:
+   :Effort:   3:45
    :END:
 *** DONE AUIPC
     CLOSED: [2017-03-09 Thu 12:20]
@@ -1691,13 +1707,23 @@ SRA x4,x4,x2
     :Effort:   0:15
     :END:
 *** DONE LHU
-    CLOSED: [2017-03-10 Fri 22:38]
+    CLOSED: [2017-03-13 Mon 10:39]
 *** DONE SB
-    CLOSED: [2017-03-10 Fri 23:24]
-    :LOGBOOK:
-    CLOCK: [2017-03-10 Fri 22:38]--[2017-03-10 Fri 23:24] =>  0:46
+    CLOSED: [2017-03-13 Mon 10:45]
+    :LOGBOOK:  
+    CLOCK: [2017-03-13 Mon 10:39]--[2017-03-13 Mon 10:45] =>  0:06
+    :END:      
+    :PROPERTIES:
+    :Effort:   0:15
     :END:
-*** TODO SH
+*** DONE SH
+    CLOSED: [2017-03-13 Mon 10:32]
+    :LOGBOOK:  
+    CLOCK: [2017-03-13 Mon 10:13]--[2017-03-13 Mon 10:32] =>  0:19
+    :END:      
+    :PROPERTIES:
+    :Effort:   0:15
+    :END:
 *** DONE SW
     CLOSED: [2017-03-10 Fri 10:26]
     :LOGBOOK:  
@@ -1706,29 +1732,111 @@ SRA x4,x4,x2
     :PROPERTIES:
     :Effort:   0:15
     :END:
-*** TODO SLTI
-*** TODO SLTIU
-*** TODO XORI
-*** TODO ORI
-*** TODO ANDI
-*** TODO SLLI
-*** TODO SRLI
-*** TODO SRAI
-*** TODO ADD
-*** TODO SUB
-*** TODO SLL
+*** DONE SLTI
+    CLOSED: [2017-03-13 Mon 12:41]
+    :LOGBOOK:  
+    CLOCK: [2017-03-13 Mon 10:45]--[2017-03-13 Mon 11:03] =>  0:18
+    :END:      
+    :PROPERTIES:
+    :Effort:   0:15
+    :END:
+*** DONE SLTIU
+    CLOSED: [2017-03-14 Tue 10:39]
+    :LOGBOOK:  
+    CLOCK: [2017-03-14 Tue 10:11]--[2017-03-14 Tue 10:39] =>  0:28
+    :END:      
+    :PROPERTIES:
+    :Effort:   0:15
+    :END:
+*** DONE XORI
+    CLOSED: [2017-03-15 Wed 12:35]
+    :LOGBOOK:  
+    CLOCK: [2017-03-15 Wed 12:30]--[2017-03-15 Wed 12:35] =>  0:05
+    :END:      
+    :PROPERTIES:
+    :Effort:   0:15
+    :END:
+*** DONE ORI
+    CLOSED: [2017-03-15 Wed 12:45]
+    :LOGBOOK:  
+    CLOCK: [2017-03-15 Wed 12:42]--[2017-03-15 Wed 12:45] =>  0:03
+    :END:      
+    :PROPERTIES:
+    :Effort:   0:15
+    :END:
+*** DONE ANDI
+    CLOSED: [2017-03-16 Thu 09:21]
+    :LOGBOOK:  
+    CLOCK: [2017-03-16 Thu 09:18]--[2017-03-16 Thu 09:21] =>  0:03
+    :END:      
+    :PROPERTIES:
+    :Effort:   0:15
+    :END:
+*** DONE SLLI
+    CLOSED: [2017-03-16 Thu 09:24]
+    :LOGBOOK:  
+    CLOCK: [2017-03-16 Thu 09:21]--[2017-03-16 Thu 09:24] =>  0:03
+    :END:      
+    :PROPERTIES:
+    :Effort:   0:15
+    :END:
+*** DONE SRLI
+    CLOSED: [2017-03-16 Thu 09:39]
+    :LOGBOOK:  
+    CLOCK: [2017-03-16 Thu 09:25]--[2017-03-16 Thu 09:39] =>  0:14
+    :END:      
+    :PROPERTIES:
+    :Effort:   0:15
+    :END:
+*** DONE SRAI
+    CLOSED: [2017-03-16 Thu 09:49]
+    :LOGBOOK:  
+    CLOCK: [2017-03-16 Thu 09:40]--[2017-03-16 Thu 09:49] =>  0:09
+    :END:      
+    :PROPERTIES:
+    :Effort:   0:15
+    :END:
+*** DONE ADDI
+    CLOSED: [2017-03-16 Thu 10:04]
+    :LOGBOOK:  
+    CLOCK: [2017-03-16 Thu 09:52]--[2017-03-16 Thu 10:04] =>  0:12
+    :END:      
+    :PROPERTIES:
+    :Effort:   0:15
+    :END:
+*** CANCELLED ADD                                                 :CANCELLED:
+    CLOSED: [2017-03-16 Thu 09:18]
+    - State "CANCELLED"  from "TODO"       [2017-03-16 Thu 09:18]
+*** CANCELLED SUB                                                 :CANCELLED:
+    CLOSED: [2017-03-16 Thu 09:18]
+    - State "CANCELLED"  from "TODO"       [2017-03-16 Thu 09:18]
+*** CANCELLED SLL                                                 :CANCELLED:
+    CLOSED: [2017-03-16 Thu 09:18]
+    - State "CANCELLED"  from "TODO"       [2017-03-16 Thu 09:18]
     :LOGBOOK:  
     CLOCK: [2017-02-01 Wed 16:33]--[2017-02-01 Wed 17:57] =>  1:24
     :END:      
     :PROPERTIES:
     :Effort:   0:30
     :END:
-*** TODO SLTU
-*** TODO XOR
-*** TODO SRL
-*** TODO SRA
-*** TODO OR
-*** TODO AND
+*** CANCELLED SLTU                                                :CANCELLED:
+    CLOSED: [2017-03-16 Thu 09:18]
+    - State "CANCELLED"  from "TODO"       [2017-03-16 Thu 09:18]
+*** CANCELLED XOR                                                 :CANCELLED:
+    CLOSED: [2017-03-16 Thu 09:18]
+    - State "CANCELLED"  from "TODO"       [2017-03-16 Thu 09:18]
+*** CANCELLED SRL                                                 :CANCELLED:
+    CLOSED: [2017-03-16 Thu 09:18]
+    - State "CANCELLED"  from "TODO"       [2017-03-16 Thu 09:18]
+*** CANCELLED SRA                                                 :CANCELLED:
+    CLOSED: [2017-03-16 Thu 09:18]
+    - State "CANCELLED"  from "TODO"       [2017-03-16 Thu 09:18]
+*** CANCELLED OR                                                  :CANCELLED:
+    CLOSED: [2017-03-16 Thu 09:18]
+    - State "CANCELLED"  from "TODO"       [2017-03-16 Thu 09:18]
+*** CANCELLED AND                                                 :CANCELLED:
+    CLOSED: [2017-03-16 Thu 09:18]
+    - State "CANCELLED"  from "TODO"       [2017-03-16 Thu 09:18]
 ** DONE add dw to assembler
    CLOSED: [2017-03-10 Fri 10:10]
    :LOGBOOK:  
