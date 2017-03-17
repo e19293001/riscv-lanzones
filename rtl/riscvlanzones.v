@@ -80,6 +80,7 @@ module lanzones(
    reg [19:0]  imm_ctrl;
 
    reg         DI_LUI_ctrl;
+   reg         DI_JAL_ctrl;
    reg			DI_AUIPC_ctrl;
    reg         DI_ADD_ctrl;
    reg         DI_XOR_ctrl;
@@ -355,7 +356,8 @@ module lanzones(
       end
    end
 
-   assign PCctrl = stallff ? 0 : 1;
+   reg JALff;
+   assign PCctrl = (!stallff && !DI_JAL_ctrl) ? 1 : 0;
    
    always @(posedge clk) begin
       if (!rstn) begin
@@ -367,9 +369,21 @@ module lanzones(
                PCff <= PCff + 1;
             end
          end
+         else if (DI_JAL_ctrl) begin
+            PCff <= imm_ctrl;
+         end
       end
    end
 
+   always @(posedge clk) begin
+      if (!rstn) begin
+         JALff <= 0;
+      end
+      else begin
+         JALff <= DI_JAL_ctrl;
+      end
+   end
+  
    always @(posedge clk) begin
       if (!rstn) begin
          RAddr <= 0;
@@ -381,7 +395,12 @@ module lanzones(
             end
             else begin
                if (fetchctrl) begin
-                  RAddr <= PCff;
+                  if (DI_JAL_ctrl) begin
+                     RAddr <= imm_ctrl;
+                  end
+                  else begin
+                     RAddr <= PCff;
+                  end
                end
                else if (RVld) begin
                   RAddr <= 0;
@@ -407,6 +426,7 @@ module lanzones(
    // instruction decoder
    always @* begin
       DI_LUI_ctrl = 0;
+      DI_JAL_ctrl = 0;
       DI_AUIPC_ctrl = 0;
       DI_ADD_ctrl = 0;
       DI_XOR_ctrl = 0;
@@ -482,6 +502,11 @@ module lanzones(
                 3'b111: DI_ANDI_ctrl = 1;
                 default: invalid_inst = 1; 
               endcase
+           end
+           7'b1101111: begin
+              DI_JAL_ctrl = 1;
+              rd_ctrl = FIff[11:7];
+              imm_ctrl = FIff[31:12];
            end
            7'b0110111: begin // LUI
               DI_LUI_ctrl = 1;
@@ -637,6 +662,7 @@ module lanzones(
       end
       else begin
          if (DI_LUI_ctrl ||
+             DI_JAL_ctrl ||
              DI_AUIPC_ctrl ||
              DI_ADD_ctrl || 
              DI_XOR_ctrl || 
@@ -677,6 +703,9 @@ module lanzones(
       else begin
          if (DI_LUI_ctrl) begin
             xWData <= {imm_ctrl,12'h0};
+         end
+         else if (DI_JAL_ctrl) begin
+            xWData <= PCff + 1;
          end
          else if (DI_ADD_ctrl ||
                   DI_XOR_ctrl ||
@@ -726,7 +755,7 @@ module lanzones(
          xAddr <= 0;
       end
       else begin
-         if (DI_LUI_ctrl) begin
+         if (DI_LUI_ctrl || DI_JAL_ctrl) begin
             xAddr <= rd_ctrl;
          end
          else if (DI_ADD_ctrl ||
