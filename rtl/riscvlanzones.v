@@ -393,17 +393,15 @@ module lanzones(
             if (stallctrl) begin
                RAddr <= alu_outctrl;
             end
+            else if (RVld) begin
+               RAddr <= 0;
+            end
             else begin
-               if (fetchctrl) begin
-                  if (DI_JAL_ctrl) begin
-                     RAddr <= imm_ctrl;
-                  end
-                  else begin
-                     RAddr <= PCff;
-                  end
+               if (DI_JAL_ctrl) begin
+                  RAddr <= imm_ctrl;
                end
-               else if (RVld) begin
-                  RAddr <= 0;
+               else if (fetchctrl) begin
+                  RAddr <= PCff;
                end
             end
          end
