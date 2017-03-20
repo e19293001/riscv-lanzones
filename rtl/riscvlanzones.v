@@ -81,6 +81,8 @@ module lanzones(
 
    reg         DI_LUI_ctrl;
    reg         DI_JAL_ctrl;
+   reg         DI_JALR_ctrl;
+   reg         DI_BEQ_ctrl;
    reg			DI_AUIPC_ctrl;
    reg         DI_ADD_ctrl;
    reg         DI_XOR_ctrl;
@@ -356,8 +358,7 @@ module lanzones(
       end
    end
 
-   reg JALff;
-   assign PCctrl = (!stallff && !DI_JAL_ctrl) ? 1 : 0;
+   assign PCctrl = (!stallff && !DI_JAL_ctrl && !DI_JALR_ctrl && !DI_BEQ_ctrl) ? 1 : 0;
    
    always @(posedge clk) begin
       if (!rstn) begin
@@ -372,18 +373,20 @@ module lanzones(
          else if (DI_JAL_ctrl) begin
             PCff <= imm_ctrl;
          end
+         else if (DI_JALR_ctrl) begin
+            PCff <= rs1_ctrl + imm_ctrl;
+         end
+         else if (DI_BEQ_ctrl) begin
+            if (alu_outctrl == 1) begin
+               PCff <= imm_ctrl;
+            end
+            else begin
+               PCff <= PCff + 1;
+            end               
+         end
       end
    end
 
-   always @(posedge clk) begin
-      if (!rstn) begin
-         JALff <= 0;
-      end
-      else begin
-         JALff <= DI_JAL_ctrl;
-      end
-   end
-  
    always @(posedge clk) begin
       if (!rstn) begin
          RAddr <= 0;
@@ -399,6 +402,17 @@ module lanzones(
             else begin
                if (DI_JAL_ctrl) begin
                   RAddr <= imm_ctrl;
+               end
+               else if (DI_BEQ_ctrl) begin
+                  if (alu_outctrl == 1) begin
+                     RAddr <= imm_ctrl;
+                  end
+                  else begin
+                     RAddr <= PCff;
+                  end
+               end
+               else if (DI_JALR_ctrl) begin
+                  RAddr <= rs1_ctrl + imm_ctrl;
                end
                else if (fetchctrl) begin
                   RAddr <= PCff;
@@ -428,6 +442,8 @@ module lanzones(
    always @* begin
       DI_LUI_ctrl = 0;
       DI_JAL_ctrl = 0;
+      DI_JALR_ctrl = 0;
+      DI_BEQ_ctrl = 0;
       DI_AUIPC_ctrl = 0;
       DI_ADD_ctrl = 0;
       DI_XOR_ctrl = 0;
@@ -508,6 +524,25 @@ module lanzones(
               DI_JAL_ctrl = 1;
               rd_ctrl = FIff[11:7];
               imm_ctrl = FIff[31:12];
+           end
+           7'b1100111: begin
+              DI_JALR_ctrl = 1;
+              imm_ctrl = FIff[31:20];
+              rs1_ctrl = FIff[19:15];
+              funct3_ctrl = FIff[14:12];
+              rd_ctrl = FIff[11:7];
+           end
+           7'b1100011: begin
+              case (FIff[14:12])
+                3'b000: DI_BEQ_ctrl = 1;
+//                3'b001: DI_SH_ctrl = 1;
+//                3'b010: DI_SW_ctrl = 1;
+                default: invalid_inst = 1;
+              endcase
+              imm_ctrl = {FIff[31:25],FIff[11:7]};
+              rs2_ctrl = FIff[24:20];
+              rs1_ctrl = FIff[19:15];
+              funct3_ctrl = FIff[14:12];
            end
            7'b0110111: begin // LUI
               DI_LUI_ctrl = 1;
@@ -654,6 +689,9 @@ module lanzones(
       else if (DI_AUIPC_ctrl) begin
          alu_outctrl = PCff + imm_ctrl;
       end
+      else if (DI_BEQ_ctrl) begin
+         alu_outctrl = xRData0 == xRData1 ? 1 : 0;
+      end
    end
 
    // x register controller
@@ -664,6 +702,7 @@ module lanzones(
       else begin
          if (DI_LUI_ctrl ||
              DI_JAL_ctrl ||
+             DI_JALR_ctrl ||
              DI_AUIPC_ctrl ||
              DI_ADD_ctrl || 
              DI_XOR_ctrl || 
@@ -706,6 +745,9 @@ module lanzones(
             xWData <= {imm_ctrl,12'h0};
          end
          else if (DI_JAL_ctrl) begin
+            xWData <= PCff + 1;
+         end
+         else if (DI_JALR_ctrl) begin
             xWData <= PCff + 1;
          end
          else if (DI_ADD_ctrl ||
@@ -756,7 +798,7 @@ module lanzones(
          xAddr <= 0;
       end
       else begin
-         if (DI_LUI_ctrl || DI_JAL_ctrl) begin
+         if (DI_LUI_ctrl || DI_JAL_ctrl || DI_JALR_ctrl) begin
             xAddr <= rd_ctrl;
          end
          else if (DI_ADD_ctrl ||
