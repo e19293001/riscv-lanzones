@@ -74,7 +74,7 @@ of RISC-V 32I.
 #+END_LATEX
 
 *** Internal Hand Shake
-** Instructions [68%]
+** Instructions [72%]
 *** DONE LUI
     CLOSED: [2017-01-29 Sun 00:02]
 #+BEGIN_LATEX
@@ -143,14 +143,23 @@ of RISC-V 32I.
     :PROPERTIES:
     :Effort:   0:45
     :END:
-*** NEXT BNE
+*** DONE BNE
+    CLOSED: [2017-03-21 Tue 09:14]
     :LOGBOOK:  
-    CLOCK: [2017-03-21 Tue 08:58]
+    CLOCK: [2017-03-21 Tue 08:58]--[2017-03-21 Tue 09:14] =>  0:16
     :END:      
     :PROPERTIES:
     :Effort:   0:30
     :END:
-*** TODO BLT
+*** DONE BLT
+    CLOSED: [2017-03-22 Wed 09:55]
+    :LOGBOOK:  
+    CLOCK: [2017-03-22 Wed 09:51]--[2017-03-22 Wed 09:55] =>  0:04
+    CLOCK: [2017-03-22 Wed 09:22]--[2017-03-22 Wed 09:43] =>  0:21
+    :END:      
+    :PROPERTIES:
+    :Effort:   0:30
+    :END:
 *** TODO BGE
 *** TODO BLTU
 *** TODO BGEU

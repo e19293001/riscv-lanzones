@@ -84,6 +84,7 @@ module lanzones(
    reg         DI_JALR_ctrl;
    reg         DI_BEQ_ctrl;
    reg         DI_BNE_ctrl;
+   reg         DI_BLT_ctrl;
    reg			DI_AUIPC_ctrl;
    reg         DI_ADD_ctrl;
    reg         DI_XOR_ctrl;
@@ -359,7 +360,7 @@ module lanzones(
       end
    end
 
-   assign PCctrl = (!stallff && !DI_JAL_ctrl && !DI_JALR_ctrl && !DI_BEQ_ctrl && !DI_BNE_ctrl) ? 1 : 0;
+   assign PCctrl = (!stallff && !DI_JAL_ctrl && !DI_JALR_ctrl && !DI_BEQ_ctrl && !DI_BNE_ctrl && !DI_BLT_ctrl) ? 1 : 0;
    
    always @(posedge clk) begin
       if (!rstn) begin
@@ -387,6 +388,14 @@ module lanzones(
          end
          else if (DI_BNE_ctrl) begin
             if (alu_outctrl == 0) begin
+               PCff <= imm_ctrl;
+            end
+            else begin
+               PCff <= PCff + 1;
+            end               
+         end
+         else if (DI_BLT_ctrl) begin
+            if (alu_outctrl == 1) begin
                PCff <= imm_ctrl;
             end
             else begin
@@ -428,6 +437,14 @@ module lanzones(
                      RAddr <= PCff;
                   end
                end
+               else if (DI_BLT_ctrl) begin
+                  if (alu_outctrl == 0) begin
+                     RAddr <= imm_ctrl;
+                  end
+                  else begin
+                     RAddr <= PCff;
+                  end
+               end
                else if (DI_JALR_ctrl) begin
                   RAddr <= rs1_ctrl + imm_ctrl;
                end
@@ -462,6 +479,7 @@ module lanzones(
       DI_JALR_ctrl = 0;
       DI_BEQ_ctrl = 0;
       DI_BNE_ctrl = 0;
+      DI_BLT_ctrl = 0;
       DI_AUIPC_ctrl = 0;
       DI_ADD_ctrl = 0;
       DI_XOR_ctrl = 0;
@@ -554,6 +572,7 @@ module lanzones(
               case (FIff[14:12])
                 3'b000: DI_BEQ_ctrl = 1;
                 3'b001: DI_BNE_ctrl = 1;
+                3'b100: DI_BLT_ctrl = 1;
 //                3'b010: DI_SW_ctrl = 1;
                 default: invalid_inst = 1;
               endcase
@@ -712,6 +731,9 @@ module lanzones(
       end
       else if (DI_BNE_ctrl) begin
          alu_outctrl = xRData0 == xRData1 ? 1 : 0;
+      end
+      else if (DI_BLT_ctrl) begin
+         alu_outctrl = xRData0 < xRData1 ? 1 : 0;
       end
    end
 
