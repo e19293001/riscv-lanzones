@@ -45,6 +45,7 @@ JALR = 40
 BEQ = 41
 BNE = 42
 BLT = 43
+BGE = 44
 
 class Token:
     def __init__(self):
@@ -98,7 +99,8 @@ class Token:
                            "JALR",
                            "BEQ",
                            "BNE",
-                           "BLT"]
+                           "BLT",
+                           "BGE"]
           
     def getKind(self,k):
         if (k == 0):
@@ -189,6 +191,8 @@ class Token:
             return "BNE"
         elif (k == 43):
             return "BLT"
+        elif (k == 44):
+            return "BGE"
         else:
             return "UNKNOWN"
 
@@ -359,6 +363,8 @@ class TokenMgr:
                     tkn.kind = BNE
                 elif tkn.image == "BLT":
                     tkn.kind = BLT
+                elif tkn.image == "BGE":
+                    tkn.kind = BGE
                 elif tkn.image[0] == "x" and tkn.image[1:].isdigit():
                     tkn.kind = REGISTER
                 else:
@@ -752,14 +758,14 @@ class asmblr:
             if imm.kind == HEX:
                 immstr = self.hextobinstr(imm.image[2:])
         
-                instruction = self.binformat(immstr,12) + self.binformat(rs1str,5) + "001" + self.binformat(rdstr,5) + self.binformat(op,7)
+                instruction = self.binformat(immstr,12) + self.binformat(rs1str,5) + "000" + self.binformat(rdstr,5) + self.binformat(op,7)
 
                 self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
                 self.consume(HEX)
             elif imm.kind == ID:
                 immstr = self.hextobinstr(str(hex(self.symboltablename[imm.image])))
 
-                instruction = self.binformat(immstr,12) + self.binformat(rs1str,5) + "001" + self.binformat(rdstr,5) + self.binformat(op,7)
+                instruction = self.binformat(immstr,12) + self.binformat(rs1str,5) + "000" + self.binformat(rdstr,5) + self.binformat(op,7)
 
                 self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
                 self.consume(ID)
@@ -1652,6 +1658,50 @@ class asmblr:
             print "Error. Invalid state"
             exit(1)
 
+    def BGEpattern(self):
+        op = "1100011"
+        self.consume(BGE)
+        rs2 = self.currentToken
+        self.consume(REGISTER)
+        self.consume(COMMA)
+        rs1 = self.currentToken
+        self.consume(REGISTER)
+        self.consume(COMMA)
+        imm = self.currentToken
+
+        if self.asmblrstate == PARSESTATE_ASM:
+            if imm.kind == HEX:
+                immstr = self.hextobinstr(imm.image[2:])
+                immstr = self.binformat(immstr,20)
+                rs1str = self.tobinstr(rs1.image[1:])
+                rs2str = self.tobinstr(rs2.image[1:])
+
+                instruction =  immstr[8:15] + self.binformat(rs2str,5) + self.binformat(rs1str,5) + "101" + immstr[15:20] + self.binformat(op,7)
+        
+                self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
+                self.consume(HEX)
+            elif imm.kind == ID:
+                immstr = self.hextobinstr(str(hex(self.symboltablename[imm.image])))
+                immstr = self.binformat(immstr,20)
+                rs1str = self.tobinstr(rs1.image[1:])
+                rs2str = self.tobinstr(rs2.image[1:])
+
+                instruction =  immstr[8:15] + self.binformat(rs2str,5) + self.binformat(rs1str,5) + "101" + immstr[15:20] + self.binformat(op,7)
+        
+                self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
+                self.consume(ID)
+            else:
+                print "Error. Hex value or a label is expected."
+                exit(1)
+        elif self.asmblrstate == PARSESTATE_LABELS:
+            if imm.kind == HEX:
+                self.consume(HEX)
+            elif imm.kind == ID:
+                self.consume(ID)
+        else:
+            print "Error. Invalid state"
+            exit(1)
+
     def program(self,labels = 0):
         while self.currentToken.kind != EOF:
             if self.currentToken.kind == ID:
@@ -1760,6 +1810,9 @@ class asmblr:
             elif self.currentToken.kind == BLT:
                 self.BLTpattern()
                 self.programcounter += 1
+            elif self.currentToken.kind == BGE:
+                self.BGEpattern()
+                self.programcounter += 1
             elif self.currentToken.kind == ERROR:
                 print "Line: " + str(self.currentToken.beginLine)
                 print "syntax Error"
@@ -1785,8 +1838,8 @@ class asmblr:
         self.programcounter = 0
         self.asmblrstate = PARSESTATE_LABELS
         self.program()
-        #print "symboltable:"
-        #print self.symboltablename
+        print "symboltable:"
+        print self.symboltablename
 
 def printHelp():
     print "usage: python2 ../bin/asmblr.py <asm file>"
