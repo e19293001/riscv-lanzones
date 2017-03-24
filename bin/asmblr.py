@@ -46,6 +46,7 @@ BEQ = 41
 BNE = 42
 BLT = 43
 BGE = 44
+BLTU = 45
 
 class Token:
     def __init__(self):
@@ -100,7 +101,8 @@ class Token:
                            "BEQ",
                            "BNE",
                            "BLT",
-                           "BGE"]
+                           "BGE",
+                           "BLTU"]
           
     def getKind(self,k):
         if (k == 0):
@@ -193,6 +195,8 @@ class Token:
             return "BLT"
         elif (k == 44):
             return "BGE"
+        elif (k == 45):
+            return "BLTU"
         else:
             return "UNKNOWN"
 
@@ -365,6 +369,8 @@ class TokenMgr:
                     tkn.kind = BLT
                 elif tkn.image == "BGE":
                     tkn.kind = BGE
+                elif tkn.image == "BLTU":
+                    tkn.kind = BLTU
                 elif tkn.image[0] == "x" and tkn.image[1:].isdigit():
                     tkn.kind = REGISTER
                 else:
@@ -1658,6 +1664,50 @@ class asmblr:
             print "Error. Invalid state"
             exit(1)
 
+    def BLTUpattern(self):
+        op = "1100011"
+        self.consume(BLTU)
+        rs2 = self.currentToken
+        self.consume(REGISTER)
+        self.consume(COMMA)
+        rs1 = self.currentToken
+        self.consume(REGISTER)
+        self.consume(COMMA)
+        imm = self.currentToken
+
+        if self.asmblrstate == PARSESTATE_ASM:
+            if imm.kind == HEX:
+                immstr = self.hextobinstr(imm.image[2:])
+                immstr = self.binformat(immstr,20)
+                rs1str = self.tobinstr(rs1.image[1:])
+                rs2str = self.tobinstr(rs2.image[1:])
+
+                instruction =  immstr[8:15] + self.binformat(rs2str,5) + self.binformat(rs1str,5) + "110" + immstr[15:20] + self.binformat(op,7)
+        
+                self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
+                self.consume(HEX)
+            elif imm.kind == ID:
+                immstr = self.hextobinstr(str(hex(self.symboltablename[imm.image])))
+                immstr = self.binformat(immstr,20)
+                rs1str = self.tobinstr(rs1.image[1:])
+                rs2str = self.tobinstr(rs2.image[1:])
+
+                instruction =  immstr[8:15] + self.binformat(rs2str,5) + self.binformat(rs1str,5) + "110" + immstr[15:20] + self.binformat(op,7)
+        
+                self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
+                self.consume(ID)
+            else:
+                print "Error. Hex value or a label is expected."
+                exit(1)
+        elif self.asmblrstate == PARSESTATE_LABELS:
+            if imm.kind == HEX:
+                self.consume(HEX)
+            elif imm.kind == ID:
+                self.consume(ID)
+        else:
+            print "Error. Invalid state"
+            exit(1)
+
     def BGEpattern(self):
         op = "1100011"
         self.consume(BGE)
@@ -1812,6 +1862,9 @@ class asmblr:
                 self.programcounter += 1
             elif self.currentToken.kind == BGE:
                 self.BGEpattern()
+                self.programcounter += 1
+            elif self.currentToken.kind == BLTU:
+                self.BLTUpattern()
                 self.programcounter += 1
             elif self.currentToken.kind == ERROR:
                 print "Line: " + str(self.currentToken.beginLine)
