@@ -176,7 +176,13 @@ of RISC-V 32I.
     :PROPERTIES:
     :Effort:   0:15
     :END:
-*** TODO BGEU
+*** NEXT BGEU
+    :LOGBOOK:  
+    CLOCK: [2017-03-27 Mon 12:48]
+    :END:      
+    :PROPERTIES:
+    :Effort:   0:15
+    :END:
 *** DONE LB
     CLOSED: [2017-02-20 Mon 11:19]
     :LOGBOOK:  

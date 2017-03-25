@@ -87,6 +87,7 @@ module lanzones(
    reg         DI_BLT_ctrl;
    reg         DI_BLTU_ctrl;
    reg         DI_BGE_ctrl;
+   reg         DI_BGEU_ctrl;
    reg			DI_AUIPC_ctrl;
    reg         DI_ADD_ctrl;
    reg         DI_XOR_ctrl;
@@ -362,7 +363,7 @@ module lanzones(
       end
    end
 
-   assign PCctrl = (!stallff && !DI_JAL_ctrl && !DI_JALR_ctrl && !DI_BEQ_ctrl && !DI_BNE_ctrl && !DI_BLT_ctrl && !DI_BLTU_ctrl &&!DI_BGE_ctrl) ? 1 : 0;
+   assign PCctrl = (!stallff && !DI_JAL_ctrl && !DI_JALR_ctrl && !DI_BEQ_ctrl && !DI_BNE_ctrl && !DI_BLT_ctrl && !DI_BLTU_ctrl && !DI_BGE_ctrl && !DI_BGEU_ctrl) ? 1 : 0;
    
    always @(posedge clk) begin
       if (!rstn) begin
@@ -413,6 +414,14 @@ module lanzones(
             end               
          end
          else if (DI_BGE_ctrl) begin
+            if (alu_outctrl == 1) begin
+               PCff <= imm_ctrl;
+            end
+            else begin
+               PCff <= PCff + 1;
+            end               
+         end
+         else if (DI_BGEU_ctrl) begin
             if (alu_outctrl == 1) begin
                PCff <= imm_ctrl;
             end
@@ -479,6 +488,14 @@ module lanzones(
                      RAddr <= PCff;
                   end
                end
+               else if (DI_BGEU_ctrl) begin
+                  if (alu_outctrl == 1) begin
+                     RAddr <= imm_ctrl;
+                  end
+                  else begin
+                     RAddr <= PCff;
+                  end
+               end
                else if (DI_JALR_ctrl) begin
                   RAddr <= rs1_ctrl + imm_ctrl;
                end
@@ -516,6 +533,7 @@ module lanzones(
       DI_BLT_ctrl = 0;
       DI_BLTU_ctrl = 0;
       DI_BGE_ctrl = 0;
+      DI_BGEU_ctrl = 0;
       DI_AUIPC_ctrl = 0;
       DI_ADD_ctrl = 0;
       DI_XOR_ctrl = 0;
@@ -611,7 +629,7 @@ module lanzones(
                 3'b100: DI_BLT_ctrl = 1;
                 3'b101: DI_BGE_ctrl = 1;
                 3'b110: DI_BLTU_ctrl = 1;
-//                3'b010: DI_SW_ctrl = 1;
+                3'b111: DI_BGEU_ctrl = 1;
                 default: invalid_inst = 1;
               endcase
               imm_ctrl = {FIff[31:25],FIff[11:7]};
@@ -777,6 +795,9 @@ module lanzones(
          alu_outctrl = xRData0 < xRData1 ? 1 : 0;
       end
       else if (DI_BGE_ctrl) begin
+         alu_outctrl = $signed(xRData0) >= $signed(xRData1) ? 1 : 0;
+      end
+      else if (DI_BGEU_ctrl) begin
          alu_outctrl = xRData0 >= xRData1 ? 1 : 0;
       end
    end
