@@ -152,11 +152,11 @@ module lanzones(
    assign fetchctrl = stallff ? 0 : 1;
 
    assign DI_LW_w = (DI_LW_ctrl | DI_LW_ff) ? 1 : 0; // ?? 
-   assign DI_LW_xctrl = (DI_LW_ff & RVld) ? 1 : 0;
-   assign DI_LB_xctrl = (DI_LB_ff & RVld) ? 1 : 0;
-   assign DI_LBU_xctrl = (DI_LBU_ff & RVld) ? 1 : 0;
-   assign DI_LH_xctrl = (DI_LH_ff & RVld) ? 1 : 0;
-   assign DI_LHU_xctrl = (DI_LHU_ff & RVld) ? 1 : 0;
+   assign DI_LW_xctrl = (DI_LW_ff & RVld & RRdy) ? 1 : 0;
+   assign DI_LB_xctrl = (DI_LB_ff & RVld & RRdy) ? 1 : 0;
+   assign DI_LBU_xctrl = (DI_LBU_ff & RVld & RRdy) ? 1 : 0;
+   assign DI_LH_xctrl = (DI_LH_ff & RVld & RRdy) ? 1 : 0;
+   assign DI_LHU_xctrl = (DI_LHU_ff & RVld & RRdy) ? 1 : 0;
    
    always @(posedge clk) begin
       if (!rstn) begin
@@ -177,7 +177,7 @@ module lanzones(
          if (DI_LB_ctrl | DI_LB_ctrl) begin
             DI_LB_ff <= 1;
          end
-         else if (DI_LB_ff && RVld) begin
+         else if (DI_LB_ff && RVld & RRdy) begin
             DI_LB_ff <= 0;
          end
       end
@@ -191,7 +191,7 @@ module lanzones(
          if (DI_LBU_ctrl) begin
             DI_LBU_ff <= 1;
          end
-         else if (DI_LBU_ff && RVld) begin
+         else if (DI_LBU_ff && RVld & RRdy) begin
             DI_LBU_ff <= 0;
          end
       end
@@ -205,7 +205,7 @@ module lanzones(
          if (DI_LH_ctrl) begin
             DI_LH_ff <= 1;
          end
-         else if (DI_LH_ff && RVld) begin
+         else if (DI_LH_ff && RVld & RRdy) begin
             DI_LH_ff <= 0;
          end
       end
@@ -219,7 +219,7 @@ module lanzones(
          if (DI_LHU_ctrl) begin
             DI_LHU_ff <= 1;
          end
-         else if (DI_LHU_ff && RVld) begin
+         else if (DI_LHU_ff && RVld & RRdy) begin
             DI_LHU_ff <= 0;
          end
       end
@@ -233,7 +233,7 @@ module lanzones(
          if (DI_LW_ctrl) begin
             DI_LW_ff <= 1;
          end
-         else if (DI_LW_ff && RVld) begin
+         else if (DI_LW_ff && RVld & RRdy) begin
             DI_LW_ff <= 0;
          end
       end
@@ -276,7 +276,7 @@ module lanzones(
       end
       else begin
          if (!Halt) begin
-            if (RVld) begin
+            if (RVld & RRdy) begin
                RRdy <= 0;
             end
             else begin
@@ -298,7 +298,7 @@ module lanzones(
             if (stallctrl && (DI_SW_ctrl || DI_SB_ctrl || DI_SH_ctrl)) begin
                RWEn <= 1;
             end
-            else if (RVld) begin
+            else if (RVld & RRdy) begin
                RWEn <= 0;
             end
          end
@@ -320,7 +320,7 @@ module lanzones(
             else if (DI_SH_ctrl) begin
                RWData <= xRData1 & 32'hFFFF;
             end
-            else if (RVld) begin
+            else if (RVld & RRdy) begin
                RWData <= 0;
             end
          end
@@ -342,7 +342,7 @@ module lanzones(
             else if (DI_SH_ctrl) begin
                RWStrobe <= 4'b0011;
             end
-            else if (RVld) begin
+            else if (RVld & RRdy) begin
                RWStrobe <= 0;
             end
          end
@@ -357,7 +357,7 @@ module lanzones(
          if (stallctrl) begin
             stallff <= 1;
          end
-         else if (stallff && RVld) begin
+         else if (stallff && RVld & RRdy) begin
             stallff <= 0;
          end
       end
@@ -370,7 +370,7 @@ module lanzones(
          PCff <= 0;
       end
       else begin
-         if (RVld) begin
+         if (RVld & RRdy) begin
             if (PCctrl) begin
                PCff <= PCff + 1;
             end
@@ -441,7 +441,7 @@ module lanzones(
             if (stallctrl) begin
                RAddr <= alu_outctrl;
             end
-            else if (RVld) begin
+            else if (RVld & RRdy) begin
                RAddr <= 0;
             end
             else begin
@@ -706,7 +706,7 @@ module lanzones(
               stallctrl = 1; // stop the fetch to read from memory
            end          
            default: begin
-              $display("----- invalid instruction ----- %0b", opcode_instw);
+              $display("@%0t ----- invalid instruction ----- %0b", $time, opcode_instw);
               invalid_inst = 1;
            end
          endcase

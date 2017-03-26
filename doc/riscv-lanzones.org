@@ -74,7 +74,7 @@ of RISC-V 32I.
 #+END_LATEX
 
 *** Internal Hand Shake
-** Instructions [76%]
+** Instructions [78%]
 *** DONE LUI
     CLOSED: [2017-01-29 Sun 00:02]
 #+BEGIN_LATEX
@@ -176,9 +176,10 @@ of RISC-V 32I.
     :PROPERTIES:
     :Effort:   0:15
     :END:
-*** NEXT BGEU
+*** DONE BGEU
+    CLOSED: [2017-03-27 Mon 13:00]
     :LOGBOOK:  
-    CLOCK: [2017-03-27 Mon 12:48]
+    CLOCK: [2017-03-27 Mon 12:48]--[2017-03-27 Mon 12:59] =>  0:11
     :END:      
     :PROPERTIES:
     :Effort:   0:15
@@ -1666,7 +1667,14 @@ SRA x4,x4,x2
 SRA x4,x4,x2
 ** (labels) tstPattern0032.asm
 * Misc
-** TODO test with RVld fixed to 1
+** DONE test with RVld fixed to 1
+   CLOSED: [2017-03-27 Mon 14:01]
+   :LOGBOOK:  
+   CLOCK: [2017-03-27 Mon 13:08]--[2017-03-27 Mon 14:01] =>  0:53
+   :END:      
+   :PROPERTIES:
+   :Effort:   0:30
+   :END:
 ** DONE add error handler in testbench
    CLOSED: [2017-02-15 Wed 09:30]
    :LOGBOOK:  
