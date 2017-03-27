@@ -377,6 +377,102 @@ class TokenMgr:
                     tkn.kind = BLTU
                 elif tkn.image == "BGEU":
                     tkn.kind = BGEU
+                elif tkn.image == "zero":
+                    tkn.image = "x0"
+                    tkn.kind = REGISTER
+                elif tkn.image == "ra":
+                    tkn.image = "x1"
+                    tkn.kind = REGISTER
+                elif tkn.image == "sp":
+                    tkn.image = "x2"
+                    tkn.kind = REGISTER
+                elif tkn.image == "gp":
+                    tkn.image = "x3"
+                    tkn.kind = REGISTER
+                elif tkn.image == "tp":
+                    tkn.image = "x4"
+                    tkn.kind = REGISTER
+                elif tkn.image == "t0":
+                    tkn.image = "x5"
+                    tkn.kind = REGISTER
+                elif tkn.image == "t1":
+                    tkn.image = "x6"
+                    tkn.kind = REGISTER
+                elif tkn.image == "t2":
+                    tkn.image = "x7"
+                    tkn.kind = REGISTER
+                elif tkn.image == "s0" or tkn.image == "fp":
+                    tkn.image = "x8"
+                    tkn.kind = REGISTER
+                elif tkn.image == "s1":
+                    tkn.image = "x9"
+                    tkn.kind = REGISTER
+                elif tkn.image == "a0":
+                    tkn.image = "x10"
+                    tkn.kind = REGISTER
+                elif tkn.image == "a1":
+                    tkn.image = "x11"
+                    tkn.kind = REGISTER
+                elif tkn.image == "a2":
+                    tkn.image = "x12"
+                    tkn.kind = REGISTER
+                elif tkn.image == "a3":
+                    tkn.image = "x13"
+                    tkn.kind = REGISTER
+                elif tkn.image == "a4":
+                    tkn.image = "x14"
+                    tkn.kind = REGISTER
+                elif tkn.image == "a5":
+                    tkn.image = "x15"
+                    tkn.kind = REGISTER
+                elif tkn.image == "a6":
+                    tkn.image = "x16"
+                    tkn.kind = REGISTER
+                elif tkn.image == "a7":
+                    tkn.image = "x17"
+                    tkn.kind = REGISTER
+                elif tkn.image == "s2":
+                    tkn.image = "x18"
+                    tkn.kind = REGISTER
+                elif tkn.image == "s3":
+                    tkn.image = "x19"
+                    tkn.kind = REGISTER
+                elif tkn.image == "s4":
+                    tkn.image = "x20"
+                    tkn.kind = REGISTER
+                elif tkn.image == "s5":
+                    tkn.image = "x21"
+                    tkn.kind = REGISTER
+                elif tkn.image == "s6":
+                    tkn.image = "x22"
+                    tkn.kind = REGISTER
+                elif tkn.image == "s7":
+                    tkn.image = "x23"
+                    tkn.kind = REGISTER
+                elif tkn.image == "s8":
+                    tkn.image = "x24"
+                    tkn.kind = REGISTER
+                elif tkn.image == "s9":
+                    tkn.image = "x25"
+                    tkn.kind = REGISTER
+                elif tkn.image == "s10":
+                    tkn.image = "x26"
+                    tkn.kind = REGISTER
+                elif tkn.image == "s11":
+                    tkn.image = "x27"
+                    tkn.kind = REGISTER
+                elif tkn.image == "t3":
+                    tkn.image = "x28"
+                    tkn.kind = REGISTER
+                elif tkn.image == "t4":
+                    tkn.image = "x29"
+                    tkn.kind = REGISTER
+                elif tkn.image == "t5":
+                    tkn.image = "x30"
+                    tkn.kind = REGISTER
+                elif tkn.image == "t6":
+                    tkn.image = "x31"
+                    tkn.kind = REGISTER
                 elif tkn.image[0] == "x" and tkn.image[1:].isdigit():
                     tkn.kind = REGISTER
                 else:
