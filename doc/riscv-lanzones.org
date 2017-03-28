@@ -1905,6 +1905,10 @@ SRA x4,x4,x2
    :END:
 ** DONE test LUI with dw
    CLOSED: [2017-03-10 Fri 22:30]
+** DONE added ABI names to registers x0 to x31
+   CLOSED: [2017-03-27 Mon 14:35]
 * Notes
 ** The Assembler
-   
+** Global variable
+** Local variable
+** Static variable

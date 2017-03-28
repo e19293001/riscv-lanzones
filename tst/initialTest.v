@@ -11,7 +11,7 @@ module MemoryModel(
                    output [31:0] RData
                    );
 
-   reg [31:0] mem ['hFFFF:0];
+   reg [31:0] mem ['hFFFFFFF:0];
 
    wire [31:0] strb_w;
 
@@ -331,7 +331,7 @@ module initialTest;
       reg [8*128:1] datastr;
       integer       addrOrData;
       reg [8*128:1] tomem;
-      reg [31:0]    addr;
+      reg [31:0]       addr;
       reg [31:0]    datain;
       begin
          fp = $fopen(str, "r");
@@ -348,21 +348,23 @@ module initialTest;
          while (code > 0) begin
             code = $fscanf(fp, "+%08x %08x\n", addr, datain);
             //$display("code: %0d addr: %04x datain: %04x", code, addr, datain);
-            //$display("code: %0d addr: %0d datain: %08x", code, addr, datain);
+            $display("code: %0d addr: %08x datain: %08x", code, addr, datain);
             if (code == 0) begin
                $display("invalid input code: %0d addr: %0d datain: %08x", code, addr, datain);
                $finish;
             end
             mem.mem[addr] = datain;
+            $display("mem[%08x]: %08x", addr, mem.mem[addr]);
+            
             indx = indx + 1;
          end
          $fclose(fp);
-         code = indx - 1;
-         $display("code: %0d indx: %0d\n", code, indx);
-         for (indx = 0; indx < code; indx = indx + 1) begin
-//            $display("mem[%04x]: %04x", indx, mem.mem[indx]);
-            $display("mem[%04X]: %04X", indx, mem.mem[indx]);
-         end
+//         code = indx - 1;
+//         $display("code: %0d indx: %0d\n", code, indx);
+//         for (indx = 0; indx < code; indx = indx + 1) begin
+////            $display("mem[%04x]: %04x", indx, mem.mem[indx]);
+//            $display("mem[%04X]: %04X", indx, mem.mem[indx]);
+//         end
       end
    endtask
 

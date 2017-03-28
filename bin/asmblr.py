@@ -48,6 +48,7 @@ BLT = 43
 BGE = 44
 BLTU = 45
 BGEU = 46
+ORG = 47
 
 class Token:
     def __init__(self):
@@ -104,7 +105,8 @@ class Token:
                            "BLT",
                            "BGE",
                            "BLTU",
-                           "BGEU"]
+                           "BGEU",
+                           "ORG"]
           
     def getKind(self,k):
         if (k == 0):
@@ -201,6 +203,8 @@ class Token:
             return "BLTU"
         elif (k == 46):
             return "BGEU"
+        elif (k == 47):
+            return "ORG"
         else:
             return "UNKNOWN"
 
@@ -208,18 +212,22 @@ class CodeGenerator:
     def __init__(self, outFile):
         self.outFile = outFile
         self.memarray = []
+        self.memaddr = []
         #print "[ start ] CodeGenerator"
 
     def __del__(self):
         for index in range(len(self.memarray)):
-            print "+" + "{0:0{1}X}".format(index,8) + " " + self.memarray[index]
-            self.outFile.write("+" + "{0:0{1}X}".format(index,8) + " " + self.memarray[index] + "\n")
+            #print "+" + "{0:0{1}X}".format(index,8) + " " + self.memarray[index]
+            print "+" + "{0:0{1}X}".format(self.memaddr[index],8) + " " + self.memarray[index]
+            #self.outFile.write("+" + "{0:0{1}X}".format(index,8) + " " + self.memarray[index] + "\n")
+            self.outFile.write("+" + "{0:0{1}X}".format(self.memaddr[index],8) + " " + self.memarray[index] + "\n")
         
     def emitInstruction(self, cnt, op):
         #self.outFile.write("+" + "{0:0{1}X}".format(cnt,8) + " " + op + "\n")
         #print "+" + "{0:0{1}X}".format(cnt,8) + " " + op
         #self.memdic["{0:0{1}X}".format(cnt,8)] = op
         self.memarray.append(op)
+        self.memaddr.append(cnt)
 
         #print "--------------------"
         #for index in range(len(self.memarray)):
@@ -249,7 +257,7 @@ class TokenMgr:
         self.currentLineNumber = 0
         self.inputLine = ""
         self.buff = ""
-        self.getNextChar()
+        #self.getNextChar()
 
     def __del__(self):
         self.inFileHandle.close()
@@ -377,6 +385,8 @@ class TokenMgr:
                     tkn.kind = BLTU
                 elif tkn.image == "BGEU":
                     tkn.kind = BGEU
+                elif tkn.image == "org":
+                    tkn.kind = ORG
                 elif tkn.image == "zero":
                     tkn.image = "x0"
                     tkn.kind = REGISTER
@@ -1898,6 +1908,30 @@ class asmblr:
             print "Error. Invalid state"
             exit(1)
 
+    def ORGpattern(self):
+#        if self.asmblrstate == PARSESTATE_ASM:
+#            print "[ ORGpattern ] start"
+#            self.consume(ORG)
+#            lprogcounter = self.currentToken
+#            self.consume(HEX)
+#            print "lprogcounter.image[2:] -> " + str(lprogcounter.image[2:])
+#            self.programcounter = int(lprogcounter.image[2:], 16)
+#            print "[ ORGpattern ] end: " + self.currentToken.image
+#            print "[ ORGpattern ] " + str(self.programcounter)
+#        elif self.asmblrstate == PARSESTATE_LABELS:
+#            self.consume(ORG)
+#            self.consume(HEX)
+
+        print "[ ORGpattern ] start"
+        self.consume(ORG)
+        lprogcounter = self.currentToken
+        self.consume(HEX)
+        print "lprogcounter.image[2:] -> " + str(lprogcounter.image[2:])
+        self.programcounter = int(lprogcounter.image[2:], 16)
+        print "[ ORGpattern ] end: " + self.currentToken.image
+        print "[ ORGpattern ] " + str(self.programcounter)
+
+
     def program(self,labels = 0):
         while self.currentToken.kind != EOF:
             if self.currentToken.kind == ID:
@@ -2015,6 +2049,8 @@ class asmblr:
             elif self.currentToken.kind == BGEU:
                 self.BGEUpattern()
                 self.programcounter += 1
+            elif self.currentToken.kind == ORG:
+                self.ORGpattern()
             elif self.currentToken.kind == ERROR:
                 print "Line: " + str(self.currentToken.beginLine)
                 print "syntax Error"
