@@ -331,7 +331,8 @@ module initialTest;
       reg [8*128:1] datastr;
       integer       addrOrData;
       reg [8*128:1] tomem;
-      reg [31:0]       addr;
+      reg [15:0]       addr0;
+      reg [15:0]       addr1;
       reg [31:0]    datain;
       begin
          fp = $fopen(str, "r");
@@ -346,15 +347,15 @@ module initialTest;
          indx = 0;
          addrOrData = 0;
          while (code > 0) begin
-            code = $fscanf(fp, "+%08x %08x\n", addr, datain);
+            code = $fscanf(fp, "+%04x%04x %08x\n", addr0,addr1, datain);
             //$display("code: %0d addr: %04x datain: %04x", code, addr, datain);
-            $display("code: %0d addr: %08x datain: %08x", code, addr, datain);
+            $display("code: %0d addr: %04x%04x datain: %08x", code, addr0,addr1, datain);
             if (code == 0) begin
-               $display("invalid input code: %0d addr: %0d datain: %08x", code, addr, datain);
+               $display("invalid input code: %0d addr: %04x%04x datain: %08x", code, addr0,addr1, datain);
                $finish;
             end
-            mem.mem[addr] = datain;
-            $display("mem[%08x]: %08x", addr, mem.mem[addr]);
+            mem.mem[{addr0,addr1}] = datain;
+            $display("mem[%08x]: %08x", {addr0,addr1}, mem.mem[{addr0,addr1}]);
             
             indx = indx + 1;
          end

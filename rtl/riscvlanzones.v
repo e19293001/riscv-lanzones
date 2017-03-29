@@ -780,7 +780,7 @@ module lanzones(
          alu_outctrl = xRData0 ^ imm_ctrl;
       end
       else if (DI_AUIPC_ctrl) begin
-         alu_outctrl = PCff + imm_ctrl;
+         alu_outctrl = PCff[31:12] + imm_ctrl;
       end
       else if (DI_BEQ_ctrl) begin
          alu_outctrl = xRData0 == xRData1 ? 1 : 0;

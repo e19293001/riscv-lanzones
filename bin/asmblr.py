@@ -1453,7 +1453,11 @@ class asmblr:
                 self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
                 self.consume(HEX)
             elif imm.kind == ID:
-                immstr = self.hextobinstr(str(hex(self.symboltablename[imm.image])))
+                if len(str(hex(self.symboltablename[imm.image]))) > 3:
+                    print "Warning: " + imm.image + " exceeds the maximum immediate value."
+                    print "         this will be rounded to " + str(hex(self.symboltablename[imm.image]))[0:3]
+                    imm.image = str(hex(self.symboltablename[imm.image]))[0:3]
+                immstr = self.hextobinstr(imm.image)
                 rs1str = self.tobinstr(rs1.image[1:])
                 rdstr = self.tobinstr(rd.image[1:])
                 instruction = self.binformat(immstr,12) + self.binformat(rs1str,5) + "101" + self.binformat(rdstr,5) + self.binformat(op,7)
@@ -1583,7 +1587,12 @@ class asmblr:
 
         if self.asmblrstate == PARSESTATE_ASM:
             if imm.kind == HEX:
+                if len(imm.image[2:]) > 5:
+                    print "Warning: " + imm.image + " exceeds the maximum immediate value."
+                    print "         this will be rounded to " + imm.image[0:7]
+                    imm.image = imm.image[0:7]
                 immstr = self.hextobinstr(imm.image[2:])
+                print "len(immstr.image[2:] -> " + str(len(immstr))
                 rdstr = self.tobinstr(rd.image[1:])
                 instruction = self.binformat(immstr,20) + self.binformat(rdstr,5) + self.binformat(op,7)
                 self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
@@ -1930,7 +1939,6 @@ class asmblr:
         self.programcounter = int(lprogcounter.image[2:], 16)
         print "[ ORGpattern ] end: " + self.currentToken.image
         print "[ ORGpattern ] " + str(self.programcounter)
-
 
     def program(self,labels = 0):
         while self.currentToken.kind != EOF:
