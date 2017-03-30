@@ -1,4 +1,11 @@
+	;; LW tp,tp,0x123456789
+	LW tp,tp,0x1111111111
+   LW tp,tp,biglabel
+	SW tp,tp,0x123456789
+	LUI  tp,0x987654321
+   LUI  tp,biglabel
 	JAL  tp,0x123456789
+	JAL  tp,biglabel
 org 0x12345
 	;; ORI  tp,zero,label5
 	LUI  tp,0xFFFFF
@@ -41,6 +48,8 @@ label5:
 label6:  JAL ra,label6
 this1:
    JAL ra,this2
+org 0x12345678	
+biglabel:   
 xx1:   dw 0xAAAAAA
 xx2:   dw 0xAAAAAB
 xx3:   dw 0xAAAAAC

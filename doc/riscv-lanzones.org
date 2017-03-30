@@ -1907,6 +1907,51 @@ SRA x4,x4,x2
    CLOSED: [2017-03-10 Fri 22:30]
 ** DONE added ABI names to registers x0 to x31
    CLOSED: [2017-03-27 Mon 14:35]
+** NEXT add immediate boundary check [6/37]
+   :LOGBOOK:  
+   CLOCK: [2017-03-30 Thu 08:32]--[2017-03-30 Thu 09:19] =>  0:47
+   :END:      
+   :PROPERTIES:
+   :Effort:   2:00
+   :END:
+   - [X] LUIpattern
+   - [X] ADDpattern
+   - [X] SWpattern
+   - [X] LWpattern
+   - [ ] LHpattern
+   - [ ] SUBpattern
+   - [ ] SLLpattern
+   - [ ] ORIpattern
+   - [ ] ANDIpattern
+   - [ ] SLLIpattern
+   - [ ] SRLIpattern
+   - [ ] SRAIpattern
+   - [ ] ADDIpattern
+   - [ ] XORIpattern
+   - [ ] XORpattern
+   - [ ] ORpattern
+   - [ ] ANDpattern
+   - [ ] SLTIpattern
+   - [ ] SLTIUpattern
+   - [ ] SLTpattern
+   - [ ] SLTUpattern
+   - [ ] LBpattern
+   - [ ] SBpattern
+   - [ ] SHpattern
+   - [ ] LBUpattern
+   - [X] LHUpattern
+   - [ ] SRLpattern
+   - [ ] SRApattern
+   - [ ] AUIPCpattern
+   - [X] JALpattern
+   - [ ] JALRpattern
+   - [ ] BEQpattern
+   - [ ] BNEpattern
+   - [ ] BLTpattern
+   - [ ] BGEpattern
+   - [ ] BLTUpattern
+   - [ ] BGEUpattern
+
 * Notes
 ** The Assembler
 ** Global variable

@@ -591,6 +591,11 @@ class asmblr:
 
         if self.asmblrstate == PARSESTATE_ASM:
             if imm.kind == HEX:
+                if len(imm.image[2:]) > 4:
+                    print "Warning: " + imm.image + " exceeds the maximum immediate value."
+                    print "         this will be rounded to " + imm.image[0:5]
+                    imm.image = imm.image[0:5]
+
                 immstr = self.hextobinstr(imm.image[2:])
                 rs1str = self.tobinstr(rs1.image[1:])
                 rdstr = self.tobinstr(rd.image[1:])
@@ -600,7 +605,15 @@ class asmblr:
                 self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
                 self.consume(HEX)
             elif imm.kind == ID:
-                immstr = self.hextobinstr(str(hex(self.symboltablename[imm.image])))
+                labelvalue = str(hex(self.symboltablename[imm.image]))
+                if len(labelvalue) > 4:
+                    print "Warning: " + labelvalue[2:0] + " exceeds the maximum immediate value."
+                    print "         this will be rounded to " + labelvalue[0:5] + " address of label: " + imm.image
+                    labelvalue = labelvalue[0:5]
+                                 
+                immstr = self.hextobinstr(labelvalue)
+
+                #immstr = self.hextobinstr(str(hex(self.symboltablename[imm.image])))
                 rs1str = self.tobinstr(rs1.image[1:])
                 rdstr = self.tobinstr(rd.image[1:])
 
@@ -677,30 +690,11 @@ class asmblr:
             if imm.kind == HEX:
                 immstr = self.hextobinstr(imm.image[2:])
                 immstr = self.binformat(immstr,20)
-                #print "immstr[3]: " + immstr[len(immstr)-3]
                 rs1str = self.tobinstr(rs1.image[1:])
                 rs2str = self.tobinstr(rs2.image[1:])
-        
-                #imm = {inst[31:25],inst[11:7]}
-                #rs2 = inst[24:20]
-                #rs1 = inst[19:15]
-                #funct3 = inst[14:12]
-                #opcode = inst[6:0]
-                #
-                #0001000 00000 00010010010000100011
-                #0001000 00010 00000 010 01000 0100011
-                #
-                #0001 0000 0010 0000 0010 0100 0010 0011
-                #   0    0    2    0    2    4    2    3
-        
-                # 0001000 01000
-                # imm[5:11] 0001000
-                # imm[0:4] 01000
+
                 instruction =  immstr[8:15] + self.binformat(rs2str,5) + self.binformat(rs1str,5) + "010" + immstr[15:20] + self.binformat(op,7)
         
-                #print "self.binformat(rs2str,5): " + self.binformat(rs2str,5) + " rs2.image[1:]: " + rs2.image[1:]
-                #print "instruction: " + instruction
-                
                 self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
                 self.consume(HEX)
             elif imm.kind == ID:
@@ -735,13 +729,26 @@ class asmblr:
 
         if self.asmblrstate == PARSESTATE_ASM:
             if imm.kind == HEX:
+                if len(imm.image[2:]) > 5:
+                    print "Warning: " + imm.image + " exceeds the maximum immediate value."
+                    print "         this will be rounded to " + imm.image[0:7]
+                    imm.image = imm.image[0:7]
+
                 immstr = self.hextobinstr(imm.image[2:])
                 rdstr = self.tobinstr(rd.image[1:])
                 instruction = self.binformat(immstr,20) + self.binformat(rdstr,5) + self.binformat(op,7)
                 self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
                 self.consume(HEX)
             elif imm.kind == ID:
-                immstr = self.hextobinstr(str(hex(self.symboltablename[imm.image])))
+                labelvalue = str(hex(self.symboltablename[imm.image]))
+                if len(labelvalue) > 5:
+                    print "Warning: " + labelvalue[2:0] + " exceeds the maximum immediate value."
+                    print "         this will be rounded to " + labelvalue[0:7] + " address of label: " + imm.image
+                    labelvalue = labelvalue[0:7]
+                                 
+                immstr = self.hextobinstr(labelvalue)
+
+                #immstr = self.hextobinstr(str(hex(self.symboltablename[imm.image])))
                 rdstr = self.tobinstr(rd.image[1:])
                 instruction = self.binformat(immstr,20) + self.binformat(rdstr,5) + self.binformat(op,7)
                 self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
@@ -1598,7 +1605,14 @@ class asmblr:
                 self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
                 self.consume(HEX)
             elif imm.kind == ID:
-                immstr = self.hextobinstr(str(hex(self.symboltablename[imm.image])))
+                labelvalue = str(hex(self.symboltablename[imm.image]))
+                if len(labelvalue) > 5:
+                    print "Warning: " + labelvalue[2:0] + " exceeds the maximum immediate value."
+                    print "         this will be rounded to " + labelvalue[0:7] + " address of label: " + imm.image
+                    labelvalue = labelvalue[0:7]
+                                 
+                immstr = self.hextobinstr(labelvalue)
+                
                 rdstr = self.tobinstr(rd.image[1:])
                 instruction = self.binformat(immstr,20) + self.binformat(rdstr,5) + self.binformat(op,7)
                 self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
