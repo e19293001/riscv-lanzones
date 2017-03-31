@@ -1,4 +1,21 @@
-	;; LW tp,tp,0x123456789
+	SLTI tp,tp,0xAAAAAAAAAA
+   SLTI tp,tp,biglabel
+	XORI tp,tp,0x9999999999
+   XORI tp,tp,biglabel
+	ADDI tp,tp,0x8888888888
+   ADDI tp,tp,biglabel
+	SRAI tp,tp,0x7777777777
+   SRAI tp,tp,biglabel
+	SRLI tp,tp,0x6666666666
+   SRLI tp,tp,biglabel
+	SLLI tp,tp,0x5555555555
+   SLLI tp,tp,biglabel
+	ANDI tp,tp,0x4444444444
+	ANDI tp,tp,biglabel
+	ORI tp,tp,0x3333333333
+	ORI tp,tp,biglabel
+	LH tp,tp,0x2222222222
+   LH tp,tp,biglabel
 	LW tp,tp,0x1111111111
    LW tp,tp,biglabel
 	SW tp,tp,0x123456789
