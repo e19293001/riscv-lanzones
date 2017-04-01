@@ -48,7 +48,7 @@ label5:
 label6:  JAL ra,label6
 this1:
    JAL ra,this2
-org 0x12345678	
+org 0x12345678
 biglabel:   
 xx1:   dw 0xAAAAAA
 xx2:   dw 0xAAAAAB
