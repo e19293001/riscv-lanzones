@@ -53,7 +53,7 @@ static int vpi_dynmem_write_calltf(char*user_data)
   vpi_printf("Hello, World!\n");
   s_vpi_value value_s;
   vpiHandle systf_handle, arg_itr, arg_handle;
-  PLI_INT32 key, value;
+  unsigned int key, value;
   PLI_INT32 result;
 
   systf_handle = vpi_handle(vpiSysTfCall, NULL);
@@ -71,7 +71,7 @@ static int vpi_dynmem_write_calltf(char*user_data)
   arg_handle = vpi_scan(arg_itr);
   vpi_free_object(arg_itr);
   vpi_get_value(arg_handle, &value_s);
-  value = value_s.value.integer;
+  value = (unsigned int) value_s.value.integer;
 
   vpi_printf("key: %0X value: %0d\n", key, value);
   return 0;

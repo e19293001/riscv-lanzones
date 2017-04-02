@@ -24,3 +24,8 @@ vpi:
 	gcc -shared -o vpi_dynmem.vpi vpi_dynmem.o -lvpi $(COPTS)
 	iverilog -o tstvpiassoc.vvp tstvpiassoc.v
 	vvp -M. -m vpi_dynmem tstvpiassoc.vvp
+
+dbgbst:
+	gcc -g ../vpi/bst.c -o bst -I../vpi/ -D DEBUG_BST
+#	valgrind --leak-check=full -v ./bst
+	./bst
