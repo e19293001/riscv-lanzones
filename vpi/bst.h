@@ -16,7 +16,7 @@ typedef struct node node;
 
 node *bst_new(mem memdata);
 node *bst_insert(node *n, mem memdata);
-int bst_search(node *n, mem memdata);
+unsigned int bst_search(node *n, mem memdata);
 void bst_free(node *n);
 
 #ifdef DEBUG_BST

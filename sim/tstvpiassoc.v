@@ -1,7 +1,17 @@
 module test;
    reg [31:0] data;
+   reg [31:0] address;
    initial begin
-      data = 'hFFFFFFFF;
-      $dynmem_write(data,4);
+      address = 'hFFFFFFFF;
+      $dynmem_write(address,4);
+
+      data = $dynmem_read(address);
+      $display("data after read: %0x", data);
+
+      address = 'hABCDE123;
+      $dynmem_write(address,'h444444);
+
+      data = $dynmem_read(address);
+      $display("data after read: %0x", data);
    end
 endmodule
