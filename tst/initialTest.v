@@ -1,116 +1,116 @@
-`ifdef FIXRESPONSE
-module MemoryModel(
-                   input             clk,
-                   input             rstn,
-                   output 		       RVld,
-                   input             RRdy,
-                   input [31:0]      RAddr,
-                   input [31:0]      RWData,
-                   input             RWEn,
-                   input [3:0] 		 RWStrobe,
-                   output [31:0] RData
-                   );
-
-   reg [31:0] mem ['hFFFFFFF:0];
-
-   wire [31:0] strb_w;
-
-   assign strb_w = {{8{RWStrobe[3]}},{8{RWStrobe[2]}},{8{RWStrobe[1]}},{8{RWStrobe[0]}}};
-   
-   always @(posedge clk) begin
-      if (RWEn) begin
-         //mem[RAddr] <= RWData;
-         mem[RAddr] <= (mem[RAddr] & ~strb_w) | (RWData & strb_w);
-      end
-   end
-
-   assign RData = (RRdy && RVld) ? mem[RAddr] : 0;
-
-//   assign RVld = RRdy;
-   assign RVld = 1;
+//`ifdef FIXRESPONSE
+//module MemoryModel(
+//                   input             clk,
+//                   input             rstn,
+//                   output 		       RVld,
+//                   input             RRdy,
+//                   input [31:0]      RAddr,
+//                   input [31:0]      RWData,
+//                   input             RWEn,
+//                   input [3:0] 		 RWStrobe,
+//                   output [31:0] RData
+//                   );
+//
+//   reg [31:0] mem ['hFFFFFFF:0];
+//
+//   wire [31:0] strb_w;
+//
+//   assign strb_w = {{8{RWStrobe[3]}},{8{RWStrobe[2]}},{8{RWStrobe[1]}},{8{RWStrobe[0]}}};
+//   
 //   always @(posedge clk) begin
-//      if (!rstn) begin
-//         RVld <= 0;
-//      end
-//      else begin
-//         RVld <= 0;
-//         if (RVld) begin
-//            RVld <= 0;
-//         end
-//         else if (RRdy) begin
-//            RVld <= 1;
-//         end
+//      if (RWEn) begin
+//         //mem[RAddr] <= RWData;
+//         mem[RAddr] <= (mem[RAddr] & ~strb_w) | (RWData & strb_w);
 //      end
 //   end
-
-   wire [31:0] mem0x100;
-   wire [31:0] mem0x101;
-   wire [31:0] mem0x102;
-   wire [31:0] mem0x103;
-   wire [31:0] mem0x104;
-   wire [31:0] mem0x105;
-   wire [31:0] mem0x106;
-   wire [31:0] mem0x107;
-   wire [31:0] mem0x108;
-   wire [31:0] mem0x109;
-
-   wire [31:0] mem0x000;
-   wire [31:0] mem0x001;
-   wire [31:0] mem0x002;
-   wire [31:0] mem0x003;
-   wire [31:0] mem0x004;
-   wire [31:0] mem0x005;
-   wire [31:0] mem0x006;
-   wire [31:0] mem0x007;
-   wire [31:0] mem0x008;
-   wire [31:0] mem0x009;
-
-   wire [31:0] mem0x010;
-   wire [31:0] mem0x011;
-   wire [31:0] mem0x012;
-   wire [31:0] mem0x013;
-   wire [31:0] mem0x014;
-   wire [31:0] mem0x015;
-   wire [31:0] mem0x016;
-   wire [31:0] mem0x017;
-   wire [31:0] mem0x018;
-   wire [31:0] mem0x019;
-
-   assign mem0x100 = mem['h100];
-   assign mem0x101 = mem['h101];
-   assign mem0x102 = mem['h102];
-   assign mem0x103 = mem['h103];
-   assign mem0x104 = mem['h104];
-   assign mem0x105 = mem['h105];
-   assign mem0x106 = mem['h106];
-   assign mem0x107 = mem['h107];
-   assign mem0x108 = mem['h108];
-   assign mem0x109 = mem['h109];
-
-   assign mem0x000 = mem['h000];
-   assign mem0x001 = mem['h001];
-   assign mem0x002 = mem['h002];
-   assign mem0x003 = mem['h003];
-   assign mem0x004 = mem['h004];
-   assign mem0x005 = mem['h005];
-   assign mem0x006 = mem['h006];
-   assign mem0x007 = mem['h007];
-   assign mem0x008 = mem['h008];
-   assign mem0x009 = mem['h009];
-
-   assign mem0x010 = mem['h010];
-   assign mem0x011 = mem['h011];
-   assign mem0x012 = mem['h012];
-   assign mem0x013 = mem['h013];
-   assign mem0x014 = mem['h014];
-   assign mem0x015 = mem['h015];
-   assign mem0x016 = mem['h016];
-   assign mem0x017 = mem['h017];
-   assign mem0x018 = mem['h018];
-   assign mem0x019 = mem['h019];
-
-endmodule
-`else
+//
+//   assign RData = (RRdy && RVld) ? mem[RAddr] : 0;
+//
+////   assign RVld = RRdy;
+//   assign RVld = 1;
+////   always @(posedge clk) begin
+////      if (!rstn) begin
+////         RVld <= 0;
+////      end
+////      else begin
+////         RVld <= 0;
+////         if (RVld) begin
+////            RVld <= 0;
+////         end
+////         else if (RRdy) begin
+////            RVld <= 1;
+////         end
+////      end
+////   end
+//
+//   wire [31:0] mem0x100;
+//   wire [31:0] mem0x101;
+//   wire [31:0] mem0x102;
+//   wire [31:0] mem0x103;
+//   wire [31:0] mem0x104;
+//   wire [31:0] mem0x105;
+//   wire [31:0] mem0x106;
+//   wire [31:0] mem0x107;
+//   wire [31:0] mem0x108;
+//   wire [31:0] mem0x109;
+//
+//   wire [31:0] mem0x000;
+//   wire [31:0] mem0x001;
+//   wire [31:0] mem0x002;
+//   wire [31:0] mem0x003;
+//   wire [31:0] mem0x004;
+//   wire [31:0] mem0x005;
+//   wire [31:0] mem0x006;
+//   wire [31:0] mem0x007;
+//   wire [31:0] mem0x008;
+//   wire [31:0] mem0x009;
+//
+//   wire [31:0] mem0x010;
+//   wire [31:0] mem0x011;
+//   wire [31:0] mem0x012;
+//   wire [31:0] mem0x013;
+//   wire [31:0] mem0x014;
+//   wire [31:0] mem0x015;
+//   wire [31:0] mem0x016;
+//   wire [31:0] mem0x017;
+//   wire [31:0] mem0x018;
+//   wire [31:0] mem0x019;
+//
+//   assign mem0x100 = mem['h100];
+//   assign mem0x101 = mem['h101];
+//   assign mem0x102 = mem['h102];
+//   assign mem0x103 = mem['h103];
+//   assign mem0x104 = mem['h104];
+//   assign mem0x105 = mem['h105];
+//   assign mem0x106 = mem['h106];
+//   assign mem0x107 = mem['h107];
+//   assign mem0x108 = mem['h108];
+//   assign mem0x109 = mem['h109];
+//
+//   assign mem0x000 = mem['h000];
+//   assign mem0x001 = mem['h001];
+//   assign mem0x002 = mem['h002];
+//   assign mem0x003 = mem['h003];
+//   assign mem0x004 = mem['h004];
+//   assign mem0x005 = mem['h005];
+//   assign mem0x006 = mem['h006];
+//   assign mem0x007 = mem['h007];
+//   assign mem0x008 = mem['h008];
+//   assign mem0x009 = mem['h009];
+//
+//   assign mem0x010 = mem['h010];
+//   assign mem0x011 = mem['h011];
+//   assign mem0x012 = mem['h012];
+//   assign mem0x013 = mem['h013];
+//   assign mem0x014 = mem['h014];
+//   assign mem0x015 = mem['h015];
+//   assign mem0x016 = mem['h016];
+//   assign mem0x017 = mem['h017];
+//   assign mem0x018 = mem['h018];
+//   assign mem0x019 = mem['h019];
+//
+//endmodule
+//`else
 module MemoryModel(
                    input             clk,
                    input             rstn,
@@ -123,7 +123,7 @@ module MemoryModel(
                    output reg [31:0] RData
                    );
 
-   reg [31:0] mem ['hFFFF:0];
+   reg [31:0] mem [0:'hFFFF];
 
    wire [31:0] strb_w;
 
@@ -231,7 +231,7 @@ module MemoryModel(
    assign mem0x019 = mem['h019];
 
 endmodule
-`endif
+//`endif
 
 module initialTest;
    reg 			clk;
@@ -360,6 +360,8 @@ module initialTest;
             indx = indx + 1;
          end
          $fclose(fp);
+//         mem.mem['h12345678] = 12345;
+//         $display("mem.mem['h12345678]: %08x", mem.mem['h12345678]);
 //         code = indx - 1;
 //         $display("code: %0d indx: %0d\n", code, indx);
 //         for (indx = 0; indx < code; indx = indx + 1) begin
