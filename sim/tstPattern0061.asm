@@ -1,3 +1,19 @@
+	BEQ    tp,tp,0xDDDDDDDDDDDDDD
+   BEQ    tp,tp,biglabel
+	JALR    tp,tp,0xEEEEEEEEEEE
+   JALR    tp,tp,biglabel
+	AUIPC    tp,0xFFFFFFFFFFFF
+   AUIPC    tp,biglabel
+	LBU    tp,tp,0xEEEEEEEEEE
+   LBU    tp,tp,biglabel
+	SH    tp,tp,0xDDDDDDDDD
+   SH    tp,tp,biglabel
+	SB    tp,tp,0xDDDDDDDDDD
+   SB    tp,tp,biglabel
+	LB    tp,tp,0xCCCCCCCCCC
+   LB    tp,tp,biglabel
+	SLTIU tp,tp,0xBBBBBBBBBB
+   SLTIU tp,tp,biglabel
 	SLTI tp,tp,0xAAAAAAAAAA
    SLTI tp,tp,biglabel
 	XORI tp,tp,0x9999999999
