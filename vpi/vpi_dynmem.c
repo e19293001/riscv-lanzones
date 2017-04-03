@@ -1,4 +1,7 @@
-# include  <vpi_user.h>
+#include <vpi_user.h>
+#include <bst.h>
+
+node *memassoc = NULL;
 
 static int vpi_dynmem_write_compiletf(char*user_data)
 {
@@ -50,11 +53,11 @@ static int vpi_dynmem_write_compiletf(char*user_data)
 
 static int vpi_dynmem_write_calltf(char*user_data)
 {
-  vpi_printf("Hello, World!\n");
   s_vpi_value value_s;
   vpiHandle systf_handle, arg_itr, arg_handle;
   unsigned int key, value;
   PLI_INT32 result;
+  mem memdata;
 
   systf_handle = vpi_handle(vpiSysTfCall, NULL);
   arg_itr = vpi_iterate(vpiArgument, systf_handle);
@@ -73,6 +76,10 @@ static int vpi_dynmem_write_calltf(char*user_data)
   vpi_get_value(arg_handle, &value_s);
   value = (unsigned int) value_s.value.integer;
 
+  memdata.address = key;
+  memdata.data = value;
+  memassoc = bst_insert(memassoc,memdata);
+  
   vpi_printf("key: %0X value: %0d\n", key, value);
   return 0;
 }

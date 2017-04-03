@@ -7,6 +7,7 @@ node *bst_new(mem memdata) {
   nd->data = memdata;
   nd->left = NULL;
   nd->right = NULL;
+  return nd;
 }
 
 node *bst_insert(node *n, mem memdata) {
@@ -50,6 +51,7 @@ int bst_search(node *n, mem memdata) {
       return 1;
     }
   }
+  return 0;
 }
 
 #ifdef DEBUG_BST
