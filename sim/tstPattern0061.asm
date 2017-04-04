@@ -1,3 +1,13 @@
+	BGEU    tp,tp,0x888888888888888
+   BGEU    tp,tp,biglabel
+	BGE    tp,tp,0x999999999999999
+   BGE    tp,tp,biglabel
+	BLTU    tp,tp,0xAAAAAAAAAAAAAA
+   BLTU    tp,tp,biglabel
+	BLT    tp,tp,0xBBBBBBBBBBBBBB
+   BLT    tp,tp,biglabel
+	BNE    tp,tp,0xCCCCCCCCCCCCCC
+   BNE    tp,tp,biglabel
 	BEQ    tp,tp,0xDDDDDDDDDDDDDD
    BEQ    tp,tp,biglabel
 	JALR    tp,tp,0xEEEEEEEEEEE

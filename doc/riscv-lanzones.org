@@ -1907,9 +1907,11 @@ SRA x4,x4,x2
    CLOSED: [2017-03-10 Fri 22:30]
 ** DONE added ABI names to registers x0 to x31
    CLOSED: [2017-03-27 Mon 14:35]
-** NEXT add immediate boundary check [30/37]
+** DONE add immediate boundary check [37/37]
+   CLOSED: [2017-04-04 Tue 09:11]
    :LOGBOOK:  
-   CLOCK: [2017-04-03 Mon 11:59]
+   CLOCK: [2017-04-04 Tue 09:01]--[2017-04-04 Tue 09:11] =>  0:10
+   CLOCK: [2017-04-03 Mon 11:59]--[2017-04-03 Mon 12:49] =>  0:50
    CLOCK: [2017-03-31 Fri 12:25]--[2017-03-31 Fri 12:45] =>  0:20
    CLOCK: [2017-03-30 Thu 08:32]--[2017-03-30 Thu 09:19] =>  0:47
    :END:      
@@ -1946,13 +1948,13 @@ SRA x4,x4,x2
    - [X] SRApattern
    - [X] AUIPCpattern
    - [X] JALpattern
-   - [ ] JALRpattern
-   - [ ] BEQpattern
-   - [ ] BNEpattern
-   - [ ] BLTpattern
-   - [ ] BGEpattern
-   - [ ] BLTUpattern
-   - [ ] BGEUpattern
+   - [X] JALRpattern
+   - [X] BEQpattern
+   - [X] BNEpattern
+   - [X] BLTpattern
+   - [X] BGEpattern
+   - [X] BLTUpattern
+   - [X] BGEUpattern
 
 * Notes
 ** The Assembler
