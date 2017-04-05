@@ -21,8 +21,10 @@ static int vpi_dynmem_read_compiletf(char*user_data) {
   tfarg_type = vpi_get(vpiType, arg_handle);
   if ((tfarg_type != vpiReg) &&
       (tfarg_type != vpiIntegerVar) &&
-      (tfarg_type != vpiConstant)) {
+      (tfarg_type != vpiConstant) &&
+      (tfarg_type != vpiNet)) {
     vpi_printf("ERROR: $dynmem_read arg1 must be a number, variable or net\n");
+    vpi_printf("tfarg_type: %0d\n", tfarg_type);
     err_flag = 1;
   }
 //  arg_handle = vpi_scan(arg_itr);
@@ -71,7 +73,7 @@ static int vpi_dynmem_read_calltf(char*user_data) {
   memdata.address = key;
   memdata.data = bst_search(memassoc,memdata);
 
-  vpi_printf("[ vpi_dynmem_read_calltf ] memdata.data: %08X\n", memdata.data);
+  //vpi_printf("[ vpi_dynmem_read_calltf ] memdata.data: %08X\n", memdata.data);
 
   value_s.value.integer = (PLI_INT32) memdata.data;
   
@@ -128,7 +130,8 @@ static int vpi_dynmem_write_compiletf(char*user_data) {
   tfarg_type = vpi_get(vpiType, arg_handle);
   if ((tfarg_type != vpiReg) &&
       (tfarg_type != vpiIntegerVar) &&
-      (tfarg_type != vpiConstant)) {
+      (tfarg_type != vpiConstant) &&
+      (tfarg_type != vpiNet)) {
     vpi_printf("ERROR: $dynmem_write arg2 must be a number, variable or net\n");
     err_flag = 1;
   }
@@ -182,9 +185,11 @@ static int vpi_dynmem_write_calltf(char*user_data) {
 
   memdata.address = key;
   memdata.data = value;
+  vpi_printf("[ vpi_dynmem_write_calltf ] address: %08X data: %08X\n", memdata.address, memdata.data);
+
   memassoc = bst_insert(memassoc,memdata);
   
-  vpi_printf("writing key: %08X value: %08X\n", key, value);
+  //vpi_printf("writing key: %08X value: %08X\n", key, value);
   return 0;
 }
 

@@ -123,8 +123,9 @@ module MemoryModel(
                    output reg [31:0] RData
                    );
 
-   reg [31:0] mem [0:'hFFFF];
+//   reg [31:0] mem [0:'hFFFF];
 
+   reg [31:0] data;
    wire [31:0] strb_w;
 
    assign strb_w = {{8{RWStrobe[3]}},{8{RWStrobe[2]}},{8{RWStrobe[1]}},{8{RWStrobe[0]}}};
@@ -135,12 +136,16 @@ module MemoryModel(
       end
       else begin
          if (RWEn) begin
-            //mem[RAddr] <= RWData;
-            mem[RAddr] <= (mem[RAddr] & ~strb_w) | (RWData & strb_w);
+            data = $dynmem_read(RAddr);
+            $dynmem_write(RAddr,((data & ~strb_w) | (RWData & strb_w)));
          end
          else begin
             if (RRdy && !RVld) begin
-               RData <= mem[RAddr];
+               //data = $dynmem_read(RAddr);
+               //RData <= data;
+               $display("reading @RAddr: %08X\n", RAddr);
+               RData <= $dynmem_read(RAddr);
+               $display("RData: %08X\n", RData);
             end
             else begin
                RData <= 0;
@@ -163,72 +168,6 @@ module MemoryModel(
          end
       end
    end
-
-   wire [31:0] mem0x100;
-   wire [31:0] mem0x101;
-   wire [31:0] mem0x102;
-   wire [31:0] mem0x103;
-   wire [31:0] mem0x104;
-   wire [31:0] mem0x105;
-   wire [31:0] mem0x106;
-   wire [31:0] mem0x107;
-   wire [31:0] mem0x108;
-   wire [31:0] mem0x109;
-
-   wire [31:0] mem0x000;
-   wire [31:0] mem0x001;
-   wire [31:0] mem0x002;
-   wire [31:0] mem0x003;
-   wire [31:0] mem0x004;
-   wire [31:0] mem0x005;
-   wire [31:0] mem0x006;
-   wire [31:0] mem0x007;
-   wire [31:0] mem0x008;
-   wire [31:0] mem0x009;
-
-   wire [31:0] mem0x010;
-   wire [31:0] mem0x011;
-   wire [31:0] mem0x012;
-   wire [31:0] mem0x013;
-   wire [31:0] mem0x014;
-   wire [31:0] mem0x015;
-   wire [31:0] mem0x016;
-   wire [31:0] mem0x017;
-   wire [31:0] mem0x018;
-   wire [31:0] mem0x019;
-
-   assign mem0x100 = mem['h100];
-   assign mem0x101 = mem['h101];
-   assign mem0x102 = mem['h102];
-   assign mem0x103 = mem['h103];
-   assign mem0x104 = mem['h104];
-   assign mem0x105 = mem['h105];
-   assign mem0x106 = mem['h106];
-   assign mem0x107 = mem['h107];
-   assign mem0x108 = mem['h108];
-   assign mem0x109 = mem['h109];
-
-   assign mem0x000 = mem['h000];
-   assign mem0x001 = mem['h001];
-   assign mem0x002 = mem['h002];
-   assign mem0x003 = mem['h003];
-   assign mem0x004 = mem['h004];
-   assign mem0x005 = mem['h005];
-   assign mem0x006 = mem['h006];
-   assign mem0x007 = mem['h007];
-   assign mem0x008 = mem['h008];
-   assign mem0x009 = mem['h009];
-
-   assign mem0x010 = mem['h010];
-   assign mem0x011 = mem['h011];
-   assign mem0x012 = mem['h012];
-   assign mem0x013 = mem['h013];
-   assign mem0x014 = mem['h014];
-   assign mem0x015 = mem['h015];
-   assign mem0x016 = mem['h016];
-   assign mem0x017 = mem['h017];
-   assign mem0x018 = mem['h018];
-   assign mem0x019 = mem['h019];
 
 endmodule
 //`endif
@@ -347,19 +286,24 @@ module initialTest;
          indx = 0;
          addrOrData = 0;
          while (code > 0) begin
-            code = $fscanf(fp, "+%04x%04x %08x\n", addr0,addr1, datain);
+            code = $fscanf(fp, "+%08x %08x\n", addr0, datain);
             //$display("code: %0d addr: %04x datain: %04x", code, addr, datain);
-            $display("code: %0d addr: %04x%04x datain: %08x", code, addr0,addr1, datain);
+            $display("code: %0d addr: %08x datain: %08x", code, addr0, datain);
             if (code == 0) begin
-               $display("invalid input code: %0d addr: %04x%04x datain: %08x", code, addr0,addr1, datain);
+               $display("invalid input code: %0d addr: %08x datain: %08x", code, addr0, datain);
                $finish;
             end
-            mem.mem[{addr0,addr1}] = datain;
-            $display("mem[%08x]: %08x", {addr0,addr1}, mem.mem[{addr0,addr1}]);
+            $dynmem_write(addr0,datain);
+            //mem.mem[{addr0,addr1}] = datain;
+            //$display("mem[%08x]: %08x", {addr0,addr1}, mem.mem[{addr0,addr1}]);
+//            $display("mem[%08x]: %08x", addr0, $dynmem_read(addr0));
             
             indx = indx + 1;
          end
          $fclose(fp);
+         
+//         $display("reading @00000888");
+//         $display("%08x", $dynmem_read('h00000888));
 //         mem.mem['h12345678] = 12345;
 //         $display("mem.mem['h12345678]: %08x", mem.mem['h12345678]);
 //         code = indx - 1;

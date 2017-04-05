@@ -13,5 +13,8 @@ module test;
 
       data = $dynmem_read(address);
       $display("data after read: %0x", data);
+
+      $display("reading @00000888");
+      $display("%08x", $dynmem_read('h00000888));
    end
 endmodule

@@ -37,9 +37,13 @@ void bst_free(node *n) {
 }
 
 unsigned int bst_search(node *n, mem memdata) {
-  printf("searching for mem.address: %08X\n", memdata.address);
-  if (n == NULL || memdata.address == n->data.address) {
-    return n->data.data;
+//  printf("searching for mem.address: %08X\n", memdata.address);
+//  if (n == NULL || memdata.address == n->data.address) {
+  if (n == NULL) {
+//  if (memdata.address == n->data.address) {
+//    printf("returning data: %0d\n", n->data.data);
+//    return n->data.data;
+    return 0;
   }
   else if (memdata.address < n->data.address) {
     bst_search(n->left, memdata);
@@ -47,7 +51,11 @@ unsigned int bst_search(node *n, mem memdata) {
   else if (memdata.address > n->data.address) {
     bst_search(n->right, memdata);
   }
-//  return 0;
+  else {
+    return n->data.data;
+//    return 0;
+  }
+  return 0;
 }
 
 #ifdef DEBUG_BST
