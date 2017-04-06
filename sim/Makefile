@@ -36,7 +36,7 @@ vpi4: vpi3
 	iverilog -f files -o lanzones
 	vvp -M. -m vvp_dynmem lanzones
 
-vpi5: output.txt bst.o vpi_dynmem.o vpi_dynmem.vpi
+vpi5: output.txt bst.o vpi_dynmem.o vpi_dynmem.vpi #working
 	iverilog -f files -o lanzones.vvp
 	vvp -M. -m vpi_dynmem lanzones.vvp
 
@@ -50,7 +50,8 @@ vpi_dynmem.o: ../vpi/vpi_dynmem.c
 	gcc -c -fpic $^ -o $@ $(COPTS)
 
 vpi_dynmem.vpi:
-	gcc -shared -o $@ vpi_dynmem.o bst.o $(COPTS) -lvpi 
+#	gcc -shared -o $@ vpi_dynmem.o bst.o $(COPTS) -lvpi 
+	iverilog-vpi vpi_dynmem.o bst.o
 
 dbgbst:
 	gcc -g ../vpi/bst.c -o bst $(COPTS) -D DEBUG_BST
