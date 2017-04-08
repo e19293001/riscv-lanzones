@@ -78,14 +78,14 @@ static int vpi_dynmem_read_calltf(char*user_data) {
   value_s.value.integer = (PLI_INT32) memdata.data;
   
   vpi_put_value(systf_handle, &value_s, NULL, vpiNoDelay);
-  vpi_printf("[ vpi_dynmem_read_calltf ] address: %08X data: %08X\n", memdata.address, memdata.data);
+  //vpi_printf("[ vpi_dynmem_read_calltf ] address: %08X data: %08X\n", memdata.address, memdata.data);
 
   return 0;
 }
 
 PLI_INT32 vpi_end_of_simulation(s_cb_data *callback_data) {
   vpi_printf("[ vpi_end_of_simulation ]\n");
-  bst_free(memassoc);
+  //bst_free(memassoc);
   return 0;
 }
 
@@ -185,7 +185,7 @@ static int vpi_dynmem_write_calltf(char*user_data) {
 
   memdata.address = key;
   memdata.data = value;
-  vpi_printf("[ vpi_dynmem_write_calltf ] address: %08X data: %08X\n", memdata.address, memdata.data);
+  //vpi_printf("[ vpi_dynmem_write_calltf ] address: %08X data: %08X\n", memdata.address, memdata.data);
 
   memassoc = bst_insert(memassoc,memdata);
   

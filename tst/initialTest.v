@@ -143,9 +143,9 @@ module MemoryModel(
             if (RRdy && !RVld) begin
                //data = $dynmem_read(RAddr);
                //RData <= data;
-               $display("reading @RAddr: %08X\n", RAddr);
+               //$display("reading @RAddr: %08X\n", RAddr);
                RData <= $dynmem_read(RAddr);
-               $display("RData: %08X\n", RData);
+               //$display("RData: %08X\n", RData);
             end
             else begin
                RData <= 0;
@@ -288,7 +288,9 @@ module initialTest;
          while (code > 0) begin
             code = $fscanf(fp, "+%08x %08x\n", addr0, datain);
             //$display("code: %0d addr: %04x datain: %04x", code, addr, datain);
-            $display("code: %0d addr: %08x datain: %08x", code, addr0, datain);
+            if (code > 0) begin
+               $display("code: %0d addr: %08x datain: %08x", code, addr0, datain);
+            end
             if (code == 0) begin
                $display("invalid input code: %0d addr: %08x datain: %08x", code, addr0, datain);
                $finish;

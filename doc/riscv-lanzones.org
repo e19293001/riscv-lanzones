@@ -2163,12 +2163,198 @@ ABI Name of the registers
     fa();
   }
 
-  void main() {
+  int main() {
     fb();
     printf("x = %0d\n", x);
     printf("y = %0d\n", y);
     return 0;
   }
+
+  // compiled:
+  // gcc -g global1.c -o global1
+  // gdb -batch -ex 'file global1' -ex 'disassemble main' -ex 'disassemble fa' -ex 'disassemble fb'
+  // objdump -d -S global1
 #+END_SRC   
+
+#+BEGIN_SRC asm
+  Dump of assembler code for function main:
+     0x00010214 <+0>:     addi    sp,sp,-16
+     0x00010218 <+4>:     sw      ra,12(sp)
+     0x0001021c <+8>:     sw      s0,8(sp)
+     0x00010220 <+12>:    addi    s0,sp,16
+     0x00010224 <+16>:    jal     ra,0x101dc <fb>
+     0x00010228 <+20>:    lw      a5,-1832(gp)
+     0x0001022c <+24>:    mv      a1,a5
+     0x00010230 <+28>:    lui     a5,0x1c
+     0x00010234 <+32>:    addi    a0,a5,-384 # 0x1be80
+     0x00010238 <+36>:    jal     ra,0x104cc <printf>
+     0x0001023c <+40>:    lw      a5,-1964(gp)
+     0x00010240 <+44>:    mv      a1,a5
+     0x00010244 <+48>:    lui     a5,0x1c
+     0x00010248 <+52>:    addi    a0,a5,-372 # 0x1be8c
+     0x0001024c <+56>:    jal     ra,0x104cc <printf>
+     0x00010250 <+60>:    li      a5,0
+     0x00010254 <+64>:    mv      a0,a5
+     0x00010258 <+68>:    lw      ra,12(sp)
+     0x0001025c <+72>:    lw      s0,8(sp)
+     0x00010260 <+76>:    addi    sp,sp,16
+     0x00010264 <+80>:    ret
+  End of assembler dump.
+  Dump of assembler code for function fa:
+     0x000101b0 <+0>:     addi    sp,sp,-16
+     0x000101b4 <+4>:     sw      s0,12(sp)
+     0x000101b8 <+8>:     addi    s0,sp,16
+     0x000101bc <+12>:    lw      a5,-1832(gp)
+     0x000101c0 <+16>:    addi    a5,a5,1
+     0x000101c4 <+20>:    slli    a4,a5,0x1
+     0x000101c8 <+24>:    sw      a4,-1832(gp)
+     0x000101cc <+28>:    nop
+     0x000101d0 <+32>:    lw      s0,12(sp)
+     0x000101d4 <+36>:    addi    sp,sp,16
+     0x000101d8 <+40>:    ret
+  End of assembler dump.
+  Dump of assembler code for function fb:
+     0x000101dc <+0>:     addi    sp,sp,-16
+     0x000101e0 <+4>:     sw      ra,12(sp)
+     0x000101e4 <+8>:     sw      s0,8(sp)
+     0x000101e8 <+12>:    addi    s0,sp,16
+     0x000101ec <+16>:    li      a4,5
+     0x000101f0 <+20>:    sw      a4,-1832(gp)
+     0x000101f4 <+24>:    li      a4,-2
+     0x000101f8 <+28>:    sw      a4,-1964(gp)
+     0x000101fc <+32>:    jal     ra,0x101b0 <fa>
+     0x00010200 <+36>:    nop
+     0x00010204 <+40>:    lw      ra,12(sp)
+     0x00010208 <+44>:    lw      s0,8(sp)
+     0x0001020c <+48>:    addi    sp,sp,16
+     0x00010210 <+52>:    ret
+  End of assembler dump.
+#+END_SRC
+
+#+BEGIN_SRC asm
+
+  global1:     file format elf32-littleriscv
+
+
+  Disassembly of section .text:
+
+  00000000 <fa>:
+  #include <stdio.h>
+
+  int x;
+
+  void fa() {
+     0:   ff010113                addi    sp,sp,-16
+
+  00000004 <.LCFI0>:
+     4:   00812623                sw      s0,12(sp)
+
+  00000008 <.LCFI1>:
+     8:   01010413                addi    s0,sp,16
+
+  0000000c <.LCFI2>:
+    x = x + x + 2;
+     c:   000007b7                lui     a5,0x0
+    10:   0007a783                lw      a5,0(a5) # 0 <fa>
+    14:   00178793                addi    a5,a5,1
+    18:   00179713                slli    a4,a5,0x1
+    1c:   000007b7                lui     a5,0x0
+    20:   00e7a023                sw      a4,0(a5) # 0 <fa>
+  }
+    24:   00000013                nop
+    28:   00c12403                lw      s0,12(sp)
+
+  0000002c <.LCFI3>:
+    2c:   01010113                addi    sp,sp,16
+
+  00000030 <.LCFI4>:
+    30:   00008067                ret
+
+  00000034 <fb>:
+
+  int y = 3;
+
+  void fb() {
+    34:   ff010113                addi    sp,sp,-16
+
+  00000038 <.LCFI5>:
+    38:   00112623                sw      ra,12(sp)
+    3c:   00812423                sw      s0,8(sp)
+
+  00000040 <.LCFI6>:
+    40:   01010413                addi    s0,sp,16
+
+  00000044 <.LCFI7>:
+    x = 5;
+    44:   000007b7                lui     a5,0x0
+    48:   00500713                li      a4,5
+    4c:   00e7a023                sw      a4,0(a5) # 0 <fa>
+    y = -2;
+    50:   000007b7                lui     a5,0x0
+    54:   ffe00713                li      a4,-2
+    58:   00e7a023                sw      a4,0(a5) # 0 <fa>
+    fa();
+    5c:   00000317                auipc   t1,0x0
+    60:   000300e7                jalr    t1
+  }
+    64:   00000013                nop
+    68:   00c12083                lw      ra,12(sp)
+
+  0000006c <.LCFI8>:
+    6c:   00812403                lw      s0,8(sp)
+
+  00000070 <.LCFI9>:
+    70:   01010113                addi    sp,sp,16
+
+  00000074 <.LCFI10>:
+    74:   00008067                ret
+
+  00000078 <main>:
+
+  int main() {
+    78:   ff010113                addi    sp,sp,-16
+
+  0000007c <.LCFI11>:
+    7c:   00112623                sw      ra,12(sp)
+    80:   00812423                sw      s0,8(sp)
+
+  00000084 <.LCFI12>:
+    84:   01010413                addi    s0,sp,16
+
+  00000088 <.LCFI13>:
+    fb();
+    88:   00000317                auipc   t1,0x0
+    8c:   000300e7                jalr    t1
+    printf("x = %0d\n", x);
+    90:   000007b7                lui     a5,0x0
+    94:   0007a783                lw      a5,0(a5) # 0 <fa>
+    98:   00078593                mv      a1,a5
+    9c:   000007b7                lui     a5,0x0
+    a0:   00078513                mv      a0,a5
+    a4:   00000317                auipc   t1,0x0
+    a8:   000300e7                jalr    t1
+    printf("y = %0d\n", y);
+    ac:   000007b7                lui     a5,0x0
+    b0:   0007a783                lw      a5,0(a5) # 0 <fa>
+    b4:   00078593                mv      a1,a5
+    b8:   000007b7                lui     a5,0x0
+    bc:   00078513                mv      a0,a5
+    c0:   00000317                auipc   t1,0x0
+    c4:   000300e7                jalr    t1
+    return 0;
+    c8:   00000793                li      a5,0
+  }
+    cc:   00078513                mv      a0,a5
+    d0:   00c12083                lw      ra,12(sp)
+
+  000000d4 <.LCFI14>:
+    d4:   00812403                lw      s0,8(sp)
+
+  000000d8 <.LCFI15>:
+    d8:   01010113                addi    sp,sp,16
+
+  000000dc <.LCFI16>:
+    dc:   00008067                ret   
+#+END_SRC
 ** Local variable
 ** Static variable

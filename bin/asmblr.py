@@ -502,7 +502,7 @@ class TokenMgr:
             else:
                 tkn.kind = ERROR
 
-        #print "tkn.image: " + tkn.image + " tkn.kind: " + tkn.getKind(tkn.kind) + " line: " + str(self.currentLineNumber)
+        print "tkn.image: " + tkn.image + " tkn.kind: " + tkn.getKind(tkn.kind) + " line: " + str(self.currentLineNumber)
 
         return tkn
 
@@ -1125,6 +1125,7 @@ class asmblr:
                     print "         this will be rounded to " + imm.image[0:5]
                     imm.image = imm.image[0:5]
 
+                #print "imm.image[2:]: " + imm.image[2:] + "\n"
                 immstr = self.hextobinstr(imm.image[2:])
         
                 instruction = self.binformat(immstr,12) + self.binformat(rs1str,5) + "000" + self.binformat(rdstr,5) + self.binformat(op,7)

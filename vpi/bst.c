@@ -23,17 +23,17 @@ void bst_traverse(node *n) {
 
 node *bst_insert(node *n, mem memdata) {
   if (n == NULL) {
-    printf("[ bst_insert ] n is NULL creating new\n");
+    //printf("[ bst_insert ] n is NULL creating new\n");
     node *nd = bst_new(memdata);
     return nd;
   }
   else {
     if (memdata.address <= n->data.address) {
-      printf("[ bst_insert ] [ going to LEFT ] memdata.address: %0d\n", memdata.address);
+      //printf("[ bst_insert ] [ going to LEFT ] memdata.address: %0d\n", memdata.address);
       n->left = bst_insert(n->left, memdata);
     }
     else {
-      printf("[ bst_insert ] [ going to RIGHT ] memdata.address: %0d\n", memdata.address);
+      //printf("[ bst_insert ] [ going to RIGHT ] memdata.address: %0d\n", memdata.address);
       n->right = bst_insert(n->right, memdata);
     }
     return n;

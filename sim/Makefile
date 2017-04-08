@@ -1,9 +1,13 @@
 # vpi
 IVERILOG_LIB_PATH=$(IVERILOG_LIB_PATH_)
 IVERILOG_INCLUDE_PATH=$(IVERILOG_INCLUDE_PATH_)
-COPTS=-g -Wall -I$(IVERILOG_INCLUDE_PATH) -L$(IVERILOG_LIB_PATH) -I../vpi/
+#COPTS=-g -Wall -I$(IVERILOG_INCLUDE_PATH) -L$(IVERILOG_LIB_PATH) -I../vpi/
+#COPTS=-I$(IVERILOG_INCLUDE_PATH) -L$(IVERILOG_LIB_PATH) -I../vpi/ -Wall
+#COPTS=-L/data/local/KTDP/silladore/files/build/install/lib -I/data/local/KTDP/silladore/files/build/install/include/iverilog -I../vpi/ -Wall
+COPTS=-L/data/local/KTDP/silladore/files/build/install/lib -I/data/local/KTDP/silladore/files/build/install/include/iverilog -I../vpi/ -Wall
 
-TESTFILE=tstPattern0063.asm
+#TESTFILE=tstPattern0063.asm
+TESTFILE=../asm/global/global.asm
 
 all: asm comp run
 
@@ -20,9 +24,10 @@ clean:
 	rm -fr lanzones sim.vcd
 	rm -fr *.vvp *.o *.vpi
 
-vpi: bst.o
+vpi: bst.o vpi_dynmem.o
 	gcc -c -fpic ../vpi/vpi_dynmem.c -o vpi_dynmem.o $(COPTS)
 	gcc -shared -o vpi_dynmem.vpi vpi_dynmem.o bst.o -lvpi $(COPTS)
+#	iverilog-vpi vpi_dynmem.o bst.o
 	iverilog -o tstvpiassoc.vvp tstvpiassoc.v
 	vvp -M. -m vpi_dynmem tstvpiassoc.vvp
 
