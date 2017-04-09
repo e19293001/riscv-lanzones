@@ -2232,7 +2232,6 @@ ABI Name of the registers
 #+END_SRC
 
 #+BEGIN_SRC asm
-
   global1:     file format elf32-littleriscv
 
 

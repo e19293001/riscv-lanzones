@@ -49,6 +49,7 @@ BGE = 44
 BLTU = 45
 BGEU = 46
 ORG = 47
+SIGNED = 48
 
 class Token:
     def __init__(self):
@@ -106,7 +107,8 @@ class Token:
                            "BGE",
                            "BLTU",
                            "BGEU",
-                           "ORG"]
+                           "ORG",
+                           "SIGNED"]
           
     def getKind(self,k):
         if (k == 0):
@@ -205,6 +207,8 @@ class Token:
             return "BGEU"
         elif (k == 47):
             return "ORG"
+        elif (k == 48):
+            return "SIGNED"
         else:
             return "UNKNOWN"
 
@@ -288,15 +292,47 @@ class TokenMgr:
         else:
             if self.currentChar.isdigit():
                 if self.currentChar == "0":
+                    self.getNextChar()
+                    if self.currentChar == "x":
+                        self.buff = ""
+                        while True:
+                            self.buff = self.buff + self.currentChar
+                            tkn.endLine = self.currentLineNumber
+                            tkn.endColumn = self.currentColumnNumber
+                            self.getNextChar()
+                            if not (self.is_hex(self.currentChar) or self.currentChar == "x"):
+                                break
+                        tkn.image = self.buff
+                        tkn.kind = HEX
+                    else:
+                        self.buff = ""
+                        #self.getNextChar()
+                        while True:
+                            self.buff = self.buff + self.currentChar
+                            tkn.endLine = self.currentLineNumber
+                            tkn.endColumn = self.currentColumnNumber
+                            self.getNextChar()
+                            if not self.currentChar.isdigit():
+                                break
+                        tkn.image = self.buff
+                        #print "signed int: " + self.buff + "\n"
+                        #print "      converting to hex: " + hex(int(self.buff) & 0xFFFFFFFF) + "\n"
+                        tkn.image = hex(int(self.buff) & 0xFFFFFFFF)
+                        tkn.kind = HEX
+                else:
                     self.buff = ""
+                    #self.getNextChar()
                     while True:
                         self.buff = self.buff + self.currentChar
                         tkn.endLine = self.currentLineNumber
                         tkn.endColumn = self.currentColumnNumber
                         self.getNextChar()
-                        if not (self.is_hex(self.currentChar) or self.currentChar == "x"):
+                        if not self.currentChar.isdigit():
                             break
                     tkn.image = self.buff
+                    #print "signed int: " + self.buff + "\n"
+                    #print "      converting to hex: " + hex(int(self.buff) & 0xFFFFFFFF) + "\n"
+                    tkn.image = hex(int(self.buff) & 0xFFFFFFFF)
                     tkn.kind = HEX
             elif self.currentChar.isalnum() or self.currentChar == "_" or self.currentChar == '@':
                 self.buff = ""
@@ -309,81 +345,81 @@ class TokenMgr:
                         break
                 #print "self.buff:" + self.buff
                 tkn.image = self.buff
-                if tkn.image == "LUI":
+                if tkn.image == "LUI" or tkn.image == "lui":
                     tkn.kind = LUI
-                elif tkn.image == "ADD":
+                elif tkn.image == "ADD" or tkn.image == "add":
                     tkn.kind = ADD
-                elif tkn.image == "SW":
+                elif tkn.image == "SW" or tkn.image == "sw":
                     tkn.kind = SW
-                elif tkn.image == "LW":
+                elif tkn.image == "LW" or tkn.image == "lw":
                     tkn.kind = LW
-                elif tkn.image == "LH":
+                elif tkn.image == "LH" or tkn.image == "lh":
                     tkn.kind = LH
-                elif tkn.image == "SUB":
+                elif tkn.image == "SUB" or tkn.image == "sub":
                     tkn.kind = SUB
-                elif tkn.image == "SLL":
+                elif tkn.image == "SLL" or tkn.image == "sll":
                     tkn.kind = SLL
-                elif tkn.image == "ORI":
+                elif tkn.image == "ORI" or tkn.image == "ori":
                     tkn.kind = ORI
-                elif tkn.image == "ANDI":
+                elif tkn.image == "ANDI" or tkn.image == "andi":
                     tkn.kind = ANDI
-                elif tkn.image == "SLLI":
+                elif tkn.image == "SLLI" or tkn.image == "slli":
                     tkn.kind = SLLI
-                elif tkn.image == "SRLI":
+                elif tkn.image == "SRLI" or tkn.image == "srli":
                     tkn.kind = SRLI
-                elif tkn.image == "SRAI":
+                elif tkn.image == "SRAI" or tkn.image == "srai":
                     tkn.kind = SRAI
-                elif tkn.image == "ADDI":
+                elif tkn.image == "ADDI" or tkn.image == "addi":
                     tkn.kind = ADDI
-                elif tkn.image == "XORI":
+                elif tkn.image == "XORI" or tkn.image == "xori":
                     tkn.kind = XORI
-                elif tkn.image == "XOR":
+                elif tkn.image == "XOR" or tkn.image == "xor":
                     tkn.kind = XOR
-                elif tkn.image == "OR":
+                elif tkn.image == "OR" or tkn.image == "or":
                     tkn.kind = OR
-                elif tkn.image == "AND":
+                elif tkn.image == "AND" or tkn.image == "and":
                     tkn.kind = AND
-                elif tkn.image == "SLTI":
+                elif tkn.image == "SLTI" or tkn.image == "slti":
                     tkn.kind = SLTI
-                elif tkn.image == "SLTIU":
+                elif tkn.image == "SLTIU" or tkn.image == "sltiu":
                     tkn.kind = SLTIU
-                elif tkn.image == "SLT":
+                elif tkn.image == "SLT" or tkn.image == "slt":
                     tkn.kind = SLT
-                elif tkn.image == "SLTU":
+                elif tkn.image == "SLTU" or tkn.image == "sltu":
                     tkn.kind = SLTU
-                elif tkn.image == "LB":
+                elif tkn.image == "LB" or tkn.image == "lb":
                     tkn.kind = LB
-                elif tkn.image == "SB":
+                elif tkn.image == "SB" or tkn.image == "sb":
                     tkn.kind = SB
-                elif tkn.image == "SH":
+                elif tkn.image == "SH" or tkn.image == "sh":
                     tkn.kind = SH
-                elif tkn.image == "LBU":
+                elif tkn.image == "LBU" or tkn.image == "lbu":
                     tkn.kind = LBU
-                elif tkn.image == "LHU":
+                elif tkn.image == "LHU" or tkn.image == "lhu":
                     tkn.kind = LHU
-                elif tkn.image == "SRL":
+                elif tkn.image == "SRL" or tkn.image == "srl":
                     tkn.kind = SRL
-                elif tkn.image == "SRA":
+                elif tkn.image == "SRA" or tkn.image == "sra":
                     tkn.kind = SRA
-                elif tkn.image == "AUIPC":
+                elif tkn.image == "AUIPC" or tkn.image == "auipc":
                     tkn.kind = AUIPC
                 elif tkn.image == "dw":
                     tkn.kind = DW
-                elif tkn.image == "JAL":
+                elif tkn.image == "JAL" or tkn.image == "jal":
                     tkn.kind = JAL
-                elif tkn.image == "JALR":
+                elif tkn.image == "JALR" or tkn.image == "jalr":
                     tkn.kind = JALR
-                elif tkn.image == "BEQ":
+                elif tkn.image == "BEQ" or tkn.image == "beq":
                     tkn.kind = BEQ
-                elif tkn.image == "BNE":
+                elif tkn.image == "BNE" or tkn.image == "bne":
                     tkn.kind = BNE
-                elif tkn.image == "BLT":
+                elif tkn.image == "BLT" or tkn.image == "blt":
                     tkn.kind = BLT
-                elif tkn.image == "BGE":
+                elif tkn.image == "BGE" or tkn.image == "bge":
                     tkn.kind = BGE
-                elif tkn.image == "BLTU":
+                elif tkn.image == "BLTU" or tkn.image == "bltu":
                     tkn.kind = BLTU
-                elif tkn.image == "BGEU":
+                elif tkn.image == "BGEU" or tkn.image == "bgeu":
                     tkn.kind = BGEU
                 elif tkn.image == "org":
                     tkn.kind = ORG
@@ -487,6 +523,21 @@ class TokenMgr:
                     tkn.kind = REGISTER
                 else:
                     tkn.kind = ID
+            elif self.currentChar == "-":
+                self.buff = ""
+                #self.getNextChar()
+                while True:
+                    self.buff = self.buff + self.currentChar
+                    tkn.endLine = self.currentLineNumber
+                    tkn.endColumn = self.currentColumnNumber
+                    self.getNextChar()
+                    if not self.currentChar.isdigit():
+                        break
+                #tkn.image = self.buff
+                print "signed int: " + self.buff + "\n"
+                print "      converting to hex: " + hex(int(self.buff) & 0xFFFFFFFF) + "\n"
+                tkn.image = hex(int(self.buff) & 0xFFFFFFFF)
+                tkn.kind = HEX
             elif self.currentChar == ":":
                 tkn.endLine = self.currentLineNumber
                 tkn.endColumn = self.currentColumnNumber
@@ -502,7 +553,8 @@ class TokenMgr:
             else:
                 tkn.kind = ERROR
 
-        print "tkn.image: " + tkn.image + " tkn.kind: " + tkn.getKind(tkn.kind) + " line: " + str(self.currentLineNumber)
+        #print "self.currentChar: " + self.currentChar
+        #print "tkn.image: " + tkn.image + " tkn.kind: " + tkn.getKind(tkn.kind) + " line: " + str(self.currentLineNumber)
 
         return tkn
 
@@ -526,7 +578,7 @@ class TokenMgr:
         self.currentColumnNumber = self.currentColumnNumber + 1
         #print "currentChar:" + self.currentChar
 
-        if self.currentChar == ";":
+        if self.currentChar == ";" or self.currentChar == "#":
             self.currentChar = "\n"
 
 PARSESTATE_NONE = 0
@@ -1121,12 +1173,15 @@ class asmblr:
         if self.asmblrstate == PARSESTATE_ASM:
             if imm.kind == HEX:
                 if len(imm.image[2:]) > 4:
-                    print "Warning: " + imm.image + " exceeds the maximum immediate value."
-                    print "         this will be rounded to " + imm.image[0:5]
-                    imm.image = imm.image[0:5]
+                    print "[ ADDIpattern ] Warning: " + imm.image + " exceeds the maximum immediate value."
+                    #print "         this will be rounded to " + imm.image[0:5]
+                    print "         this will be rounded to 0x" + imm.image[len(imm.image)-3:len(imm.image)]
+                    #imm.image = imm.image[0:5]
+                    imm.image = imm.image[len(imm.image)-3:len(imm.image)]
+                    print "imm.image: " + imm.image
 
                 #print "imm.image[2:]: " + imm.image[2:] + "\n"
-                immstr = self.hextobinstr(imm.image[2:])
+                immstr = self.hextobinstr(imm.image)
         
                 instruction = self.binformat(immstr,12) + self.binformat(rs1str,5) + "000" + self.binformat(rdstr,5) + self.binformat(op,7)
 
