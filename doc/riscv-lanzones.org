@@ -2066,6 +2066,56 @@ SRA x4,x4,x2
    - [X] BLTUpattern
    - [X] BGEUpattern
 
+** TODO fix bug in immediate boundary check [1/37]
+   :PROPERTIES:
+   :END:
+   :LOGBOOK:  
+   CLOCK: [2017-04-04 Tue 09:01]--[2017-04-04 Tue 09:11] =>  0:10
+   CLOCK: [2017-04-03 Mon 11:59]--[2017-04-03 Mon 12:49] =>  0:50
+   CLOCK: [2017-03-31 Fri 12:25]--[2017-03-31 Fri 12:45] =>  0:20
+   CLOCK: [2017-03-30 Thu 08:32]--[2017-03-30 Thu 09:19] =>  0:47
+   :END:      
+   :PROPERTIES:
+   :Effort:   2:00
+   :END:
+   - [ ] LUIpattern
+   - [ ] ADDpattern
+   - [ ] SWpattern
+   - [ ] LWpattern
+   - [ ] LHpattern
+   - [ ] SUBpattern
+   - [ ] SLLpattern
+   - [ ] ORIpattern
+   - [ ] ANDIpattern
+   - [ ] SLLIpattern
+   - [ ] SRLIpattern
+   - [ ] SRAIpattern
+   - [X] ADDIpattern
+   - [ ] XORIpattern
+   - [ ] XORpattern
+   - [ ] ORpattern
+   - [ ] ANDpattern
+   - [ ] SLTIpattern
+   - [ ] SLTIUpattern
+   - [ ] SLTpattern
+   - [ ] SLTUpattern
+   - [ ] LBpattern
+   - [ ] SBpattern
+   - [ ] SHpattern
+   - [ ] LBUpattern
+   - [ ] LHUpattern
+   - [ ] SRLpattern
+   - [ ] SRApattern
+   - [ ] AUIPCpattern
+   - [ ] JALpattern
+   - [ ] JALRpattern
+   - [ ] BEQpattern
+   - [ ] BNEpattern
+   - [ ] BLTpattern
+   - [ ] BGEpattern
+   - [ ] BLTUpattern
+   - [ ] BGEUpattern
+
 * Notes
 ** The Assembler
    :PROPERTIES:
@@ -2357,3 +2407,16 @@ ABI Name of the registers
 #+END_SRC
 ** Local variable
 ** Static variable
+** Using the GNU Assembler
+*** Assembly using as
+
+#+BEGIN_SRC 
+as lh.s -o lh && objdump -d lh
+#+END_SRC
+*** Generating assembly file using gcc
+gcc -save-temps test.c -o test
+#+BEGIN_SRC c
+  int main() {
+    return 0;
+  }
+#+END_SRC

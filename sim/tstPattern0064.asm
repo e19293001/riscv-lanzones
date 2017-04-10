@@ -1,6 +1,20 @@
+lh a5,a5,0x13
+lh a5,a5,-16   
+lh a5,a5,16
+lh a5,a5,016   
+lw a5,a5,0x13
+lw a5,a5,-16   
+lw a5,a5,16
+lw a5,a5,016   
+addi    sp,sp,0x13
 addi    sp,sp,-16
 addi    sp,sp,16
-addi    sp,sp,016   
+addi    sp,sp,016
+lui a5,0x13	
+lui a5,-16
+lui a5,16
+lui a5,016
+   
 	
 ;sw      ra,12(sp)
 ;sw      s0,8(sp)

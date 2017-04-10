@@ -1,15 +1,17 @@
 # vpi
 IVERILOG_LIB_PATH=$(IVERILOG_LIB_PATH_)
 IVERILOG_INCLUDE_PATH=$(IVERILOG_INCLUDE_PATH_)
-#COPTS=-g -Wall -I$(IVERILOG_INCLUDE_PATH) -L$(IVERILOG_LIB_PATH) -I../vpi/
+COPTS=-g -Wall -I$(IVERILOG_INCLUDE_PATH) -L$(IVERILOG_LIB_PATH) -I../vpi/
 #COPTS=-I$(IVERILOG_INCLUDE_PATH) -L$(IVERILOG_LIB_PATH) -I../vpi/ -Wall
 #COPTS=-L/data/local/KTDP/silladore/files/build/install/lib -I/data/local/KTDP/silladore/files/build/install/include/iverilog -I../vpi/ -Wall
-COPTS=-L/data/local/KTDP/silladore/files/build/install/lib -I/data/local/KTDP/silladore/files/build/install/include/iverilog -I../vpi/ -Wall
+#COPTS=-L/data/local/KTDP/silladore/files/build/install/lib -I/data/local/KTDP/silladore/files/build/install/include/iverilog -I../vpi/ -Wall
 
 TESTFILE=tstPattern0064.asm
 #TESTFILE=../asm/global/global.asm
 
-all: asm comp run
+#all: asm comp run
+
+all: vpi5
 
 asm: $(TESTFILE)
 	python2 ../bin/asmblr.py $(TESTFILE)
@@ -48,7 +50,7 @@ vpi5: output.txt bst.o vpi_dynmem.o vpi_dynmem.vpi #working
 output.txt:
 	python2 ../bin/asmblr.py $(TESTFILE)
 
-bst.o: ../vpi/bst.c
+bst.o: ../vpi/bst.c ../vpi/bst.h
 	gcc -c -fpic $^ -o $@ $(COPTS)
 
 vpi_dynmem.o: ../vpi/vpi_dynmem.c
