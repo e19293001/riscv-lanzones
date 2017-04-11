@@ -2066,7 +2066,7 @@ SRA x4,x4,x2
    - [X] BLTUpattern
    - [X] BGEUpattern
 
-** TODO fix bug in immediate boundary check [1/37]
+** TODO fix bug in immediate boundary check [8/37]
    :PROPERTIES:
    :END:
    :LOGBOOK:  
@@ -2078,13 +2078,13 @@ SRA x4,x4,x2
    :PROPERTIES:
    :Effort:   2:00
    :END:
-   - [ ] LUIpattern
-   - [ ] ADDpattern
-   - [ ] SWpattern
-   - [ ] LWpattern
-   - [ ] LHpattern
-   - [ ] SUBpattern
-   - [ ] SLLpattern
+   - [X] LUIpattern
+   - [X] ADDpattern
+   - [X] SWpattern
+   - [X] LWpattern
+   - [X] LHpattern
+   - [X] SUBpattern
+   - [X] SLLpattern
    - [ ] ORIpattern
    - [ ] ANDIpattern
    - [ ] SLLIpattern
