@@ -1904,11 +1904,17 @@ class asmblr:
         if self.asmblrstate == PARSESTATE_ASM:
             if imm.kind == HEX:
                 if len(imm.image[2:]) > 6:
+                    print "Line: " + str(self.currentToken.beginLine)
                     print "Warning: " + imm.image + " exceeds the maximum immediate value."
-                    print "         this will be rounded to " + imm.image[0:7]
-                    imm.image = imm.image[0:7]
+#                    print "         this will be rounded to " + imm.image[0:7]
+#                    imm.image = imm.image[0:7]
+                    print "         this will be rounded to 0x" + self.roundOffString(imm.image,5)
+                    imm.image = self.roundOffString(imm.image,5)
+                    immstr = self.hextobinstr(imm.image)
+                else:
+                    immstr = self.hextobinstr(imm.image[2:])
 
-                immstr = self.hextobinstr(imm.image[2:])
+#                immstr = self.hextobinstr(imm.image[2:])
                 rdstr = self.tobinstr(rd.image[1:])
                 instruction = self.binformat(immstr,20) + self.binformat(rdstr,5) + self.binformat(op,7)
                 self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
@@ -1950,10 +1956,16 @@ class asmblr:
         if self.asmblrstate == PARSESTATE_ASM:
             if imm.kind == HEX:
                 if len(imm.image[2:]) > 5:
+                    print "Line: " + str(self.currentToken.beginLine)
                     print "Warning: " + imm.image + " exceeds the maximum immediate value."
-                    print "         this will be rounded to " + imm.image[0:7]
-                    imm.image = imm.image[0:7]
-                immstr = self.hextobinstr(imm.image[2:])
+#                    print "         this will be rounded to " + imm.image[0:7]
+#                    imm.image = imm.image[0:7]
+                    print "         this will be rounded to 0x" + self.roundOffString(imm.image,5)
+                    imm.image = self.roundOffString(imm.image,5)
+                    immstr = self.hextobinstr(imm.image)
+                else:
+                    immstr = self.hextobinstr(imm.image[2:])
+#                immstr = self.hextobinstr(imm.image[2:])
                 print "len(immstr.image[2:] -> " + str(len(immstr))
                 rdstr = self.tobinstr(rd.image[1:])
                 instruction = self.binformat(immstr,20) + self.binformat(rdstr,5) + self.binformat(op,7)
@@ -1962,11 +1974,17 @@ class asmblr:
             elif imm.kind == ID:
                 labelvalue = str(hex(self.symboltablename[imm.image]))
                 if len(labelvalue) > 5:
+                    print "Line: " + str(self.currentToken.beginLine)
                     print "Warning: " + labelvalue[2:0] + " exceeds the maximum immediate value."
-                    print "         this will be rounded to " + labelvalue[0:7] + " address of label: " + imm.image
-                    labelvalue = labelvalue[0:7]
+#                    print "         this will be rounded to " + labelvalue[0:7] + " address of label: " + imm.image
+#                    labelvalue = labelvalue[0:7]
+                    print "         this will be rounded to 0x" + self.roundOffString(imm.image,5)
+                    imm.image = self.roundOffString(imm.image,5)
+                    immstr = self.hextobinstr(imm.image)
+                else:
+                    immstr = self.hextobinstr(imm.image[2:])
                                  
-                immstr = self.hextobinstr(labelvalue)
+#                immstr = self.hextobinstr(labelvalue)
                 
                 rdstr = self.tobinstr(rd.image[1:])
                 instruction = self.binformat(immstr,20) + self.binformat(rdstr,5) + self.binformat(op,7)
@@ -1998,11 +2016,17 @@ class asmblr:
         if self.asmblrstate == PARSESTATE_ASM:
             if imm.kind == HEX:
                 if len(imm.image[2:]) > 4:
+                    print "Line: " + str(self.currentToken.beginLine)
                     print "Warning: " + imm.image + " exceeds the maximum immediate value."
-                    print "         this will be rounded to " + imm.image[0:5]
-                    imm.image = imm.image[0:5]
+#                    print "         this will be rounded to " + imm.image[0:5]
+#                    imm.image = imm.image[0:5]
+                    print "         this will be rounded to 0x" + self.roundOffString(imm.image,3)
+                    imm.image = self.roundOffString(imm.image,3)
+                    immstr = self.hextobinstr(imm.image)
+                else:
+                    immstr = self.hextobinstr(imm.image[2:])
 
-                immstr = self.hextobinstr(imm.image[2:])
+#                immstr = self.hextobinstr(imm.image[2:])
                 rs1str = self.tobinstr(rs1.image[1:])
                 rdstr = self.tobinstr(rd.image[1:])
                 instruction = self.binformat(immstr,12) + self.binformat(rs1str,5) + "000" + self.binformat(rdstr,5) + self.binformat(op,7)
@@ -2011,11 +2035,16 @@ class asmblr:
             elif imm.kind == ID:
                 labelvalue = str(hex(self.symboltablename[imm.image]))
                 if len(labelvalue) > 4:
+                    print "Line: " + str(self.currentToken.beginLine)
                     print "Warning: " + labelvalue[2:0] + " exceeds the maximum immediate value."
-                    print "         this will be rounded to " + labelvalue[0:5] + " address of label: " + imm.image
-                    labelvalue = labelvalue[0:5]
+#                    print "         this will be rounded to " + labelvalue[0:5] + " address of label: " + imm.image
+#                    labelvalue = labelvalue[0:5]
+                    print "         this will be rounded to 0x" + self.roundOffString(labelvalue,3)
+                    immstr = self.hextobinstr(labelvalue)
+                else:
+                    immstr = self.hextobinstr(imm.image[2:])
                                  
-                immstr = self.hextobinstr(labelvalue)
+#                immstr = self.hextobinstr(labelvalue)
 #                immstr = self.hextobinstr(str(hex(self.symboltablename[imm.image])))
                 rs1str = self.tobinstr(rs1.image[1:])
                 rdstr = self.tobinstr(rd.image[1:])
@@ -2048,11 +2077,17 @@ class asmblr:
         if self.asmblrstate == PARSESTATE_ASM:
             if imm.kind == HEX:
                 if len(imm.image[2:]) > 4:
+                    print "Line: " + str(self.currentToken.beginLine)
                     print "Warning: " + imm.image + " exceeds the maximum immediate value."
-                    print "         this will be rounded to " + imm.image[0:5]
-                    imm.image = imm.image[0:5]
+#                    print "         this will be rounded to " + imm.image[0:5]
+#                    imm.image = imm.image[0:5]
+                    print "         this will be rounded to 0x" + self.roundOffString(imm.image,3)
+                    imm.image = self.roundOffString(imm.image,3)
+                    immstr = self.hextobinstr(imm.image)
+                else:
+                    immstr = self.hextobinstr(imm.image[2:])
 
-                immstr = self.hextobinstr(imm.image[2:])
+#                immstr = self.hextobinstr(imm.image[2:])
                 immstr = self.binformat(immstr,20)
                 rs1str = self.tobinstr(rs1.image[1:])
                 rs2str = self.tobinstr(rs2.image[1:])
@@ -2063,12 +2098,19 @@ class asmblr:
                 self.consume(HEX)
             elif imm.kind == ID:
                 labelvalue = str(hex(self.symboltablename[imm.image]))
+                immstr = ""
                 if len(labelvalue) > 4:
+                    print "Line: " + str(self.currentToken.beginLine)
                     print "Warning: " + labelvalue[2:0] + " exceeds the maximum immediate value."
-                    print "         this will be rounded to " + labelvalue[0:5] + " address of label: " + imm.image
-                    labelvalue = labelvalue[0:5]
+#                    print "         this will be rounded to " + labelvalue[0:5] + " address of label: " + imm.image
+#                    labelvalue = labelvalue[0:5]
+                    print "         this will be rounded to 0x" + self.roundOffString(labelvalue,3)
+                    labelvalue = self.roundOffString(labelvalue,3)
+#                    immstr = self.hextobinstr(imm.image)
+                else:
+                    immstr = self.hextobinstr(labelvalue)
                                  
-                immstr = self.hextobinstr(labelvalue)
+#                immstr = self.hextobinstr(labelvalue)
 
 #                immstr = self.hextobinstr(str(hex(self.symboltablename[imm.image])))
                 immstr = self.binformat(immstr,20)
@@ -2105,11 +2147,17 @@ class asmblr:
         if self.asmblrstate == PARSESTATE_ASM:
             if imm.kind == HEX:
                 if len(imm.image[2:]) > 4:
+                    print "Line: " + str(self.currentToken.beginLine)
                     print "Warning: " + imm.image + " exceeds the maximum immediate value."
-                    print "         this will be rounded to " + imm.image[0:5]
-                    imm.image = imm.image[0:5]
+#                    print "         this will be rounded to " + imm.image[0:5]
+#                    imm.image = imm.image[0:5]
+                    print "         this will be rounded to 0x" + self.roundOffString(imm.image,3)
+                    imm.image = self.roundOffString(imm.image,3)
+                    immstr = self.hextobinstr(imm.image)
+                else:
+                    immstr = self.hextobinstr(imm.image[2:])
 
-                immstr = self.hextobinstr(imm.image[2:])
+#                immstr = self.hextobinstr(imm.image[2:])
                 immstr = self.binformat(immstr,20)
                 rs1str = self.tobinstr(rs1.image[1:])
                 rs2str = self.tobinstr(rs2.image[1:])
@@ -2120,12 +2168,19 @@ class asmblr:
                 self.consume(HEX)
             elif imm.kind == ID:
                 labelvalue = str(hex(self.symboltablename[imm.image]))
+                immstr = ""
                 if len(labelvalue) > 4:
+                    print "Line: " + str(self.currentToken.beginLine)
                     print "Warning: " + labelvalue[2:0] + " exceeds the maximum immediate value."
-                    print "         this will be rounded to " + labelvalue[0:5] + " address of label: " + imm.image
-                    labelvalue = labelvalue[0:5]
+#                    print "         this will be rounded to " + labelvalue[0:5] + " address of label: " + imm.image
+#                    labelvalue = labelvalue[0:5]
+                    print "         this will be rounded to 0x" + self.roundOffString(labelvalue,3)
+                    labelvalue = self.roundOffString(labelvalue,3)
+                    immstr = self.hextobinstr(imm.image)
+                else:
+                    immstr = self.hextobinstr(imm.image[2:])
                                  
-                immstr = self.hextobinstr(labelvalue)
+#                immstr = self.hextobinstr(labelvalue)
 #                immstr = self.hextobinstr(str(hex(self.symboltablename[imm.image])))
                 immstr = self.binformat(immstr,20)
                 rs1str = self.tobinstr(rs1.image[1:])
@@ -2161,11 +2216,17 @@ class asmblr:
         if self.asmblrstate == PARSESTATE_ASM:
             if imm.kind == HEX:
                 if len(imm.image[2:]) > 4:
+                    print "Line: " + str(self.currentToken.beginLine)
                     print "Warning: " + imm.image + " exceeds the maximum immediate value."
-                    print "         this will be rounded to " + imm.image[0:5]
-                    imm.image = imm.image[0:5]
+#                    print "         this will be rounded to " + imm.image[0:5]
+#                    imm.image = imm.image[0:5]
+                    print "         this will be rounded to 0x" + self.roundOffString(imm.image,3)
+                    imm.image = self.roundOffString(imm.image,3)
+                    immstr = self.hextobinstr(imm.image)
+                else:
+                    immstr = self.hextobinstr(imm.image[2:])
 
-                immstr = self.hextobinstr(imm.image[2:])
+#                immstr = self.hextobinstr(imm.image[2:])
                 immstr = self.binformat(immstr,20)
                 rs1str = self.tobinstr(rs1.image[1:])
                 rs2str = self.tobinstr(rs2.image[1:])
@@ -2176,13 +2237,19 @@ class asmblr:
                 self.consume(HEX)
             elif imm.kind == ID:
                 labelvalue = str(hex(self.symboltablename[imm.image]))
+                immstr = ""
                 if len(labelvalue) > 4:
                     print "Warning: " + labelvalue[2:0] + " exceeds the maximum immediate value."
-                    print "         this will be rounded to " + labelvalue[0:5] + " address of label: " + imm.image
-                    labelvalue = labelvalue[0:5]
-                                 
-                immstr = self.hextobinstr(labelvalue)
+#                    print "         this will be rounded to " + labelvalue[0:5] + " address of label: " + imm.image
+#                    labelvalue = labelvalue[0:5]
+                    print "         this will be rounded to 0x" + self.roundOffString(labelvalue,3)
+                    labelvalue = self.roundOffString(labelvalue,3)
+                    immstr = self.hextobinstr(labelvalue)
+                else:
+                    immstr = self.hextobinstr(imm.image[2:])
 
+                                 
+#                immstr = self.hextobinstr(labelvalue)
 #                immstr = self.hextobinstr(str(hex(self.symboltablename[imm.image])))
                 immstr = self.binformat(immstr,20)
                 rs1str = self.tobinstr(rs1.image[1:])
@@ -2218,11 +2285,17 @@ class asmblr:
         if self.asmblrstate == PARSESTATE_ASM:
             if imm.kind == HEX:
                 if len(imm.image[2:]) > 4:
+                    print "Line: " + str(self.currentToken.beginLine)
                     print "Warning: " + imm.image + " exceeds the maximum immediate value."
-                    print "         this will be rounded to " + imm.image[0:5]
-                    imm.image = imm.image[0:5]
+#                    print "         this will be rounded to " + imm.image[0:5]
+#                    imm.image = imm.image[0:5]
+                    print "         this will be rounded to 0x" + self.roundOffString(imm.image,3)
+                    imm.image = self.roundOffString(imm.image,3)
+                    immstr = self.hextobinstr(imm.image)
+                else:
+                    immstr = self.hextobinstr(imm.image[2:])
 
-                immstr = self.hextobinstr(imm.image[2:])
+#                immstr = self.hextobinstr(imm.image[2:])
                 immstr = self.binformat(immstr,20)
                 rs1str = self.tobinstr(rs1.image[1:])
                 rs2str = self.tobinstr(rs2.image[1:])
@@ -2233,12 +2306,17 @@ class asmblr:
                 self.consume(HEX)
             elif imm.kind == ID:
                 labelvalue = str(hex(self.symboltablename[imm.image]))
+                immstr = ""
                 if len(labelvalue) > 4:
                     print "Warning: " + labelvalue[2:0] + " exceeds the maximum immediate value."
-                    print "         this will be rounded to " + labelvalue[0:5] + " address of label: " + imm.image
-                    labelvalue = labelvalue[0:5]
-                                 
-                immstr = self.hextobinstr(labelvalue)
+#                    print "         this will be rounded to " + labelvalue[0:5] + " address of label: " + imm.image
+#                    labelvalue = labelvalue[0:5]
+                    print "         this will be rounded to 0x" + self.roundOffString(labelvalue,3)
+                    labelvalue = self.roundOffString(labelvalue,3)
+                    immstr = self.hextobinstr(labelvalue)
+                else:
+                    immstr = self.hextobinstr(labelvalue)
+#                immstr = self.hextobinstr(labelvalue)
 #                immstr = self.hextobinstr(str(hex(self.symboltablename[imm.image])))
                 immstr = self.binformat(immstr,20)
                 rs1str = self.tobinstr(rs1.image[1:])
@@ -2274,9 +2352,15 @@ class asmblr:
         if self.asmblrstate == PARSESTATE_ASM:
             if imm.kind == HEX:
                 if len(imm.image[2:]) > 4:
+                    print "Line: " + str(self.currentToken.beginLine)
                     print "Warning: " + imm.image + " exceeds the maximum immediate value."
-                    print "         this will be rounded to " + imm.image[0:5]
-                    imm.image = imm.image[0:5]
+#                    print "         this will be rounded to " + imm.image[0:5]
+#                    imm.image = imm.image[0:5]
+                    print "         this will be rounded to 0x" + self.roundOffString(imm.image,3)
+                    imm.image = self.roundOffString(imm.image,3)
+                    immstr = self.hextobinstr(imm.image)
+                else:
+                    immstr = self.hextobinstr(imm.image[2:])
 
                 immstr = self.hextobinstr(imm.image[2:])
                 immstr = self.binformat(immstr,20)
@@ -2289,12 +2373,18 @@ class asmblr:
                 self.consume(HEX)
             elif imm.kind == ID:
                 labelvalue = str(hex(self.symboltablename[imm.image]))
+                immstr = ""
                 if len(labelvalue) > 4:
                     print "Warning: " + labelvalue[2:0] + " exceeds the maximum immediate value."
-                    print "         this will be rounded to " + labelvalue[0:5] + " address of label: " + imm.image
-                    labelvalue = labelvalue[0:5]
+#                    print "         this will be rounded to " + labelvalue[0:5] + " address of label: " + imm.image
+#                    labelvalue = labelvalue[0:5]
+                    print "         this will be rounded to 0x" + self.roundOffString(labelvalue,3)
+                    imm.image = self.roundOffString(labelvalue,3)
+                    immstr = self.hextobinstr(labelvalue)
+                else:
+                    immstr = self.hextobinstr(labelvalue)
                                  
-                immstr = self.hextobinstr(labelvalue)
+#                immstr = self.hextobinstr(labelvalue)
 #                immstr = self.hextobinstr(str(hex(self.symboltablename[imm.image])))
                 immstr = self.binformat(immstr,20)
                 rs1str = self.tobinstr(rs1.image[1:])
@@ -2330,11 +2420,17 @@ class asmblr:
         if self.asmblrstate == PARSESTATE_ASM:
             if imm.kind == HEX:
                 if len(imm.image[2:]) > 4:
+                    print "Line: " + str(self.currentToken.beginLine)
                     print "Warning: " + imm.image + " exceeds the maximum immediate value."
-                    print "         this will be rounded to " + imm.image[0:5]
-                    imm.image = imm.image[0:5]
+#                    print "         this will be rounded to " + imm.image[0:5]
+#                    imm.image = imm.image[0:5]
+                    print "         this will be rounded to 0x" + self.roundOffString(imm.image,3)
+                    imm.image = self.roundOffString(imm.image,3)
+                    immstr = self.hextobinstr(imm.image)
+                else:
+                    immstr = self.hextobinstr(imm.image[2:])
 
-                immstr = self.hextobinstr(imm.image[2:])
+#                immstr = self.hextobinstr(imm.image[2:])
                 immstr = self.binformat(immstr,20)
                 rs1str = self.tobinstr(rs1.image[1:])
                 rs2str = self.tobinstr(rs2.image[1:])

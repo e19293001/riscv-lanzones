@@ -1,7 +1,58 @@
-lbu a5,a5,0x13
-lbu a5,a5,16
-lbu a5,a5,016   
-lbu a5,a5,-16   
+bgeu a5,a5,0x13
+bgeu a5,a5,16
+bgeu a5,a5,016   
+bgeu a5,a5,-16
+bgeu a5,a5,biglabel   
+	
+;bge a5,a5,0x13
+;bge a5,a5,16
+;bge a5,a5,016   
+;bge a5,a5,-16
+;bge a5,a5,biglabel   
+	
+;bltu a5,a5,0x13
+;bltu a5,a5,16
+;bltu a5,a5,016   
+;bltu a5,a5,-16
+;bltu a5,a5,biglabel   
+	
+;blt a5,a5,0x13
+;blt a5,a5,16
+;blt a5,a5,016   
+;blt a5,a5,-16
+;blt a5,a5,biglabel   
+	
+;bne a5,a5,0x13
+;bne a5,a5,16
+;bne a5,a5,016   
+;bne a5,a5,-16
+;bne a5,a5,biglabel   
+	
+;beq a5,a5,0x13
+;beq a5,a5,16
+;beq a5,a5,016   
+;beq a5,a5,-16
+;beq a5,a5,biglabel   
+	
+;jalr a5,a5,0x13
+;jalr a5,a5,16
+;jalr a5,a5,016   
+;jalr a5,a5,-16   
+	
+;jal a5,0x13
+;jal a5,16
+;jal a5,016   
+;jal a5,-16   
+	
+;auipc a5,0x13
+;auipc a5,16
+;auipc a5,016   
+;auipc a5,-16   
+	
+;lbu a5,a5,0x13
+;lbu a5,a5,16
+;lbu a5,a5,016   
+;lbu a5,a5,-16   
 	
 ;sh a5,a5,0x13
 ;sh a5,a5,16
@@ -94,3 +145,5 @@ lbu a5,a5,-16
 ;lw      s0,8(sp)
 ;addi    sp,sp,16
 ;ret   
+org 0x12345678
+biglabel:   dw 0x0
