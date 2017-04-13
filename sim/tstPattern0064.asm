@@ -1,8 +1,13 @@
+loop:
+   jal t1,loop
+	
 bgeu a5,a5,0x13
 bgeu a5,a5,16
 bgeu a5,a5,016   
 bgeu a5,a5,-16
-bgeu a5,a5,biglabel   
+bgeu a5,a5,biglabel
+
+   
 	
 ;bge a5,a5,0x13
 ;bge a5,a5,16

@@ -6,7 +6,7 @@ COPTS=-g -Wall -I$(IVERILOG_INCLUDE_PATH) -L$(IVERILOG_LIB_PATH) -I../vpi/
 #COPTS=-L/data/local/KTDP/silladore/files/build/install/lib -I/data/local/KTDP/silladore/files/build/install/include/iverilog -I../vpi/ -Wall
 #COPTS=-L/data/local/KTDP/silladore/files/build/install/lib -I/data/local/KTDP/silladore/files/build/install/include/iverilog -I../vpi/ -Wall
 
-TESTFILE=tstPattern0064.asm
+TESTFILE=tstPattern0065.asm
 #TESTFILE=../asm/global/global.asm
 
 #all: asm comp run

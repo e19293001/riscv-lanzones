@@ -50,6 +50,7 @@ BLTU = 45
 BGEU = 46
 ORG = 47
 SIGNED = 48
+STRING = 49
 
 class Token:
     def __init__(self):
@@ -108,7 +109,8 @@ class Token:
                            "BLTU",
                            "BGEU",
                            "ORG",
-                           "SIGNED"]
+                           "SIGNED",
+                           "STRING"]
           
     def getKind(self,k):
         if (k == 0):
@@ -209,6 +211,8 @@ class Token:
             return "ORG"
         elif (k == 48):
             return "SIGNED"
+        elif (k == 49):
+            return "STRING"
         else:
             return "UNKNOWN"
 
@@ -550,6 +554,21 @@ class TokenMgr:
                 tkn.endColumn = self.currentColumnNumber
                 tkn.image = self.currentChar
                 tkn.kind = COMMA
+                self.getNextChar()
+            elif self.currentChar == "\"":
+                self.buff = ""
+                self.getNextChar()
+                while True:
+                    self.buff = self.buff + self.currentChar
+                    #print "buff: " + self.buff
+                    tkn.endLine = self.currentLineNumber
+                    tkn.endColumn = self.currentColumnNumber
+                    self.getNextChar()
+                    if self.currentChar == "\"":
+                        #print "BREAK!"
+                        break
+                tkn.image = self.buff
+                tkn.kind = STRING
                 self.getNextChar()
             else:
                 tkn.kind = ERROR
@@ -1883,13 +1902,30 @@ class asmblr:
         if self.asmblrstate == PARSESTATE_ASM:
             self.consume(DW)
             imm = self.currentToken
-            immstr = self.hextobinstr(imm.image[2:])
-            instruction = self.binformat(immstr,32)
-            self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
-            self.consume(HEX)
+            if self.currentToken.kind == HEX:
+                immstr = self.hextobinstr(imm.image[2:])
+                instruction = self.binformat(immstr,32)
+                self.cg.emitInstruction(self.programcounter, self.instformat(instruction,8))
+                self.consume(HEX)
+            elif self.currentToken.kind == STRING:
+                strdata = imm.image
+                self.consume(STRING)
+                print "self.currentToken.image: " + strdata
+                print "strdata[0:8]: [" + strdata[0:8] + "]"
+                print "strdata[8:16]: [" + strdata[8:16] + "]"
+                lenmod8 = len(strdata) % 8
+                print "lenmod8: " + str(lenmod8)
+                for i in range(0,len(strdata),8):
+                    print "i: " + str(i) + " loop strdata: [i:i+8]: [" + strdata[i:i+8] + "]"
+                    print [ str(hex(ord(c))[2:]) for c in strdata[i:i+8] ]
+                #for index in range(len(strdata)) :
+                #    self.cg.emitInstruction(self.programcounter, instruction)
         elif self.asmblrstate == PARSESTATE_LABELS:
             self.consume(DW)
-            self.consume(HEX)
+            if self.currentToken.kind == HEX:
+                self.consume(HEX)
+            elif self.currentToken.kind == STRING:
+                self.consume(STRING)
     
     def AUIPCpattern(self):
         op = "0010111"
@@ -1978,13 +2014,13 @@ class asmblr:
                     print "Warning: " + labelvalue[2:0] + " exceeds the maximum immediate value."
 #                    print "         this will be rounded to " + labelvalue[0:7] + " address of label: " + imm.image
 #                    labelvalue = labelvalue[0:7]
-                    print "         this will be rounded to 0x" + self.roundOffString(imm.image,5)
-                    imm.image = self.roundOffString(imm.image,5)
-                    immstr = self.hextobinstr(imm.image)
-                else:
-                    immstr = self.hextobinstr(imm.image[2:])
+                    print "         this will be rounded to 0x" + self.roundOffString(labelvalue,5)
+                    imm.image = self.roundOffString(labelvalue,5)
+#                    immstr = self.hextobinstr(imm.image)
+#                else:
+#                    immstr = self.hextobinstr(imm.image[2:])
                                  
-#                immstr = self.hextobinstr(labelvalue)
+                immstr = self.hextobinstr(labelvalue)
                 
                 rdstr = self.tobinstr(rd.image[1:])
                 instruction = self.binformat(immstr,20) + self.binformat(rdstr,5) + self.binformat(op,7)
