@@ -1910,16 +1910,21 @@ class asmblr:
             elif self.currentToken.kind == STRING:
                 strdata = imm.image
                 self.consume(STRING)
-                print "self.currentToken.image: " + strdata
-                print "strdata[0:8]: [" + strdata[0:8] + "]"
-                print "strdata[8:16]: [" + strdata[8:16] + "]"
-                lenmod8 = len(strdata) % 8
-                print "lenmod8: " + str(lenmod8)
-                for i in range(0,len(strdata),8):
-                    print "i: " + str(i) + " loop strdata: [i:i+8]: [" + strdata[i:i+8] + "]"
-                    print [ str(hex(ord(c))[2:]) for c in strdata[i:i+8] ]
-                #for index in range(len(strdata)) :
-                #    self.cg.emitInstruction(self.programcounter, instruction)
+                #print "self.currentToken.image: " + strdata
+                #print "strdata[0:8]: [" + strdata[0:8] + "]"
+                #print "strdata[8:16]: [" + strdata[8:16] + "]"
+                for i in range(0,len(strdata),4):
+                    #print "i: " + str(i) + " loop strdata: [i:i+4]: [" + strdata[i:i+4] + "]"
+                    inst = "".join([ str(hex(ord(c))[2:]) for c in strdata[i:i+4] ])
+                    #instruction = [ str(hex(ord(c))[2:]) for c in strdata[i:i+4] ]
+
+                    #print "len: " + str(len(inst))
+                    if (len(inst) < 8) :
+                        for j in range(8 - len(inst)):
+                            inst = inst + "0"
+
+                    self.cg.emitInstruction(self.programcounter, inst)
+                    
         elif self.asmblrstate == PARSESTATE_LABELS:
             self.consume(DW)
             if self.currentToken.kind == HEX:
