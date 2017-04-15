@@ -310,7 +310,7 @@ class TokenMgr:
                         tkn.image = self.buff
                         tkn.kind = HEX
                     else:
-                        self.buff = ""
+                        self.buff = "0"
                         #self.getNextChar()
                         while True:
                             self.buff = self.buff + self.currentChar
@@ -319,7 +319,7 @@ class TokenMgr:
                             self.getNextChar()
                             if not self.currentChar.isdigit():
                                 break
-                        tkn.image = self.buff
+                        #tkn.image = self.buff
                         #print "signed int: " + self.buff + "\n"
                         #print "      converting to hex: " + hex(int(self.buff) & 0xFFFFFFFF) + "\n"
                         tkn.image = hex(int(self.buff) & 0xFFFFFFFF)

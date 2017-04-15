@@ -576,7 +576,7 @@ module lanzones(
       if (DIctrlff) begin
          case (opcode_instw)
            7'b0010011: begin
-              imm_ctrl = FIff[31:20];
+              imm_ctrl = $signed(FIff[31:20]);
               rs1_ctrl = FIff[19:15];
               funct3_ctrl = FIff[14:12];
               rd_ctrl = FIff[11:7];
@@ -765,7 +765,7 @@ module lanzones(
          alu_outctrl = xRData0 & imm_ctrl;
       end
       else if (DI_ADDI_ctrl) begin
-         alu_outctrl = xRData0 + imm_ctrl;
+         alu_outctrl = $signed(xRData0) + $signed(imm_ctrl);
       end
       else if (DI_SLLI_ctrl) begin
          alu_outctrl = xRData0 << imm_ctrl;
