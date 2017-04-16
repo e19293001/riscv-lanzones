@@ -372,7 +372,8 @@ module lanzones(
       else begin
          if (RVld & RRdy) begin
             if (PCctrl) begin
-               PCff <= PCff + 1;
+               //PCff <= PCff + 1;
+               PCff <= PCff + 4;
             end
          end
          else if (DI_JAL_ctrl) begin
@@ -386,7 +387,8 @@ module lanzones(
                PCff <= imm_ctrl;
             end
             else begin
-               PCff <= PCff + 1;
+               //PCff <= PCff + 1;
+               PCff <= PCff + 4;
             end               
          end
          else if (DI_BNE_ctrl) begin
@@ -394,7 +396,8 @@ module lanzones(
                PCff <= imm_ctrl;
             end
             else begin
-               PCff <= PCff + 1;
+               //PCff <= PCff + 1;
+               PCff <= PCff + 4;
             end               
          end
          else if (DI_BLT_ctrl) begin
@@ -402,7 +405,8 @@ module lanzones(
                PCff <= imm_ctrl;
             end
             else begin
-               PCff <= PCff + 1;
+               //PCff <= PCff + 1;
+               PCff <= PCff + 4;
             end               
          end
          else if (DI_BLTU_ctrl) begin
@@ -410,7 +414,8 @@ module lanzones(
                PCff <= imm_ctrl;
             end
             else begin
-               PCff <= PCff + 1;
+               //PCff <= PCff + 1;
+               PCff <= PCff + 4;
             end               
          end
          else if (DI_BGE_ctrl) begin
@@ -418,7 +423,8 @@ module lanzones(
                PCff <= imm_ctrl;
             end
             else begin
-               PCff <= PCff + 1;
+               //PCff <= PCff + 1;
+               PCff <= PCff + 4;
             end               
          end
          else if (DI_BGEU_ctrl) begin
@@ -426,7 +432,8 @@ module lanzones(
                PCff <= imm_ctrl;
             end
             else begin
-               PCff <= PCff + 1;
+               //PCff <= PCff + 1;
+               PCff <= PCff + 4;
             end               
          end
       end

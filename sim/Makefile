@@ -11,7 +11,8 @@ TESTFILE=tstPattern0067.asm
 
 #all: asm comp run
 
-all: vpi5
+#all: vpi5
+all: vpi6
 
 asm: $(TESTFILE)
 	python2 ../bin/asmblr.py $(TESTFILE)
@@ -44,6 +45,10 @@ vpi4: vpi3
 	vvp -M. -m vvp_dynmem lanzones
 
 vpi5: output.txt bst.o vpi_dynmem.o vpi_dynmem.vpi #working
+	iverilog -f files -o lanzones.vvp
+	vvp -M. -m vpi_dynmem lanzones.vvp
+
+vpi6: bst.o vpi_dynmem.o vpi_dynmem.vpi #working
 	iverilog -f files -o lanzones.vvp
 	vvp -M. -m vpi_dynmem lanzones.vvp
 

@@ -2521,117 +2521,117 @@ class asmblr:
                 self.LABELpattern()
             elif self.currentToken.kind == DW:
                 self.DWpattern()
-                self.programcounter += 1
+                self.programcounter += 4
             elif self.currentToken.kind == LUI:
                 self.LUIpattern()
-                self.programcounter += 1
+                self.programcounter += 4
             elif self.currentToken.kind == ADD:
                 self.ADDpattern()
-                self.programcounter += 1
+                self.programcounter += 4
             elif self.currentToken.kind == SW:
                 self.SWpattern()
-                self.programcounter += 1
+                self.programcounter += 4
             elif self.currentToken.kind == LW:
                 self.LWpattern()
-                self.programcounter += 1
+                self.programcounter += 4
             elif self.currentToken.kind == LH:
                 self.LHpattern()
-                self.programcounter += 1
+                self.programcounter += 4
             elif self.currentToken.kind == SUB:
                 self.SUBpattern()
-                self.programcounter += 1
+                self.programcounter += 4
             elif self.currentToken.kind == SLL:
                 self.SLLpattern()
-                self.programcounter += 1
+                self.programcounter += 4
             elif self.currentToken.kind == ORI:
                 self.ORIpattern()
-                self.programcounter += 1
+                self.programcounter += 4
             elif self.currentToken.kind == ANDI:
                 self.ANDIpattern()
-                self.programcounter += 1
+                self.programcounter += 4
             elif self.currentToken.kind == SLLI:
                 self.SLLIpattern()
-                self.programcounter += 1
+                self.programcounter += 4
             elif self.currentToken.kind == SRLI:
                 self.SRLIpattern()
-                self.programcounter += 1
+                self.programcounter += 4
             elif self.currentToken.kind == SRAI:
                 self.SRAIpattern()
-                self.programcounter += 1
+                self.programcounter += 4
             elif self.currentToken.kind == ADDI:
                 self.ADDIpattern()
-                self.programcounter += 1
+                self.programcounter += 4
             elif self.currentToken.kind == XORI:
                 self.XORIpattern()
-                self.programcounter += 1
+                self.programcounter += 4
             elif self.currentToken.kind == XOR:
                 self.XORpattern()
-                self.programcounter += 1
+                self.programcounter += 4
             elif self.currentToken.kind == OR:
                 self.ORpattern()
-                self.programcounter += 1
+                self.programcounter += 4
             elif self.currentToken.kind == AND:
                 self.ANDpattern()
-                self.programcounter += 1
+                self.programcounter += 4
             elif self.currentToken.kind == SLTI:
                 self.SLTIpattern()
-                self.programcounter += 1
+                self.programcounter += 4
             elif self.currentToken.kind == SLTIU:
                 self.SLTIUpattern()
-                self.programcounter += 1
+                self.programcounter += 4
             elif self.currentToken.kind == SLT:
                 self.SLTpattern()
-                self.programcounter += 1
+                self.programcounter += 4
             elif self.currentToken.kind == SLTU:
                 self.SLTUpattern()
-                self.programcounter += 1
+                self.programcounter += 4
             elif self.currentToken.kind == LB:
                 self.LBpattern()
-                self.programcounter += 1
+                self.programcounter += 4
             elif self.currentToken.kind == SB:
                 self.SBpattern()
-                self.programcounter += 1
+                self.programcounter += 4
             elif self.currentToken.kind == SH:
                 self.SHpattern()
-                self.programcounter += 1
+                self.programcounter += 4
             elif self.currentToken.kind == LBU:
                 self.LBUpattern()
-                self.programcounter += 1
+                self.programcounter += 4
             elif self.currentToken.kind == LHU:
                 self.LHUpattern()
-                self.programcounter += 1
+                self.programcounter += 4
             elif self.currentToken.kind == SRL:
                 self.SRLpattern()
-                self.programcounter += 1
+                self.programcounter += 4
             elif self.currentToken.kind == SRA:
                 self.SRApattern()
             elif self.currentToken.kind == AUIPC:
                 self.AUIPCpattern()
-                self.programcounter += 1
+                self.programcounter += 4
             elif self.currentToken.kind == JAL:
                 self.JALpattern()
-                self.programcounter += 1
+                self.programcounter += 4
             elif self.currentToken.kind == JALR:
                 self.JALRpattern()
-                self.programcounter += 1
+                self.programcounter += 4
             elif self.currentToken.kind == BEQ:
                 self.BEQpattern()
-                self.programcounter += 1
+                self.programcounter += 4
             elif self.currentToken.kind == BNE:
                 self.BNEpattern()
-                self.programcounter += 1
+                self.programcounter += 4
             elif self.currentToken.kind == BLT:
                 self.BLTpattern()
-                self.programcounter += 1
+                self.programcounter += 4
             elif self.currentToken.kind == BGE:
                 self.BGEpattern()
-                self.programcounter += 1
+                self.programcounter += 4
             elif self.currentToken.kind == BLTU:
                 self.BLTUpattern()
-                self.programcounter += 1
+                self.programcounter += 4
             elif self.currentToken.kind == BGEU:
                 self.BGEUpattern()
-                self.programcounter += 1
+                self.programcounter += 4
             elif self.currentToken.kind == ORG:
                 self.ORGpattern()
             elif self.currentToken.kind == ERROR:

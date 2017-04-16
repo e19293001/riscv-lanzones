@@ -145,6 +145,7 @@ module MemoryModel(
                //RData <= data;
                //$display("reading @RAddr: %08X\n", RAddr);
                RData <= $dynmem_read(RAddr);
+               $display("reading from address: %08x data: %08x", RAddr, $dynmem_read(RAddr));
                //$display("RData: %08X\n", RData);
             end
             else begin
@@ -225,6 +226,21 @@ module initialTest;
       $finish;
    end
 
+   // PC register must be 4-byte aligned
+   initial begin
+      @(posedge clk);
+      @(posedge rstn);
+      forever begin
+         @(posedge clk);
+         if (dut.PCff[1:0] != 2'b0) begin
+            $display("assertion failed. dut.PCff[1:0] is not zero.");
+            $display("         value is: %08X", dut.PCff);
+            repeat (3) @(posedge clk);
+            $finish;
+         end
+      end
+   end
+
    lanzones dut(
       .clk(clk),
       .rstn(rstn),
@@ -270,17 +286,15 @@ module initialTest;
       reg [8*128:1] datastr;
       integer       addrOrData;
       reg [8*128:1] tomem;
-      reg [15:0]       addr0;
-      reg [15:0]       addr1;
+      reg [31:0]       addr0;
       reg [31:0]    datain;
       begin
          fp = $fopen(str, "r");
-         $display("str: %0s", str);
+         $display("input file: %0s", str);
          if (fp == 0) begin
             $display("failed to open file: %0s", str);
             $finish();
          end
-         $display("file opened.");
 
          code = 1;
          indx = 0;
@@ -288,16 +302,16 @@ module initialTest;
          while (code > 0) begin
             code = $fscanf(fp, "+%08x %08x\n", addr0, datain);
             //$display("code: %0d addr: %04x datain: %04x", code, addr, datain);
-            if (code > 0) begin
-               $display("code: %0d addr: %08x datain: %08x", code, addr0, datain);
-            end
+
+            //if (code > 0) begin
+            //   $display("code: %0d addr: %08x datain: %08x", code, addr0, datain);
+            //end
+
             if (code == 0) begin
                $display("invalid input code: %0d addr: %08x datain: %08x", code, addr0, datain);
                $finish;
             end
             $dynmem_write(addr0,datain);
-            //mem.mem[{addr0,addr1}] = datain;
-            //$display("mem[%08x]: %08x", {addr0,addr1}, mem.mem[{addr0,addr1}]);
 //            $display("mem[%08x]: %08x", addr0, $dynmem_read(addr0));
             
             indx = indx + 1;
